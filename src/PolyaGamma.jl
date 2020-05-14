@@ -33,7 +33,7 @@ end
 #   Since, we do not implement the right base measure, the
 #   log-likelihood of the function is only computed up to a constant.
 function basemeasure(::PolyaGamma, X::AbstractMatrix)
-    0
+    error("The base measure of the PolyaGamma is not implemented")
 end
 
 
