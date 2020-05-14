@@ -1,11 +1,12 @@
-name: Documentation
+name: documentation
 
-on:
-    push:
-        branches:
-            - master
-        tag: '*'
-    pull_request:
+on: [push]
+#on:
+#    push:
+#        branches:
+#            - master
+#        tag: '*'
+#    pull_request:
 
 jobs:
     build:
