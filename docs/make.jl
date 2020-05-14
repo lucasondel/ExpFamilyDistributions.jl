@@ -16,3 +16,9 @@ makedocs(
         ],
     ]
 )
+
+
+deploydocs(
+    repo = "github.com/BUTSpeechFIT/ExpFamilyDistributions.jl.git",
+)
+
