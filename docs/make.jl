@@ -14,6 +14,6 @@ makedocs(
 
 
 deploydocs(
-    repo = "github.com/BUTSpeechFIT/ExpFamilyDistributions.jl.git",
+    repo = "github.com/BUTSpeechFIT/ExpFamilyDistributions.git",
 )
 
