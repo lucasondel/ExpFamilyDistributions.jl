@@ -39,7 +39,7 @@ end
 
 function gradlognorm(pdf::PolyaGamma)
     T = eltype(pdf.c)
-    replace!((pdf.b ./ (2 * pdf.c)) .* tanh.(pdf.c ./ 2), NaN => T(0.))
+    replace!((pdf.b ./ (2 * pdf.c)) .* tanh.(pdf.c ./ 2), NaN => T(1.))
 end
 
 function lognorm(pdf::PolyaGamma{D}; perdim::Bool = false) where D
