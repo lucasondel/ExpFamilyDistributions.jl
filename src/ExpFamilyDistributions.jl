@@ -59,7 +59,7 @@ Compute the KL-divergence between two distributions of the same type
 """
 function kldiv(q::T, p::T) where T<:ExpFamilyDistribution
     q_η, p_η = naturalparam(q), naturalparam(p)
-    lognorm(p) - lognorm(q) - dot((p_η .- q_η), gradlognorm(q))
+    lognorm(p) - lognorm(q) - dot(p_η .- q_η, gradlognorm(q))
 end
 
 

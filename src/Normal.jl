@@ -39,7 +39,7 @@ _splitnatparams(η, D) = η[1:D], reshape(η[D+1:end], (D, D))
 
 function basemeasure(::Normal, X::AbstractMatrix)
     retval = ones(eltype(X), size(X, 2))
-    retval[:] = -.5 * size(X, 1) * log(2 * pi) *
+    retval[:] = -.5 * size(X, 1) * log(2 * pi)
     retval
 end
 
