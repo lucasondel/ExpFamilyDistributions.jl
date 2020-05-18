@@ -37,7 +37,10 @@ function basemeasure(::PolyaGamma, X::AbstractMatrix)
 end
 
 
-gradlognorm(pdf::PolyaGamma) = (pdf.b ./ (2 * pdf.c)) .* tanh.(pdf.c ./ 2)
+function gradlognorm(pdf::PolyaGamma)
+    T = eltype(pdf.c)
+    replace!((pdf.b ./ (2 * pdf.c)) .* tanh.(pdf.c ./ 2), NaN => T(0.))
+end
 
 function lognorm(pdf::PolyaGamma{D}; perdim::Bool = false) where D
     # cosh = (exp{2x} + 1) / (2 * exp{x})
