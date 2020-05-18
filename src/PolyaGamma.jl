@@ -39,7 +39,12 @@ end
 
 function gradlognorm(pdf::PolyaGamma)
     T = eltype(pdf.c)
-    replace!((pdf.b ./ (2 * pdf.c)) .* tanh.(pdf.c ./ 2), NaN => T(1.))
+    retval = (pdf.b ./ (2 * pdf.c)) .* tanh.(pdf.c ./ 2)
+    # When c = 0 the mean is not defined but can be extended by
+    # continuity by observing that lim_{x => 0} (e^(x) - 1) / x = 0
+    # which lead to the mean = b / 4
+    idxs = isnan.(retval)
+    retval[idxs] .= pdf.b[idxs] / 4
 end
 
 function lognorm(pdf::PolyaGamma{D}; perdim::Bool = false) where D
