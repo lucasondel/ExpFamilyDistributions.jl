@@ -39,7 +39,7 @@ end
 
 gradlognorm(pdf::PolyaGamma) = (pdf.b ./ (2 * pdf.c)) .* tanh.(pdf.c ./ 2)
 
-function lognorm(pdf::PolyaGamma{D}; perdim::Bool = True) where D
+function lognorm(pdf::PolyaGamma{D}; perdim::Bool = true) where D
     # cosh = (exp{2x} + 1) / (2 * exp{x})
     # logcosh = log(1 + exp{2x} - log(2) - x
     #sum(-pdf.b .* log.(cosh.(pdf.c ./ 2)))
