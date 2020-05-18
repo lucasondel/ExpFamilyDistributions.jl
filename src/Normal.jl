@@ -50,10 +50,7 @@ function gradlognorm(pdf::Normal)
 end
 
 
-function lognorm(pdf::Normal{D}) where D
-    η1, η2 = _splitnatparams(naturalparam(pdf), D)
-    -0.25 * (dot(η1, inv(η2), η1) - .5 * logdet(-2 * η2))
-end
+lognorm(pdf::Normal) = .5 * (logdet(pdf.Σ) + dot(pdf.μ, inv(pdf.Σ), pdf.μ))
 
 mean(pdf::Normal) = pdf.μ
 
