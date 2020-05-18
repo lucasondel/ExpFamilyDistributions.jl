@@ -45,6 +45,7 @@ function gradlognorm(pdf::PolyaGamma)
     # which lead to the mean = b / 4
     idxs = isnan.(retval)
     retval[idxs] .= pdf.b[idxs] / 4
+    return retval
 end
 
 function lognorm(pdf::PolyaGamma{D}; perdim::Bool = false) where D
