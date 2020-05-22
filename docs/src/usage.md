@@ -23,16 +23,15 @@ a (multivariate) Normal distribution.
 ```juliashowcase
 julia> using ExpFamilyDistributions
 
-julia> p = Normal{2}()
-Normal{2}
+julia> p = Normal{Float64, 2}()
+Normal{Float64,2}
   μ = [0.0, 0.0]
   Σ = [1.0 0.0; 0.0 1.0]
 
 julia> q = Normal([1., -1.], [2 0.5; 0.5 1])
-Normal{2}
+Normal{Float64,2}
   μ = [1.0, -1.0]
   Σ = [2.0 0.5; 0.5 1.0]
-
 
 julia> basemeasure(p, ones(2, 5))
 5-element Array{Float64,1}:
@@ -52,10 +51,10 @@ julia> gradlognorm(p)
  1.0
 
 julia> kldiv(q, p)
-1.5699519734919276
+1.2201921060322882
 
 julia> lognorm(p), lognorm(q)
-(-0.0, 1.0729051693652147)
+(-0.0, 1.4226650368248541)
 
 julia> mean(p)
 2-element Array{Float64,1}:
@@ -85,7 +84,7 @@ julia> stdparam(p)
 
 julia> update!(q, naturalparam(p))
 julia> q
-Normal{2}
+Normal{Float64,2}
   μ = [0.0, 0.0]
   Σ = [1.0 0.0; 0.0 1.0]
 ```

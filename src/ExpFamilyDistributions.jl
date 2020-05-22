@@ -23,11 +23,11 @@ abstract type ExpFamilyDistribution end
 
 
 """
-    (pdf::ExpFamilyDistribution)(X::AbstractMatrix)
+    (pdf::ExpFamilyDistribution)(X::Matrix{<:AbstractFloat})
 
 Return the log-likelihood for each columne of `X`.
 """
-function (pdf::ExpFamilyDistribution)(X::AbstractArray)
+function (pdf::ExpFamilyDistribution)(X::Matrix{<:AbstractFloat})
     TX = stats(pdf, X)
     η = naturalparam(pdf)
     TX' * η .- lognorm(pdf) .+ basemeasure(pdf, X)

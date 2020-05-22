@@ -1,22 +1,22 @@
 
 using StatsFuns
 
-struct PolyaGamma{D} <: ExpFamilyDistribution
-    b::AbstractVector
-    c::AbstractVector
+struct PolyaGamma{T, D} <: ExpFamilyDistribution where T <: AbstractFloat
+    b::Vector{T}
+    c::Vector{T}
 
-    function PolyaGamma(b::AbstractVector, c::AbstractVector)
+    function PolyaGamma(b::Vector{T}, c::Vector{T}) where T <: AbstractFloat
         if size(b) ≠ size(c)
             error("Dimension mismathc: size(b) = $(size(b)) ≠ size(c) = $(size(c))")
         end
-        new{length(b)}(b, c)
+        new{T, length(b)}(b, c)
     end
 end
 
-PolyaGamma(b::AbstractVector) = PolyaGamma(b, zeros(eltype(b), length(b)))
+PolyaGamma(b::Vector{T}) where T <: AbstractFloat = PolyaGamma(b, zeros(T, length(b)))
 
-function PolyaGamma{D}() where D
-    PolyaGamma(ones(Float64, D), zeros(Float64, D))
+function PolyaGamma{T, D}() where {T <: AbstractFloat, D}
+    PolyaGamma(ones(T, D), zeros(T, D))
 end
 
 function Base.show(io::IO, pg::PolyaGamma)
@@ -26,20 +26,17 @@ end
 #######################################################################
 # ExpFamilyDistribution interface
 
-# The base measure of the PolyaGamma is not zero but rather and
-# infinite sum with alterning signs. Since the base measure is not
-# necessary while using VB training, we simply set it to 0.
-# WARNING:
-#   Since, we do not implement the right base measure, the
-#   log-likelihood of the function is only computed up to a constant.
+# The base measure of the PolyaGamma is an infinite sum with alterning
+# signs. Since the base measure is not necessary while using VB
+# training, we simply don't implement it.
 function basemeasure(::PolyaGamma, X::AbstractMatrix)
     error("The base measure of the PolyaGamma is not implemented")
 end
 
 
-function gradlognorm(pdf::PolyaGamma)
-    T = eltype(pdf.c)
+function gradlognorm(pdf::PolyaGamma{T, D}) where {T <: AbstractFloat, D}
     retval = (pdf.b ./ (2 * pdf.c)) .* tanh.(pdf.c ./ 2)
+
     # When c = 0 the mean is not defined but can be extended by
     # continuity by observing that lim_{x => 0} (e^(x) - 1) / x = 0
     # which lead to the mean = b / 4
@@ -48,7 +45,7 @@ function gradlognorm(pdf::PolyaGamma)
     return retval
 end
 
-function lognorm(pdf::PolyaGamma{D}; perdim::Bool = false) where D
+function lognorm(pdf::PolyaGamma{T, D}; perdim::Bool = false) where {T <: AbstractFloat, D}
     # cosh = (exp{2x} + 1) / (2 * exp{x})
     # logcosh = log(1 + exp{2x} - log(2) - x
     #sum(-pdf.b .* log.(cosh.(pdf.c ./ 2)))
@@ -63,11 +60,11 @@ mean(pdf::PolyaGamma) = gradlognorm(pdf)
 
 naturalparam(pdf::PolyaGamma) = - (pdf.c .^ 2) ./ 2
 
-stats(::PolyaGamma, X::AbstractMatrix) = X
+stats(::PolyaGamma, X::Matrix{<:AbstractFloat}) = X
 
 stdparam(pdf::PolyaGamma) = (b=pdf.b, c=pdf.c)
 
-function update!(pdf::PolyaGamma{D}, η::AbstractVector) where D
+function update!(pdf::PolyaGamma{T, D}, η::Vector) where {T <: AbstractFloat, D}
     c = sqrt.(-2 .* η)
     pdf.c[:] = c
     return nothing
