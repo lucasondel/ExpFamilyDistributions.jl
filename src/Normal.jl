@@ -7,7 +7,7 @@ struct Normal{T, D} <: ExpFamilyDistribution where T <: AbstractFloat
         if size(μ) ≠ size(Σ)[1] ≠ size(Σ)[2]
             error("Dimension mismatch: size(μ) = $(size(μ)) size(Σ) = $(size(Σ))")
         end
-        new{T, length(μ)}(μ, Σ)
+        new{T, length(μ)}(μ, Symmetric(Σ))
     end
 end
 
@@ -67,7 +67,7 @@ stdparam(pdf::Normal) = (μ=pdf.μ, Σ=pdf.Σ)
 function update!(pdf::Normal{T, D}, η::Vector{T}) where {T <: AbstractFloat, D}
     Λμ, nhΛ = _splitnatparams(η, D)
     Λ = -2 * nhΛ
-    pdf.Σ[:, :] = inv(Λ)
+    pdf.Σ[:, :] = inv(Symmetric(Λ))
     pdf.μ[:] = pdf.Σ * Λμ
     return nothing
 end
