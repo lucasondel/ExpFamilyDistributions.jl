@@ -112,6 +112,7 @@ export Gamma
 export Normal
 export PolyaGamma
 
+include("Dirichlet.jl")
 include("Gamma.jl")
 include("Normal.jl")
 include("PolyaGamma.jl")
