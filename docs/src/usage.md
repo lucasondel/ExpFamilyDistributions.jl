@@ -93,9 +93,14 @@ Normal{Float64,2}
 
 | Julia type            | Description                              |
 |:--------------------- |:---------------------------------------- |
-| `Normal{D}`           | `D`-multivariate normal distribution     |
+| `Dirichlet{D}`        | `D`-dimensional Dirichlet distribution   |
 | `Gamma{D}`            | `D` independent Gamma distributions      |
+| `Normal{D}`           | `D`-multivariate normal distribution     |
 | `PolyaGamma{D}`       | `D` independent PolyaGamma distributions |
+
+For all the distributions, the `T` parameter how the parameters are
+encoded. Note that you cannot compute the KL divergence (`kldiv`) with
+distributions having different `T`.
 
 !!! warning
     The PolyaGamma distribution does not implement the basemeasure as
