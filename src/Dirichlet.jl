@@ -30,12 +30,12 @@ function gradlognorm(pdf)
 end
 
 function stats(::Dirichlet, X::Matrix{T}) where T <: AbstractFloat
-    ln.(X)
+    log.(X)
 end
 
 function lognorm(pdf::Dirichlet)
     α = stdparam(pdf)
-    loggamma.(α) .- loggamma(sum(α))
+    sum(loggamma.(α)) - loggamma(sum(α))
 end
 
 mean(pdf::Dirichlet) = pdf.α ./ sum(pdf.α)
