@@ -108,6 +108,7 @@ update!
 #######################################################################
 # Concrete distributions
 
+export Dirichlet
 export Gamma
 export Normal
 export PolyaGamma
