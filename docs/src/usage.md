@@ -96,6 +96,7 @@ Normal{Float64,2}
 | `Dirichlet{T, D}`     | `D`-dimensional Dirichlet distribution   |
 | `Gamma{T, D}`         | `D` independent Gamma distributions      |
 | `Normal{T, D}`        | `D`-multivariate normal distribution     |
+| `NormalIso{T, D}`     | `D`-multivariate normal distribution with isotropic covariance matrix |
 | `PolyaGamma{T, D}`    | `D` independent PolyaGamma distributions |
 
 For all the distributions, the `T` parameter how the parameters are
