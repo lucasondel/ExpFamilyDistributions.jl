@@ -111,11 +111,13 @@ update!
 export Dirichlet
 export Gamma
 export Normal
+export NormalIso
 export PolyaGamma
 
 include("Dirichlet.jl")
 include("Gamma.jl")
 include("Normal.jl")
+include("NormalIso.jl")
 include("PolyaGamma.jl")
 
 end
