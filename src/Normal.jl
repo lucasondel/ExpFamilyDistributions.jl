@@ -1,5 +1,5 @@
 
-struct Normal{T, D} <: ExpFamilyDistribution where T <: AbstractFloat
+mutable struct Normal{T, D} <: ExpFamilyDistribution where T <: AbstractFloat
     μ::Vector{T}
     Σ::Matrix{T}
 
