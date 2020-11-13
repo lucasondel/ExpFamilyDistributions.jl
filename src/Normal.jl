@@ -69,6 +69,6 @@ function update!(pdf::Normal{T, D}, η::Vector{T}) where {T <: AbstractFloat, D}
     Λ = -2 * nhΛ
     pdf.Σ[:, :] = inv(Symmetric(Λ))
     pdf.μ[:] = pdf.Σ * Λμ
-    return nothing
+    return pdf
 end
 
