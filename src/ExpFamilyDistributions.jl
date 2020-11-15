@@ -1,6 +1,7 @@
 module ExpFamilyDistributions
 
 using LinearAlgebra
+using SpecialFunctions: loggamma, digamma
 
 export ExpFamilyDistribution
 export basemeasure
@@ -10,7 +11,6 @@ export lognorm
 export mean
 export naturalparam
 export stats
-export stdparam
 export update!
 
 
@@ -78,7 +78,6 @@ Return the natural (a.k.a. the canonical) parameters as a vector.
 """
 naturalparam
 
-
 """
     stats(pdf::ExpFamilyDistribution, X::AbstractMatrix)
 
@@ -86,17 +85,6 @@ Extract the sufficient statistics of `X` corresponding to type of
 `pdf`.
 """
 stats
-
-
-"""
-    stdparam(pdf::ExpFamilyDistribution)
-
-Return the standard parameters of `pdf`. If there are multiple
-parameters (i.e. a mean and a covariance matrix) the returned value
-will be a `namedtuple`.
-"""
-stdparam
-
 
 """
     update!(pdf::ExpFamilyDistribution, naturalparam::AbstractVector)
@@ -106,7 +94,10 @@ Update the parameters given a new natural parameter vector.
 update!
 
 #######################################################################
-# Concrete distributions
+# Distributions
+
+export AbstractNormal
+export AbstractGamma
 
 export Dirichlet
 export Gamma
