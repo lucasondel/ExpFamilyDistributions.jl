@@ -87,6 +87,14 @@ mutable struct NormalDiag{T, D} <: AbstractNormal where T <: AbstractFloat
     end
 end
 
+# We redefine the show function to avoid allocating the full matrix
+# in jupyter notebooks.
+function Base.show(io::IO, n::NormalDiag)
+    print(io, "$(typeof(n))\n")
+    print(io, "  μ = $(n.μ)\n")
+    print(io, "  v = $(n.v)")
+end
+
 function Base.getproperty(n::NormalDiag, sym::Symbol)
     sym == :Σ ? diagm(n.v) : getfield(n, sym)
 end
