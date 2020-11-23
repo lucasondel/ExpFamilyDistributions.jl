@@ -43,12 +43,12 @@ mutable struct Gamma{T} <: AbstractGamma where T <: AbstractFloat
     α::T
     β::T
 
-    function Gamma(α::T, β::T) where T <: AbstractFloat
+    function Gamma{T}(α::T, β::T) where T<:AbstractFloat
        new{T}(α, β)
    end
 end
 
-Gamma(T::Type{<:AbstractFloat}, α::Real, β::Real) = Gamma(T(α), T(β))
-Gamma(α::Real, β::Real) = Gamma(Float64, α, β)
-Gamma(α::Real) = Gamma(α, 1)
-Gamma() = Gamma(1, 1)
+Gamma{T}(α::Real, β::Real) where T<:AbstractFloat = Gamma{T}(T(α), T(β))
+Gamma{T}(α::Real) where T<:AbstractFloat = Gamma{T}(α, 1)
+Gamma{T}() where T<:AbstractFloat = Gamma{T}(1, 1)
+

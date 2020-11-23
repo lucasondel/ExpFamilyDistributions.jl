@@ -49,7 +49,7 @@ function update!(n::AbstractNormal, η::Vector{T}) where T <: AbstractFloat
 end
 
 #######################################################################
-# Concrete implementation
+# Concrete implementation Normal with full covariance matrix
 
 mutable struct Normal{T, D} <: AbstractNormal where T <: AbstractFloat
     μ::Vector{T}
@@ -70,5 +70,41 @@ end
 
 function Normal{T, D}() where {T <: AbstractFloat, D}
     Normal(zeros(T, D), Matrix{T}(I, D, D))
+end
+
+#######################################################################
+# Concrete implementation Normal with diagonal covariance matrix
+
+mutable struct NormalDiag{T, D} <: AbstractNormal where T <: AbstractFloat
+    μ::Vector{T}
+    v::Vector{T} # Diagonal of the covariance matrix
+
+    function NormalDiag(μ::Vector{T}, v::Vector{T}) where T <: AbstractFloat
+        if size(μ) ≠ size(v)
+            error("Dimension mismatch: size(μ) = $(size(μ)) size(v) = $(size(v))")
+        end
+        new{T, length(μ)}(μ, v)
+    end
+end
+
+function Base.getproperty(n::NormalDiag, sym::Symbol)
+    sym == :Σ ? diagm(n.v) : getfield(n, sym)
+end
+
+NormalDiag(μ::Vector{T}) where T<:AbstractFloat = NormalDiag(μ, ones(T, length(μ)))
+NormalDiag{T, D}() where {T <: AbstractFloat, D} = NormalDiag(zeros(T, D), ones(T, D))
+
+gradlognorm(n::NormalDiag) = vcat(n.μ, n.v + n.μ.^2)
+lognorm(n::NormalDiag) = .5 * sum(log.(n.v)) + sum(n.v .* n.μ.^2)
+mean(n::NormalDiag) = n.μ
+naturalparam(n::NormalDiag) = vcat((1 ./ n.v) .* n.μ, -.5 .* n.v)
+stats(::NormalDiag, X::Matrix{<:AbstractFloat}) = vcat(X, X.^2)
+
+function update!(n::NormalDiag, η::Vector{T}) where T <: AbstractFloat
+    D = length(n.μ)
+    Λμ, nhλ = η[1:D], η[D+1:end]
+    n.v = -2 * nhλ
+    n.μ = n.v .* Λμ
+    return n
 end
 

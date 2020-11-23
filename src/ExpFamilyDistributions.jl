@@ -102,6 +102,7 @@ export AbstractGamma
 export Dirichlet
 export Gamma
 export Normal
+export NormalDiag
 export NormalIso
 export PolyaGamma
 
