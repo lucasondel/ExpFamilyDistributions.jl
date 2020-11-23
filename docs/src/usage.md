@@ -15,7 +15,6 @@ following interface:
 | `mean(p)`               | Returns the mean of the distribution `p`               |
 | `naturalparam(p)`       | Returns the vector of natural parameters of `p`        |
 | `stats(p, X)`           | Returns the matrix of sufficient statistics            |
-| `stdparam(p)`           | Returns the standard parameters of `p`                 |
 | `update!(p, natparam)`  | Update the parameters of `p` given a vector of natural parameters |
 
 In the following, we show a basic demonstration of the interface using
@@ -79,9 +78,6 @@ julia> stats(p, ones(2, 5))
  1.0  1.0  1.0  1.0  1.0
  1.0  1.0  1.0  1.0  1.0
 
-julia> stdparam(p)
-(μ = [0.0, 0.0], Σ = [1.0 0.0; 0.0 1.0])
-
 julia> update!(q, naturalparam(p))
 julia> q
 Normal{Float64,2}
@@ -98,7 +94,7 @@ Normal{Float64,2}
 | `Normal{T, D}`        | `D`-multivariate normal distribution     |
 | `NormalDiag{T, D}`    | `D`-multivariate normal distribution with diagonal covariance matrix |
 
-For all the distributions, the `T` parameter how the parameters are
-encoded. Note that you cannot compute the KL divergence (`kldiv`) with
-distributions having different `T`.
+For all the distributions, the `T<:AbstractFloat` is the type of the
+distribution parameters. Note that you cannot compute the KL divergence
+(`kldiv`) with distributions having different `T`.
 
