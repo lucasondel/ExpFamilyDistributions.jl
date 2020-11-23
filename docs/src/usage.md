@@ -96,15 +96,9 @@ Normal{Float64,2}
 | `Dirichlet{T, D}`     | `D`-dimensional Dirichlet distribution   |
 | `Gamma{T, D}`         | `D` independent Gamma distributions      |
 | `Normal{T, D}`        | `D`-multivariate normal distribution     |
-| `NormalIso{T, D}`     | `D`-multivariate normal distribution with isotropic covariance matrix |
-| `PolyaGamma{T, D}`    | `D` independent PolyaGamma distributions |
+| `NormalDiag{T, D}`    | `D`-multivariate normal distribution with diagonal covariance matrix |
 
 For all the distributions, the `T` parameter how the parameters are
 encoded. Note that you cannot compute the KL divergence (`kldiv`) with
 distributions having different `T`.
-
-!!! warning
-    The PolyaGamma distribution does not implement the basemeasure as
-    it involves an infinite sum. Therefore, calling the `basemeasure`
-    method with an instance of a `PolyaGamma{D}` will raise an error.
 
