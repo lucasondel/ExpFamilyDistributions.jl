@@ -29,8 +29,7 @@ mean(pdf::AbstractNormal) = pdf.μ
 
 function naturalparam(n::AbstractNormal)
     Λ = inv(n.Σ)
-    vcat(Λ * n.μ, -.5 .* vec(Λ))
-end
+    vcat(Λ * n.μ, -.5 .* vec(Λ)) end
 
 function stats(::AbstractNormal, X::Matrix{<:AbstractFloat})
     dim1, dim2 = size(X)
@@ -111,7 +110,7 @@ stats(::NormalDiag, X::Matrix{<:AbstractFloat}) = vcat(X, X.^2)
 function update!(n::NormalDiag, η::Vector{T}) where T <: AbstractFloat
     D = length(n.μ)
     Λμ, nhλ = η[1:D], η[D+1:end]
-    n.v = 1 ./ -2 * nhλ
+    n.v = 1 ./ (-2 * nhλ)
     n.μ = n.v .* Λμ
     return n
 end
