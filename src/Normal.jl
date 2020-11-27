@@ -9,9 +9,10 @@ abstract type AbstractNormal <: ExpFamilyDistribution end
 _splitnatparams(η, D) = η[1:D], reshape(η[D+1:end], (D, D))
 
 function Base.show(io::IO, n::AbstractNormal)
-    print(io, "$(typeof(n))\n")
-    print(io, "  μ = $(n.μ)\n")
-    print(io, "  Σ = $(n.Σ)")
+    cindent = get(io, :indent, 0)
+    println(io, " "^cindent, typeof(n))
+    println(io, " "^cindent, "  μ = ", n.μ)
+    print(io, " "^cindent, "  Σ = ", n.Σ)
 end
 
 #######################################################################

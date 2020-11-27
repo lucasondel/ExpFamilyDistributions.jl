@@ -5,8 +5,9 @@ abstract type AbstractDirichlet <: ExpFamilyDistribution end
 #   getproperty(n::AbstractDirihlet, :α)
 
 function Base.show(io::IO, d::AbstractDirichlet)
-    print(io, "$(typeof(d))\n")
-    print(io, "  α = $(d.α)")
+    cindent = get(io, :indent, 0)
+    print(io, " "^cindent, typeof(g))
+    print(io, " "^cindent, "  α = ", d.α)
 end
 
 #######################################################################
