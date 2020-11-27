@@ -7,7 +7,7 @@ abstract type AbstractGamma <: ExpFamilyDistribution end
 
 function Base.show(io::IO, g::AbstractGamma)
     cindent = get(io, :indent, 0)
-    println(io, " "^cindent, typeof(g))
+    println(io, " "^cindent, typeof(g), ":")
     println(io, " "^cindent, "  α = ", g.α)
     print(io, " "^cindent, "  β = ", g.β)
 end
