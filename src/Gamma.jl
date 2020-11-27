@@ -6,9 +6,10 @@ abstract type AbstractGamma <: ExpFamilyDistribution end
 #   getproperty(n::AbstractNormal, :β)
 
 function Base.show(io::IO, g::AbstractGamma)
-    print(io, "$(typeof(g))\n")
-    print(io, "  α = $(g.α)\n")
-    print(io, "  β = $(g.β)")
+    cindent = get(io, :indent, 0)
+    print(io, " "^cindent, "$(typeof(g))\n")
+    print(io, " "^cindent, "  α = $(g.α)\n")
+    print(io, " "^cindent, "  β = $(g.β)")
 end
 
 #######################################################################
