@@ -53,9 +53,9 @@ end
 
 mutable struct Normal{T, D} <: AbstractNormal where T <: AbstractFloat
     μ::Vector{T}
-    Σ::Matrix{T}
+    Σ::Symmetric{T}
 
-    function Normal(μ::Vector{T}, Σ::Matrix{T}) where T <: AbstractFloat
+    function Normal(μ::Vector{T}, Σ::Symmetric{T}) where T <: AbstractFloat
         if size(μ) ≠ size(Σ)[1] ≠ size(Σ)[2]
             error("Dimension mismatch: size(μ) = $(size(μ)) size(Σ) = $(size(Σ))")
         end
@@ -65,11 +65,11 @@ end
 
 function Normal(μ::Vector{T}) where T <: AbstractFloat
     D = length(μ)
-    Normal(μ, Matrix{T}(I, D, D))
+    Normal(μ, Symmetric(Matrix{T}(I, D, D)))
 end
 
 function Normal{T, D}() where {T <: AbstractFloat, D}
-    Normal(zeros(T, D), Matrix{T}(I, D, D))
+    Normal(zeros(T, D), Symmetric(Matrix{T}(I, D, D)))
 end
 
 #######################################################################
