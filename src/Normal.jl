@@ -43,8 +43,8 @@ function update!(n::AbstractNormal, η::Vector{T}) where T <: AbstractFloat
     D = length(n.μ)
     Λμ, nhΛ = _splitnatparams(η, D)
     Λ = -2 * nhΛ
-    n.Σ[:, :] = inv(Symmetric(Λ))
-    n.μ[:] = n.Σ * Λμ
+    n.Σ = inv(Symmetric(Λ))
+    n.μ = n.Σ * Λμ
     return n
 end
 
@@ -59,7 +59,7 @@ mutable struct Normal{T, D} <: AbstractNormal where T <: AbstractFloat
         if size(μ) ≠ size(Σ)[1] ≠ size(Σ)[2]
             error("Dimension mismatch: size(μ) = $(size(μ)) size(Σ) = $(size(Σ))")
         end
-        new{T, length(μ)}(μ, Symmetric(Σ))
+        new{T, length(μ)}(μ, Σ)
     end
 end
 
