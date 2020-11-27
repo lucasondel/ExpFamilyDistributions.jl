@@ -24,7 +24,12 @@ function basemeasure(::AbstractNormal, X::Matrix{T}) where T <: AbstractFloat
     retval
 end
 
-gradlognorm(n::AbstractNormal) = vcat(n.μ, vec(n.Σ + n.μ * n.μ'))
+function gradlognorm(n::AbstractNormal; vectorize = true)
+    if vectorize
+        return vcat(n.μ, vec(n.Σ + n.μ * n.μ'))
+    end
+    n.μ, n.Σ + n.μ * n.μ'
+end
 lognorm(n::AbstractNormal) = .5 * (logdet(n.Σ) + dot(n.μ, inv(n.Σ), n.μ))
 mean(pdf::AbstractNormal) = pdf.μ
 
@@ -102,7 +107,12 @@ end
 NormalDiag(μ::Vector{T}) where T<:AbstractFloat = NormalDiag(μ, ones(T, length(μ)))
 NormalDiag{T, D}() where {T <: AbstractFloat, D} = NormalDiag(zeros(T, D), ones(T, D))
 
-gradlognorm(n::NormalDiag) = vcat(n.μ, n.v + n.μ.^2)
+function gradlognorm(n::NormalDiag; vectorize = true)
+    if vectorize
+        return vcat(n.μ, n.v + n.μ.^2)
+    end
+    n.μ, n.v + n.μ.^2
+end
 lognorm(n::NormalDiag) = .5 * sum(log.(n.v)) + sum(n.v .* n.μ.^2)
 mean(n::NormalDiag) = n.μ
 naturalparam(n::NormalDiag) = vcat((1 ./ n.v) .* n.μ, -.5 .* n.v)

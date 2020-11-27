@@ -16,7 +16,12 @@ end
 # ExpFamilyDistribution interface
 
 basemeasure(::AbstractGamma, x::Vector{<:AbstractFloat}) = -log.(x)
-gradlognorm(g::AbstractGamma) = vcat(g.α / g.β, digamma(g.α) - log(g.β))
+function gradlognorm(g::AbstractGamma; vectorize = true)
+    if vectorize
+        vcat(g.α / g.β, digamma(g.α) - log(g.β))
+    end
+    g.α / g.β, digamma(g.α) - log(g.β)
+end
 lognorm(g::AbstractGamma) = sum(loggamma.(g.α) .- g.α .* log.(g.β))
 naturalparam(g::AbstractGamma) = vcat(-g.β, g.α)
 mean(g::AbstractGamma) = g.α / g.β
