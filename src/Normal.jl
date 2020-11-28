@@ -34,8 +34,10 @@ lognorm(n::AbstractNormal) = .5 * (logdet(n.Σ) + dot(n.μ, inv(n.Σ), n.μ))
 mean(pdf::AbstractNormal) = pdf.μ
 
 function naturalparam(n::AbstractNormal)
+    T = eltyep(n.μ)
     Λ = inv(n.Σ)
-    vcat(Λ * n.μ, -.5 .* vec(Λ)) end
+    vcat(Λ * n.μ, -T(.5) .* vec(Λ))
+end
 
 function stats(::AbstractNormal, X::Matrix{<:AbstractFloat})
     dim1, dim2 = size(X)
@@ -113,9 +115,9 @@ function gradlognorm(n::NormalDiag; vectorize = true)
     end
     n.μ, n.v + n.μ.^2
 end
-lognorm(n::NormalDiag) = .5 * sum(log.(n.v)) + sum(n.v .* n.μ.^2)
+lognorm(n::NormalDiag{T,D}) where {T,D} = T(.5) * sum(log.(n.v)) + sum(n.v .* n.μ.^2)
 mean(n::NormalDiag) = n.μ
-naturalparam(n::NormalDiag) = vcat((1 ./ n.v) .* n.μ, -.5 .* n.v)
+naturalparam(n::NormalDiag{T,D}) where {T,D} = vcat((T(1) ./ n.v) .* n.μ, -T(.5) .* n.v)
 stats(::NormalDiag, X::Matrix{<:AbstractFloat}) = vcat(X, X.^2)
 
 function update!(n::NormalDiag, η::Vector{T}) where T <: AbstractFloat
