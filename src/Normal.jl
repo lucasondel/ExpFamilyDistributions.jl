@@ -34,7 +34,7 @@ lognorm(n::AbstractNormal) = .5 * (logdet(n.Σ) + dot(n.μ, inv(n.Σ), n.μ))
 mean(pdf::AbstractNormal) = pdf.μ
 
 function naturalparam(n::AbstractNormal)
-    T = eltyep(n.μ)
+    T = eltype(n.μ)
     Λ = inv(n.Σ)
     vcat(Λ * n.μ, -T(.5) .* vec(Λ))
 end
