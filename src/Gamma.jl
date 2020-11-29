@@ -22,7 +22,7 @@ function gradlognorm(g::AbstractGamma; vectorize = true)
     end
     g.α / g.β, digamma(g.α) - log(g.β)
 end
-lognorm(g::AbstractGamma) = sum(loggamma.(g.α) .- g.α .* log.(g.β))
+lognorm(g::AbstractGamma) = loggamma(g.α) - g.α * log.(g.β)
 naturalparam(g::AbstractGamma) = vcat(-g.β, g.α)
 mean(g::AbstractGamma) = g.α / g.β
 stats(::AbstractGamma, x::Vector{<:AbstractFloat}) = vcat(x', log.(x)')
