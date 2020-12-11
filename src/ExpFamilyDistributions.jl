@@ -21,21 +21,28 @@ Supertype for distributions member of the exponential family.
 """
 abstract type ExpFamilyDistribution end
 
-
-"""
-    (pdf::ExpFamilyDistribution)(X::Matrix{<:AbstractFloat})
-
-Return the log-likelihood for each columne of `X`.
-"""
-function (pdf::ExpFamilyDistribution)(X::Matrix{<:AbstractFloat})
-    TX = stats(pdf, X)
+function loglikelihood(x::AbstractVector)
+    Tx = stats(pdf, x)
     η = naturalparam(pdf)
-    TX' * η .- lognorm(pdf) .+ basemeasure(pdf, X)
+    dot(η, Tx) - lognorm(pdf) + basemeasure(pdf, x)
 end
 
+function loglikelihood(x::Number)
+    Tx = stats(pdf, x)
+    η = naturalparam(pdf)
+    η * Tx - lognorm(pdf) + basemeasure(pdf, x)
+end
 
 """
-    basemeasure(pdf::ExpFamilyDistribution, x)
+    loglikelihood(pdf, x)
+
+Return the log-likelihood for each of `x` given `pdf`.
+"""
+loglikelihood
+
+
+"""
+    basemeasure(pdf, x)
 
 Return the base measure of `pdf` for the vector `x`.
 """
@@ -43,7 +50,7 @@ basemeasure
 
 
 """
-    gradlognorm(pdf::ExpFamilyDistribution)
+    gradlognorm(pdf)
 
 Return the gradient of the log-normalizer w.r.t. the natural
 parameters.
@@ -64,7 +71,7 @@ end
 
 
 """
-    lognorm(pdf::ExpFamilyDistribution)
+    lognorm(pdf)
 
 Return the log-normalization constant of `pdf`
 """
@@ -72,24 +79,24 @@ lognorm
 
 
 """
-    naturalparam(pdf::ExpFamilyDistribution)
+    naturalparam(pdf)
 
 Return the natural (a.k.a. the canonical) parameters as a vector.
 """
 naturalparam
 
 """
-    stats(pdf::ExpFamilyDistribution, X::AbstractMatrix)
+    stats(pdf, x)
 
-Extract the sufficient statistics of `X` corresponding to type of
+Extract the sufficient statistics of `x` corresponding to type of
 `pdf`.
 """
 stats
 
 """
-    update!(pdf::ExpFamilyDistribution, naturalparam::AbstractVector)
+    update!(pdf, η)
 
-Update the parameters given a new natural parameter vector.
+Update the parameters given a new natural parameter `η`.
 """
 update!
 
@@ -97,16 +104,17 @@ update!
 # Distributions
 
 export AbstractNormal
-export AbstractGamma
-
-export Dirichlet
-export Gamma
 export Normal
 export NormalDiag
 
-include("Dirichlet.jl")
-include("Gamma.jl")
 include("Normal.jl")
+
+export AbstractGamma
+export Gamma
+include("Gamma.jl")
+
+export Dirichlet
+include("Dirichlet.jl")
 
 end
 

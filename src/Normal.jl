@@ -1,5 +1,4 @@
-
-abstract type AbstractNormal <: ExpFamilyDistribution end
+abstract type AbstractNormal{T,D} <: ExpFamilyDistribution end
 
 # Subtypes should implement:
 #   getproperty(n::AbstractNormal, :μ)
@@ -8,20 +7,18 @@ abstract type AbstractNormal <: ExpFamilyDistribution end
 # Split a vector of natural parameters into two components: Λμ and Λ.
 _splitnatparams(η, D) = η[1:D], reshape(η[D+1:end], (D, D))
 
-function Base.show(io::IO, n::AbstractNormal)
-    cindent = get(io, :indent, 0)
-    println(io, " "^cindent, typeof(n), ":")
-    println(io, " "^cindent, "  μ = ", n.μ)
-    print(io, " "^cindent, "  Σ = ", n.Σ)
+function Base.show(io::IO, ::MIME"text/plain", n::AbstractNormal)
+    println(io, typeof(n), ":")
+    println(io, "  μ = ", n.μ)
+    print(io, "  Σ = ", n.Σ)
 end
 
 #######################################################################
 # ExpFamilyDistribution interface
 
-function basemeasure(::AbstractNormal, X::Matrix{T}) where T <: AbstractFloat
-    retval = ones(T, size(X, 2))
-    retval[:] .= -.5 * size(X, 1) * log(2 * pi)
-    retval
+function basemeasure(::AbstractNormal{T,D}, x::AbstractVector{T}) where {T,D}
+    length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
+    -T(.5) * length(x) * log(T(2π))
 end
 
 function gradlognorm(n::AbstractNormal; vectorize = true)
@@ -39,28 +36,26 @@ function naturalparam(n::AbstractNormal)
     vcat(Λ * n.μ, -T(.5) .* vec(Λ))
 end
 
-function stats(::AbstractNormal, X::Matrix{<:AbstractFloat})
-    dim1, dim2 = size(X)
-    XX = reshape(X, dim1, 1, dim2) .* reshape(X, 1, dim1, dim2)
-    vec_XX = reshape(XX, :, dim2)
-    vcat(X, vec_XX)
+function stats(::AbstractNormal{T,D}, x::AbstractVector{T}) where {T,D}
+    length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
+    vcat(x, vec(x*x'))
 end
 
-function update!(n::AbstractNormal, η::Vector{T}) where T <: AbstractFloat
+function update!(n::AbstractNormal, η::AbstractVector{T}) where T
     D = length(n.μ)
     Λμ, nhΛ = _splitnatparams(η, D)
     Λ = -2 * nhΛ
-    n.Σ = inv(Symmetric(Λ))
+    n.Σ = inv(Λ)
     n.μ = n.Σ * Λμ
-    return n
+    n
 end
 
 #######################################################################
 # Concrete implementation Normal with full covariance matrix
 
-mutable struct Normal{T, D} <: AbstractNormal where T <: AbstractFloat
+mutable struct Normal{T,D} <: AbstractNormal{T,D}
     μ::Vector{T}
-    Σ::Symmetric{T}
+    Σ::Matrix{T}
 
     function Normal(μ::Vector{T}, Σ::Symmetric{T}) where T <: AbstractFloat
         if size(μ) ≠ size(Σ)[1] ≠ size(Σ)[2]
@@ -72,6 +67,7 @@ end
 
 function Normal(μ::Vector{T}) where T <: AbstractFloat
     D = length(μ)
+    u
     Normal(μ, Symmetric(Matrix{T}(I, D, D)))
 end
 
@@ -82,7 +78,7 @@ end
 #######################################################################
 # Concrete implementation Normal with diagonal covariance matrix
 
-mutable struct NormalDiag{T, D} <: AbstractNormal where T <: AbstractFloat
+mutable struct NormalDiag{T,D} <: AbstractNormal{T,D}
     μ::Vector{T}
     v::Vector{T} # Diagonal of the covariance matrix
 
@@ -94,20 +90,20 @@ mutable struct NormalDiag{T, D} <: AbstractNormal where T <: AbstractFloat
     end
 end
 
+function Base.getproperty(n::NormalDiag, sym::Symbol)
+    sym == :Σ ? diagm(n.v) : getfield(n, sym)
+end
+
 # We redefine the show function to avoid allocating the full matrix
 # in jupyter notebooks.
-function Base.show(io::IO, n::NormalDiag)
+function Base.show(io::IO, ::MIME"text/plain", n::NormalDiag)
     print(io, "$(typeof(n))\n")
     print(io, "  μ = $(n.μ)\n")
     print(io, "  v = $(n.v)")
 end
 
-function Base.getproperty(n::NormalDiag, sym::Symbol)
-    sym == :Σ ? diagm(n.v) : getfield(n, sym)
-end
-
-NormalDiag(μ::Vector{T}) where T<:AbstractFloat = NormalDiag(μ, ones(T, length(μ)))
-NormalDiag{T, D}() where {T <: AbstractFloat, D} = NormalDiag(zeros(T, D), ones(T, D))
+NormalDiag(μ::AbstractVector) = NormalDiag(μ, ones(eltype(μ), length(μ)))
+NormalDiag{T, D}() where {T,D} = NormalDiag(zeros(T, D), ones(T, D))
 
 function gradlognorm(n::NormalDiag; vectorize = true)
     if vectorize
@@ -118,9 +114,9 @@ end
 lognorm(n::NormalDiag{T,D}) where {T,D} = T(.5) * sum(log.(n.v)) + sum(n.v .* n.μ.^2)
 mean(n::NormalDiag) = n.μ
 naturalparam(n::NormalDiag{T,D}) where {T,D} = vcat((T(1) ./ n.v) .* n.μ, -T(.5) .* n.v)
-stats(::NormalDiag, X::Matrix{<:AbstractFloat}) = vcat(X, X.^2)
+stats(::NormalDiag, x::AbstractVector) = vcat(x, x.^2)
 
-function update!(n::NormalDiag, η::Vector{T}) where T <: AbstractFloat
+function update!(n::NormalDiag, η::AbstractVector)
     D = length(n.μ)
     Λμ, nhλ = η[1:D], η[D+1:end]
     n.v = 1 ./ (-2 * nhλ)
