@@ -5,7 +5,7 @@ family of distribution.*
 
 NOTE: This package is mostly designed to build machine learning
 Bayesian models. For a general purpose statistical Julia package we
-recommend to use Distributions.jl.
+recommend to use [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
 
 | **Documentation**  | **Test Status**   |
 |:------------------:|:-----------------:|
