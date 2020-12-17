@@ -1,16 +1,29 @@
-# ExpFamilyDistribution
+# ExpFamilyDistributions
 
-ExpFamilyDistributions is a Julia package for using distributions
-member of the Exponential family. the ExpFamilyDistributions package is
-mostly designed to build machine learning Bayesian models. For a
-general purpose statistical Julia package we recommend to use
-[Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
+*Julia package for using distributions member of the Exponential
+family of distribution.*
 
-See the full documentation here: [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://butspeechfit.github.io/ExpFamilyDistributions/dev)
+NOTE: This package is mostly designed to build machine learning
+Bayesian models. For a general purpose statistical Julia package we
+recommend to use Distributions.jl.
+
+| **Documentation**  | **Test Status**   |
+|:------------------:|:-----------------:|
+| [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions/stable) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions/dev) | ![](https://github.com/lucasondel/ExpFamilyDistributions/workflows/Test/badge.svg) |
 
 ## Installation
 
+The package can be installed with the Julia package manager.
+From the Julia REPL, type ] to enter the Pkg REPL mode and run:
+
+```julia
+pkg> add ExpFamilyDistributions
 ```
-julia> Pkg.add("https://github.com/BUTSpeechFIT/ExpFamilyDistributions")
-```
+
+Have a look at the [documentation](https://lucasondel.github.io/BasicDataLoaders/stable/)
+to get started.
+
+## Authors
+
+Lucas Ondel, Brno University of Technology, 2020
 
