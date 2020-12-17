@@ -20,7 +20,7 @@ From the Julia REPL, type ] to enter the Pkg REPL mode and run:
 pkg> add ExpFamilyDistributions
 ```
 
-Have a look at the [documentation](https://lucasondel.github.io/BasicDataLoaders/stable/)
+Have a look at the [documentation](https://lucasondel.github.io/ExpFamilyDistributions/stable/)
 to get started.
 
 ## Authors
