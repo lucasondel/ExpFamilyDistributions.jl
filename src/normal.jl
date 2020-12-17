@@ -53,11 +53,49 @@ end
 #######################################################################
 # Concrete implementation Normal with full covariance matrix
 
+"""
+    mutable struct Normal{T,D} <: ExpFamilyDistribution
+        μ
+        Σ
+    end
+
+Normal distribution with full covariance matrix.
+
+# Constructors
+
+    Normal{T,D}()
+
+where `T` is the encoding type of the parameters and `D` is the
+dimension of the support.
+
+    Normal(μ[, Σ])
+
+where `μ` is a vector and `Σ` is an [**symmetric**](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/#LinearAlgebra.Symmetric)
+    matrix.
+
+# Examples
+```jldoctest
+julia> Normal{Float32,2}()
+Normal{Float32,2}:
+  μ = Float32[0.0, 0.0]
+  Σ = Float32[1.0 0.0; 0.0 1.0]
+
+julia> Normal([1.0, 1.0])
+Normal{Float64,2}:
+  μ = [1.0, 1.0]
+  Σ = [1.0 0.0; 0.0 1.0]
+
+julia> using LinearAlgebra; Normal([1.0, 1.0], Symmetric([2.0 0.5; 0.5 1.0]))
+Normal{Float64,2}:
+  μ = [1.0, 1.0]
+  Σ = [2.0 0.5; 0.5 1.0]
+```
+"""
 mutable struct Normal{T,D} <: AbstractNormal{T,D}
     μ::Vector{T}
     Σ::Matrix{T}
 
-    function Normal(μ::Vector{T}, Σ::Symmetric{T}) where T <: AbstractFloat
+    function Normal(μ::AbstractVector{T}, Σ::Symmetric{T}) where T
         if size(μ) ≠ size(Σ)[1] ≠ size(Σ)[2]
             error("Dimension mismatch: size(μ) = $(size(μ)) size(Σ) = $(size(Σ))")
         end
@@ -65,24 +103,62 @@ mutable struct Normal{T,D} <: AbstractNormal{T,D}
     end
 end
 
-function Normal(μ::Vector{T}) where T <: AbstractFloat
+function Normal(μ::AbstractVector)
+    T = eltype(μ)
     D = length(μ)
-    u
     Normal(μ, Symmetric(Matrix{T}(I, D, D)))
 end
 
-function Normal{T, D}() where {T <: AbstractFloat, D}
+function Normal{T, D}() where {T, D}
     Normal(zeros(T, D), Symmetric(Matrix{T}(I, D, D)))
 end
 
 #######################################################################
 # Concrete implementation Normal with diagonal covariance matrix
 
+"""
+    mutable struct NormalDiag{T,D} <: ExpFamilyDistribution
+        μ
+        v
+    end
+Normal distribution with a diagonal covariance matrix. `v` is the
+diagonal of the covariance matrix. Note that you can still
+access the full covariance matrix by using the property `Σ`.
+
+# Constructors
+
+    NormalDiag{T,D}()
+
+where `T` is the encoding type of the parameters and `D` is the
+dimension of the support.
+
+    NormalDiag(μ[, v])
+
+where `μ` is a vector and `v` is the diagonal of the covariance matrix.
+
+# Examples
+```jldoctest
+julia> NormalDiag{Float32, 2}()
+NormalDiag{Float32,2}
+  μ = Float32[0.0, 0.0]
+  v = Float32[1.0, 1.0]
+
+julia> NormalDiag([1.0, 1.0])
+NormalDiag{Float64,2}
+  μ = [1.0, 1.0]
+  v = [1.0, 1.0]
+
+julia> NormalDiag([1.0, 1.0], [2.0, 1.0])
+NormalDiag{Float64,2}
+  μ = [1.0, 1.0]
+  v = [2.0, 1.0]
+```
+"""
 mutable struct NormalDiag{T,D} <: AbstractNormal{T,D}
     μ::Vector{T}
     v::Vector{T} # Diagonal of the covariance matrix
 
-    function NormalDiag(μ::Vector{T}, v::Vector{T}) where T <: AbstractFloat
+    function NormalDiag(μ::Vector{T}, v::Vector{T}) where T
         if size(μ) ≠ size(v)
             error("Dimension mismatch: size(μ) = $(size(μ)) size(v) = $(size(v))")
         end
@@ -111,9 +187,11 @@ function gradlognorm(n::NormalDiag; vectorize = true)
     end
     n.μ, n.v + n.μ.^2
 end
-lognorm(n::NormalDiag{T,D}) where {T,D} = T(.5) * sum(log.(n.v)) + sum(n.v .* n.μ.^2)
+function lognorm(n::NormalDiag{T,D}) where {T,D}
+    T(.5) * sum(log.(n.v)) + T(.5) * dot(n.μ, (1 ./ n.v) .* n.μ)
+end
 mean(n::NormalDiag) = n.μ
-naturalparam(n::NormalDiag{T,D}) where {T,D} = vcat((T(1) ./ n.v) .* n.μ, -T(.5) .* n.v)
+naturalparam(n::NormalDiag{T,D}) where {T,D} = vcat((T(1) ./ n.v) .* n.μ, -T(.5) .* (1 ./ n.v))
 stats(::NormalDiag, x::AbstractVector) = vcat(x, x.^2)
 
 function update!(n::NormalDiag, η::AbstractVector)

@@ -8,11 +8,11 @@ export basemeasure
 export gradlognorm
 export kldiv
 export lognorm
+export loglikelihood
 export mean
 export naturalparam
 export stats
 export update!
-
 
 """
     abstract type ExpFamilyDistribution end
@@ -21,42 +21,31 @@ Supertype for distributions member of the exponential family.
 """
 abstract type ExpFamilyDistribution end
 
-function loglikelihood(x::AbstractVector)
-    Tx = stats(pdf, x)
-    η = naturalparam(pdf)
-    dot(η, Tx) - lognorm(pdf) + basemeasure(pdf, x)
+"""
+    loglikelihood(p, x)
+
+Returns the log-likelihood of `x` for the distribution `p`.
+"""
+function loglikelihood(p, x)
+    Tx = stats(p, x)
+    η = naturalparam(p)
+    dot(η, Tx) - lognorm(p) + basemeasure(p, x)
 end
 
-function loglikelihood(x::Number)
-    Tx = stats(pdf, x)
-    η = naturalparam(pdf)
-    η * Tx - lognorm(pdf) + basemeasure(pdf, x)
-end
-
 """
-    loglikelihood(pdf, x)
+    basemeasure(p, x)
 
-Return the log-likelihood for each of `x` given `pdf`.
-"""
-loglikelihood
-
-
-"""
-    basemeasure(pdf, x)
-
-Return the base measure of `pdf` for the vector `x`.
+Returns the base measure of `x` for the distribution `p`.
 """
 basemeasure
 
-
 """
-    gradlognorm(pdf)
+    gradlognorm(p)
 
-Return the gradient of the log-normalizer w.r.t. the natural
+Returns the gradient of the log-normalizer of `p` w.r.t. its natural
 parameters.
 """
 gradlognorm
-
 
 """
     kldiv(q::T, p::T) where T<:ExpFamilyDistribution
@@ -69,34 +58,38 @@ function kldiv(q::T, p::T) where T<:ExpFamilyDistribution
     lognorm(p) - lognorm(q) - dot(p_η .- q_η, gradlognorm(q))
 end
 
-
 """
-    lognorm(pdf)
+    lognorm(p)
 
-Return the log-normalization constant of `pdf`
+Returns the log-normalization constant of `p`.
 """
 lognorm
 
+"""
+    mean(p)
+
+Returns the mean of the distribution `p`.
+"""
+mean
 
 """
-    naturalparam(pdf)
+    naturalparam(p)
 
-Return the natural (a.k.a. the canonical) parameters as a vector.
+Returns the natural parameters of `p`.
 """
 naturalparam
 
 """
-    stats(pdf, x)
+    stats(p, x)
 
-Extract the sufficient statistics of `x` corresponding to type of
-`pdf`.
+Returns the sufficient statistics of `x` for the distribution `p`.
 """
 stats
 
 """
-    update!(pdf, η)
+    update!(p, η)
 
-Update the parameters given a new natural parameter `η`.
+Updates the parameters given a new natural parameter `η`.
 """
 update!
 
@@ -107,14 +100,14 @@ export AbstractNormal
 export Normal
 export NormalDiag
 
-include("Normal.jl")
+include("normal.jl")
 
 export AbstractGamma
 export Gamma
-include("Gamma.jl")
+include("gamma.jl")
 
 export Dirichlet
-include("Dirichlet.jl")
+include("dirichlet.jl")
 
 end
 
