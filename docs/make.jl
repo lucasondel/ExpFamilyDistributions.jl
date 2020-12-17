@@ -1,19 +1,11 @@
+push!(LOAD_PATH, "../src/")
+
 using Documenter
+using ExpFamilyDistributions
 
-makedocs(
-    sitename="ExpFamilyDistributions",
-    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
-    pages = [
-        "Home" => "index.md",
-        "Manual" => Any[
-            "Installation" => "install.md",
-            "Usage" => "usage.md"
-        ],
-    ]
-)
+DocMeta.setdocmeta!(ExpFamilyDistributions, :DocTestSetup,
+                    :(using ExpFamilyDistributions), recursive = true)
 
-
-deploydocs(
-    repo = "github.com/BUTSpeechFIT/ExpFamilyDistributions.git",
-)
+makedocs(sitename="ExpFamilyDistributions", modules = [ExpFamilyDistributions])
+deploydocs(repo = "github.com/BUTSpeechFIT/ExpFamilyDistributions.git")
 
