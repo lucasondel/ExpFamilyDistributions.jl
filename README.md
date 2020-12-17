@@ -1,7 +1,7 @@
 # ExpFamilyDistributions
 
 *Julia package for using distributions member of the Exponential
-family of distribution.*
+family .*
 
 NOTE: This package is mostly designed to build machine learning
 Bayesian models. For a general purpose statistical Julia package we
