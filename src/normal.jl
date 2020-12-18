@@ -13,14 +13,12 @@ Normal distribution with full covariance matrix.
 # Constructors
 
     Normal{T,D}()
-
-where `T` is the encoding type of the parameters and `D` is the
-dimension of the support.
-
     Normal(μ[, Σ])
 
-where `μ` is a vector and `Σ` is an [**symmetric**](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/#LinearAlgebra.Symmetric)
-    matrix.
+where `T` is the encoding type of the parameters, `D` is the
+dimension of the support, `μ` is a vector and `Σ` is a
+[**symmetric**](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/#LinearAlgebra.Symmetric)
+matrix.
 
 # Examples
 ```jldoctest
@@ -120,13 +118,11 @@ access the full covariance matrix by using the property `Σ`.
 # Constructors
 
     NormalDiag{T,D}()
-
-where `T` is the encoding type of the parameters and `D` is the
-dimension of the support.
-
     NormalDiag(μ[, v])
 
-where `μ` is a vector and `v` is the diagonal of the covariance matrix.
+where `T` is the encoding type of the parameters, `D` is the
+dimension of the support, `μ` is a vector and `v` is the diagonal of
+the covariance matrix.
 
 # Examples
 ```jldoctest
@@ -202,6 +198,32 @@ end
 #######################################################################
 # δ-Normal distribution
 
+"""
+    mutable struct δNormal{T,D} <: δDistribution
+        μ
+    end
+
+The δ-equivalent of the [`Normal`](@ref) distribution.
+
+# Constructors
+
+    δNormal{T,D}()
+    δNormal(μ)
+
+where `T` is the encoding type of the parameters and `D` is the
+dimension of the support and `μ` is the location of the Dirac δ pulse.
+
+# Examples
+```jldoctest
+julia> δNormal{Float32,2}()
+δNormal{Float32,2}:
+  μ = Float32[0.0, 0.0]
+
+julia> δNormal([1.0, 1.0])
+δNormal{Float64,2}:
+  μ = [1.0, 1.0]
+```
+"""
 mutable struct δNormal{T,D} <: δDistribution
     μ::Vector{T}
 
@@ -228,13 +250,39 @@ end
 #######################################################################
 # δ-Normal distribution with diagonal covariance matrix
 
+"""
+    mutable struct δNormalDiag{T,D} <: δDistribution
+        μ
+    end
+
+The δ-equivalent of the [`NormalDiag`](@ref) distribution.
+
+# Constructors
+
+    δNormalDiag{T,D}()
+    δNormalDiag(μ)
+
+where `T` is the encoding type of the parameters, `D` is the
+dimension of the support and `μ` is the location of the Dirac δ pulse.
+
+# Examples
+```jldoctest
+julia> δNormalDiag{Float32, 2}()
+δNormalDiag{Float32,2}:
+  μ = Float32[0.0, 0.0]
+
+julia> δNormalDiag([1.0, 1.0])
+δNormalDiag{Float64,2}:
+  μ = [1.0, 1.0]
+```
+"""
 mutable struct δNormalDiag{T,D} <: δDistribution
     μ::Vector{T}
 
     δNormalDiag(μ::Vector{T}) where T =  new{T, length(μ)}(μ)
 end
 
-δNormalDiag{T, D}() where {T,D} = NormalDiag(zeros(T, D))
+δNormalDiag{T, D}() where {T,D} = δNormalDiag(zeros(T, D))
 
 function gradlognorm(n::δNormalDiag; vectorize = true)
     μ, μ² = n.μ, n.μ.^2

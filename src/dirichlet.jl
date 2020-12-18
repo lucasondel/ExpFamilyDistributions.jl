@@ -12,14 +12,10 @@ Dirichlet distribution.
 # Constructors
 
     Dirichlet{T,D}()
-
-where `T` is the encoding type of the parameters and `D` is the
-dimension of the support.
-
     Dirichlet(α)
 
-where `T` is a encoding type of the parameters and `α` is a vector of
-parameters
+where `T` is the encoding type of the parameters and `D` is the
+dimension of the support and `α` is a vector of parameters.
 
 # Examples
 ```jldoctest
@@ -61,6 +57,32 @@ end
 #######################################################################
 # δ-Dirichlet distribution
 
+"""
+    mutable struct Dirichlet{T,D} <: δDistribution
+        α
+    end
+
+The δ-equivalent of the [`Dirichlet`](@ref) distribution.
+
+# Constructors
+
+    Dirichlet{T,D}()
+    Dirichlet(α)
+
+where `T` is the encoding type of the parameters and `D` is the
+dimension of the support and `μ` is the location of the Dirac δ pulse.
+
+# Examples
+```jldoctest
+julia> δDirichlet{Float32, 2}()
+δDirichlet{Float32,2}:
+  μ = Float32[0.5, 0.5]
+
+julia> δDirichlet(Float32[1/2, 1/2])
+δDirichlet{Float32,2}:
+  μ = Float32[0.5, 0.5]
+```
+"""
 mutable struct δDirichlet{T,D} <: δDistribution
     μ::Vector{T}
 
@@ -70,7 +92,7 @@ mutable struct δDirichlet{T,D} <: δDistribution
     end
 end
 
-δDirichlet{T,D}() where {T, D} = δDirichlet(ones(T, D))
+δDirichlet{T,D}() where {T, D} = δDirichlet(ones(T, D) / D)
 
 gradlognorm(d::δDirichlet) = log.(d.μ)
 

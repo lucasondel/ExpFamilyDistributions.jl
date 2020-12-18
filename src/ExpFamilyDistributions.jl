@@ -101,7 +101,7 @@ update!
 """
     abstract type δDistribution
 
-Supertype for the δ-distribution
+Supertype for the δ-distributions.
 """
 abstract type δDistribution end
 

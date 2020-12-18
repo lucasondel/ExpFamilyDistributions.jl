@@ -13,12 +13,9 @@ Gamma distribution.
 # Constructors
 
     Gamma{T}()
-
-where `T` is the encoding type of the parameters.
-
     Gamma{T}(α, β)
 
-where `T` is a encoding type of the parameters and `α` and `β` are the
+where `T` is the encoding type of the parameters. `α` and `β` are the
 parameters of the distribution.
 
 # Examples
@@ -73,6 +70,33 @@ end
 #######################################################################
 # δ-Gamma distribution
 
+"""
+    mutable struct δGamma{T} <: δDistribution
+        α
+        β
+    end
+
+The δ-equivaltent of the [`Gamma`](@ref) distribution.
+
+# Constructors
+
+    δGamma{T}()
+    δGamma{T}(μ)
+
+where `T` is the encoding type of the parameters and `μ` is the
+location of the Dirac δ pulse.
+
+# Examples
+```jldoctest
+julia> δGamma{Float32}()
+δGamma{Float32}:
+  μ = 1.0
+
+julia> δGamma{Float64}(2)
+δGamma{Float64}:
+  μ = 2.0
+```
+"""
 mutable struct δGamma{T} <: δDistribution
     μ::T
 
@@ -82,7 +106,7 @@ mutable struct δGamma{T} <: δDistribution
     end
 end
 
-δGamma{T}() where T<:Real = Gamma{T}(1)
+δGamma{T}() where T<:Real = δGamma{T}(1)
 
 function gradlognorm(g::δGamma; vectorize = true)
     vectorize ? vcat(g.μ, log(g.μ)) : (g.μ, log(g.μ))
