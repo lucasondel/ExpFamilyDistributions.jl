@@ -1,57 +1,6 @@
-abstract type AbstractNormal{T,D} <: ExpFamilyDistribution end
-
-# Subtypes should implement:
-#   getproperty(n::AbstractNormal, :μ)
-#   getproperty(n::AbstractNormal, :Σ)
-
-# Split a vector of natural parameters into two components: Λμ and Λ.
-_splitnatparams(η, D) = η[1:D], reshape(η[D+1:end], (D, D))
-
-function Base.show(io::IO, ::MIME"text/plain", n::AbstractNormal)
-    println(io, typeof(n), ":")
-    println(io, "  μ = ", n.μ)
-    print(io, "  Σ = ", n.Σ)
-end
 
 #######################################################################
-# ExpFamilyDistribution interface
-
-function basemeasure(::AbstractNormal{T,D}, x::AbstractVector{T}) where {T,D}
-    length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
-    -T(.5) * length(x) * log(T(2π))
-end
-
-function gradlognorm(n::AbstractNormal; vectorize = true)
-    if vectorize
-        return vcat(n.μ, vec(n.Σ + n.μ * n.μ'))
-    end
-    n.μ, n.Σ + n.μ * n.μ'
-end
-lognorm(n::AbstractNormal) = .5 * (logdet(n.Σ) + dot(n.μ, inv(n.Σ), n.μ))
-mean(pdf::AbstractNormal) = pdf.μ
-
-function naturalparam(n::AbstractNormal)
-    T = eltype(n.μ)
-    Λ = inv(n.Σ)
-    vcat(Λ * n.μ, -T(.5) .* vec(Λ))
-end
-
-function stats(::AbstractNormal{T,D}, x::AbstractVector{T}) where {T,D}
-    length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
-    vcat(x, vec(x*x'))
-end
-
-function update!(n::AbstractNormal, η::AbstractVector{T}) where T
-    D = length(n.μ)
-    Λμ, nhΛ = _splitnatparams(η, D)
-    Λ = -2 * nhΛ
-    n.Σ = inv(Λ)
-    n.μ = n.Σ * Λμ
-    n
-end
-
-#######################################################################
-# Concrete implementation Normal with full covariance matrix
+# Normal distribution with full covariance matrix
 
 """
     mutable struct Normal{T,D} <: ExpFamilyDistribution
@@ -91,7 +40,7 @@ Normal{Float64,2}:
   Σ = [2.0 0.5; 0.5 1.0]
 ```
 """
-mutable struct Normal{T,D} <: AbstractNormal{T,D}
+mutable struct Normal{T,D} <: ExpFamilyDistribution
     μ::Vector{T}
     Σ::Matrix{T}
 
@@ -113,14 +62,57 @@ function Normal{T, D}() where {T, D}
     Normal(zeros(T, D), Symmetric(Matrix{T}(I, D, D)))
 end
 
+function Base.show(io::IO, ::MIME"text/plain", n::Normal)
+    println(io, typeof(n), ":")
+    println(io, "  μ = ", n.μ)
+    print(io, "  Σ = ", n.Σ)
+end
+
+# Split a vector of natural parameters into two components: Λμ and Λ.
+_splitnatparams(η, D) = η[1:D], reshape(η[D+1:end], (D, D))
+
+function basemeasure(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
+    length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
+    -T(.5) * length(x) * log(T(2π))
+end
+
+function gradlognorm(n::Normal; vectorize = true)
+    vectorize && return vcat(n.μ, vec(n.Σ + n.μ * n.μ'))
+    n.μ, n.Σ + n.μ * n.μ'
+end
+lognorm(n::Normal) = .5 * (logdet(n.Σ) + dot(n.μ, inv(n.Σ), n.μ))
+mean(pdf::Normal) = pdf.μ
+
+function naturalparam(n::Normal)
+    T = eltype(n.μ)
+    Λ = inv(n.Σ)
+    vcat(Λ * n.μ, -T(.5) .* vec(Λ))
+end
+
+function stats(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
+    length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
+    vcat(x, vec(x*x'))
+end
+
+function update!(n::Normal, η::AbstractVector{T}) where T
+    D = length(n.μ)
+    Λμ, nhΛ = _splitnatparams(η, D)
+    Λ = -2 * nhΛ
+    n.Σ = inv(Λ)
+    n.μ = n.Σ * Λμ
+    n
+end
+
+
 #######################################################################
-# Concrete implementation Normal with diagonal covariance matrix
+# Normal distribution with diagonal covariance matrix
 
 """
     mutable struct NormalDiag{T,D} <: ExpFamilyDistribution
         μ
         v
     end
+
 Normal distribution with a diagonal covariance matrix. `v` is the
 diagonal of the covariance matrix. Note that you can still
 access the full covariance matrix by using the property `Σ`.
@@ -154,7 +146,7 @@ NormalDiag{Float64,2}
   v = [2.0, 1.0]
 ```
 """
-mutable struct NormalDiag{T,D} <: AbstractNormal{T,D}
+mutable struct NormalDiag{T,D} <: ExpFamilyDistribution
     μ::Vector{T}
     v::Vector{T} # Diagonal of the covariance matrix
 
@@ -181,6 +173,11 @@ end
 NormalDiag(μ::AbstractVector) = NormalDiag(μ, ones(eltype(μ), length(μ)))
 NormalDiag{T, D}() where {T,D} = NormalDiag(zeros(T, D), ones(T, D))
 
+function basemeasure(::NormalDiag{T,D}, x::AbstractVector{T}) where {T,D}
+    length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
+    -T(.5) * length(x) * log(T(2π))
+end
+
 function gradlognorm(n::NormalDiag; vectorize = true)
     if vectorize
         return vcat(n.μ, n.v + n.μ.^2)
@@ -200,5 +197,55 @@ function update!(n::NormalDiag, η::AbstractVector)
     n.v = 1 ./ (-2 * nhλ)
     n.μ = n.v .* Λμ
     return n
+end
+
+#######################################################################
+# δ-Normal distribution
+
+mutable struct δNormal{T,D} <: δDistribution
+    μ::Vector{T}
+
+    function δNormal(μ::Vector{T}) where T
+        new{T, length(μ)}(μ)
+    end
+end
+
+δNormal{T,D}() where {T,D} = δNormal(zeros(T,D))
+
+function gradlognorm(n::δNormal; vectorize = true)
+    μ, μμᵀ = n.μ, vec(n.μ * n.μ')
+    vectorize ? vcat(μ, μμᵀ) : (μ, μμᵀ)
+end
+
+function update!(n::δNormal, η::AbstractVector)
+    D = length(n.μ)
+    Λμ, nhΛ = _splitnatparams(η, D)
+    Λ = -2 * nhΛ
+    n.μ = inv(Λ) * Λμ
+    n
+end
+
+#######################################################################
+# δ-Normal distribution with diagonal covariance matrix
+
+mutable struct δNormalDiag{T,D} <: δDistribution
+    μ::Vector{T}
+
+    δNormalDiag(μ::Vector{T}) where T =  new{T, length(μ)}(μ)
+end
+
+δNormalDiag{T, D}() where {T,D} = NormalDiag(zeros(T, D))
+
+function gradlognorm(n::δNormalDiag; vectorize = true)
+    μ, μ² = n.μ, n.μ.^2
+    vectorize ? vcat(μ, μ²) : (μ, μ²)
+end
+
+function update!(n::δNormalDiag, η::AbstractVector)
+    D = length(n.μ)
+    Λμ, nhλ = η[1:D], η[D+1:end]
+    v = 1 ./ (-2 * nhλ)
+    n.μ = v .* Λμ
+    n
 end
 

@@ -1,4 +1,7 @@
 
+#######################################################################
+# Dirichlet distribution
+
 """
     mutable struct Dirichlet{T,D} <: ExpFamilyDistribution
         α
@@ -44,9 +47,6 @@ end
 
 Dirichlet{T,D}() where {T, D} = Dirichlet(ones(T, D))
 
-#######################################################################
-# ExpFamilyDistribution interface
-
 basemeasure(::Dirichlet, x::AbstractVector) = -log.(x)
 gradlognorm(d::Dirichlet) = digamma.(d.α) .- digamma(sum(d.α))
 stats(::Dirichlet, x::AbstractVector) = log.(x)
@@ -56,5 +56,26 @@ naturalparam(d::Dirichlet) = d.α
 function update!(d::Dirichlet, η::AbstractVector)
     d.α = η
     d
+end
+
+#######################################################################
+# δ-Dirichlet distribution
+
+mutable struct δDirichlet{T,D} <: δDistribution
+    μ::Vector{T}
+
+    function δDirichlet(μ::Vector{T}) where T
+        sum(μ) ≈ 1 || throw(ArgumentError("input of the δDirichlet should sum up to one."))
+        new{T, length(μ)}(μ)
+    end
+end
+
+δDirichlet{T,D}() where {T, D} = δDirichlet(ones(T, D))
+
+gradlognorm(d::δDirichlet) = log.(d.μ)
+
+function update!(d::δDirichlet, η::AbstractVector)
+    all(η .≥ 1) || throw(ArgumentError("Expected η .≥ 1"))
+    d.μ = (η .- 1) / sum(η .- 1)
 end
 

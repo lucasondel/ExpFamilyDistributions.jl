@@ -43,6 +43,21 @@ for T in [Float32, Float64]
 end
 
 for T in [Float32, Float64]
+    @testset "δNormal ($T)" begin
+        n = δNormal(T[1, 2])
+
+        ETx = T[1, 2, 1, 2, 2, 4]
+        @test all(gradlognorm(n) .≈ ETx)
+
+        @test all(mean(n) .≈ n.μ)
+
+        prior = Normal{T,2}()
+        update!(n, naturalparam(prior))
+        @test all(n.μ .≈ prior.μ)
+    end
+end
+
+for T in [Float32, Float64]
     @testset "NormalDiag ($T)" begin
         n = NormalDiag(T[1, 2], T[2, 2])
 
@@ -70,6 +85,21 @@ for T in [Float32, Float64]
 
         update!(n, naturalparam(n2))
         @test all(naturalparam(n) .≈ naturalparam(n2))
+    end
+end
+
+for T in [Float32, Float64]
+    @testset "δNormalDiag ($T)" begin
+        n = δNormalDiag(T[1, 2])
+
+        ETx = T[1, 2, 1, 4]
+        @test all(gradlognorm(n) .≈ ETx)
+
+        @test all(mean(n) .≈ n.μ)
+
+        prior = NormalDiag{T,2}()
+        update!(n, naturalparam(prior))
+        @test all(n.μ .≈ prior.μ)
     end
 end
 
@@ -105,6 +135,26 @@ for T in [Float32, Float64]
 end
 
 for T in [Float32, Float64]
+    @testset "δGamma ($T)" begin
+        @test_throws ArgumentError δGamma{T}(-1)
+
+        g = δGamma{T}(1/2)
+
+        ETx = T[1/2, log(1/2)]
+        @test all(gradlognorm(g) .≈ ETx)
+
+        @test all(mean(g) .≈ 1/2)
+
+        g2 = Gamma{T}(0.9, 0.9)
+        @test_throws ArgumentError update!(g, naturalparam(g2))
+
+        g2 = Gamma{T}()
+        update!(g, naturalparam(g2))
+        @test all(g.μ .≈ (g2.α-1)/g2.β)
+    end
+end
+
+for T in [Float32, Float64]
     @testset "Dirichlet ($T)" begin
         d = Dirichlet(T[1, 2, 3])
 
@@ -132,5 +182,25 @@ for T in [Float32, Float64]
 
         update!(d, naturalparam(d2))
         @test all(naturalparam(d) .≈ naturalparam(d2))
+    end
+end
+
+for T in [Float32, Float64]
+    @testset "δDirichlet ($T)" begin
+        @test_throws ArgumentError δDirichlet(T[1, 2, 3])
+
+        d = δDirichlet(T[1/3, 1/3, 1/3])
+
+        ETx = log.(d.μ)
+        @test all(gradlognorm(d) .≈ ETx)
+
+        @test all(mean(d) .≈ d.μ)
+
+        d2 = Dirichlet(T[0.8, 0.1, 0.1])
+        @test_throws ArgumentError update!(d, naturalparam(d2))
+
+        d2 = Dirichlet(T[3, 2, 2])
+        update!(d, naturalparam(d2))
+        @test all(d.μ .≈ (d2.α .- 1) / sum(d2.α .- 1))
     end
 end

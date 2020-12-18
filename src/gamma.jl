@@ -1,4 +1,7 @@
 
+#######################################################################
+# Gamma distribution
+
 """
     mutable struct Gamma{T} <: ExpFamilyDistribution
         α
@@ -49,9 +52,6 @@ end
 Gamma{T}(α::Real, β::Real) where T = Gamma{T}(T(α), T(β))
 Gamma{T}() where T<:Real = Gamma{T}(1, 1)
 
-#######################################################################
-# ExpFamilyDistribution interface
-
 basemeasure(::Gamma, x) = -log(x)
 function gradlognorm(g::Gamma; vectorize = true)
     if vectorize
@@ -68,5 +68,30 @@ function update!(g::Gamma, η)
    g.β = -η[1]
    g.α = η[2]
    return g
+end
+
+#######################################################################
+# δ-Gamma distribution
+
+mutable struct δGamma{T} <: δDistribution
+    μ::T
+
+    function δGamma{T}(μ::Real) where T<:Real
+        μ ≥ 0 || throw(ArgumentError("Expected μ ≥ 0"))
+        new{T}(T(μ))
+    end
+end
+
+δGamma{T}() where T<:Real = Gamma{T}(1)
+
+function gradlognorm(g::δGamma; vectorize = true)
+    vectorize ? vcat(g.μ, log(g.μ)) : (g.μ, log(g.μ))
+end
+
+function update!(g::δGamma, η)
+    α, β = η[2], -η[1]
+    α ≥ 1 || throw(ArgumentError("Expected α ≥ 1"))
+    g.μ = (α - 1)/β
+    g
 end
 

@@ -4,6 +4,8 @@ using LinearAlgebra
 using SpecialFunctions: loggamma, digamma
 
 export ExpFamilyDistribution
+export δDistribution
+
 export basemeasure
 export gradlognorm
 export kldiv
@@ -94,19 +96,40 @@ Updates the parameters given a new natural parameter `η`.
 update!
 
 #######################################################################
+# δ-Distributions
+
+"""
+    abstract type δDistribution
+
+Supertype for the δ-distribution
+"""
+abstract type δDistribution end
+
+function Base.show(io::IO, d::δDistribution)
+    println(io, typeof(d), ":")
+    print(io, "  μ = ", d.μ)
+end
+
+mean(d::δDistribution) = d.μ
+
+#######################################################################
 # Distributions
 
-export AbstractNormal
 export Normal
+export δNormal
 export NormalDiag
+export δNormalDiag
 
 include("normal.jl")
 
-export AbstractGamma
 export Gamma
+export δGamma
+
 include("gamma.jl")
 
 export Dirichlet
+export δDirichlet
+
 include("dirichlet.jl")
 
 end
