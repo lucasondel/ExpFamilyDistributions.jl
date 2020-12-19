@@ -30,6 +30,10 @@ for T in [Float32, Float64]
         ETx = T[1, 2, 3, 2, 2, 6]
         @test all(gradlognorm(n) .≈ ETx)
 
+        s1, s2 = gradlognorm(n, vectorize = false)
+        @test size(s1) == (2,)
+        @test size(s2) == (2,2)
+
         @test all(mean(n) .≈ n.μ)
 
         n2 = Normal{T, 2}()
@@ -48,6 +52,10 @@ for T in [Float32, Float64]
 
         ETx = T[1, 2, 1, 2, 2, 4]
         @test all(gradlognorm(n) .≈ ETx)
+
+        s1, s2 = gradlognorm(n, vectorize = false)
+        @test size(s1) == (2,)
+        @test size(s2) == (2,2)
 
         @test all(mean(n) .≈ n.μ)
 
@@ -76,6 +84,10 @@ for T in [Float32, Float64]
         ETx = T[1, 2, 3, 6]
         @test all(gradlognorm(n) .≈ ETx)
 
+        s1, s2 = gradlognorm(n, vectorize = false)
+        @test size(s1) == (2,)
+        @test size(s2) == (2,)
+
         @test all(mean(n) .≈ n.μ)
 
         n2 = NormalDiag{T, 2}()
@@ -94,6 +106,10 @@ for T in [Float32, Float64]
 
         ETx = T[1, 2, 1, 4]
         @test all(gradlognorm(n) .≈ ETx)
+
+        s1, s2 = gradlognorm(n, vectorize = false)
+        @test size(s1) == (2,)
+        @test size(s2) == (2,)
 
         @test all(mean(n) .≈ n.μ)
 
@@ -122,6 +138,10 @@ for T in [Float32, Float64]
         ETx = T[1/2, digamma(1) - log(2)]
         @test all(gradlognorm(g) .≈ ETx)
 
+        s1, s2 = gradlognorm(g, vectorize = false)
+        @test size(s1) == ()
+        @test size(s2) == ()
+
         @test all(mean(g) .≈ g.α / g.β)
 
         g2 = Gamma{T}()
@@ -142,6 +162,10 @@ for T in [Float32, Float64]
 
         ETx = T[1/2, log(1/2)]
         @test all(gradlognorm(g) .≈ ETx)
+
+        s1, s2 = gradlognorm(g, vectorize = false)
+        @test size(s1) == ()
+        @test size(s2) == ()
 
         @test all(mean(g) .≈ 1/2)
 
@@ -173,6 +197,9 @@ for T in [Float32, Float64]
         ETx = digamma.(d.α) .- digamma(sum(d.α))
         @test all(gradlognorm(d) .≈ ETx)
 
+        s = gradlognorm(d, vectorize = false)
+        @test size(s) == (3,)
+
         @test all(mean(d) .≈ d.α / sum(d.α))
 
         d2 = Dirichlet{T,3}()
@@ -193,6 +220,9 @@ for T in [Float32, Float64]
 
         ETx = log.(d.μ)
         @test all(gradlognorm(d) .≈ ETx)
+
+        s = gradlognorm(d, vectorize = false)
+        @test size(s) == (3,)
 
         @test all(mean(d) .≈ d.μ)
 

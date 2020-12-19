@@ -44,7 +44,10 @@ end
 Dirichlet{T,D}() where {T, D} = Dirichlet(ones(T, D))
 
 basemeasure(::Dirichlet, x::AbstractVector) = -log.(x)
-gradlognorm(d::Dirichlet) = digamma.(d.α) .- digamma(sum(d.α))
+
+# vectorization is effect less
+gradlognorm(d::Dirichlet; vectorize = true) = digamma.(d.α) .- digamma(sum(d.α))
+
 stats(::Dirichlet, x::AbstractVector) = log.(x)
 lognorm(d::Dirichlet) = sum(loggamma.(d.α)) - loggamma(sum(d.α))
 mean(d::Dirichlet) = d.α ./ sum(d.α)
@@ -94,7 +97,8 @@ end
 
 δDirichlet{T,D}() where {T, D} = δDirichlet(ones(T, D) / D)
 
-gradlognorm(d::δDirichlet) = log.(d.μ)
+# vectorization is effect less
+gradlognorm(d::δDirichlet; vectorize = true) = log.(d.μ)
 
 function update!(d::δDirichlet, η::AbstractVector)
     all(η .≥ 1) || throw(ArgumentError("Expected η .≥ 1"))

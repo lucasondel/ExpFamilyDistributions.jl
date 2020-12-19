@@ -75,8 +75,8 @@ function basemeasure(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
 end
 
 function gradlognorm(n::Normal; vectorize = true)
-    vectorize && return vcat(n.μ, vec(n.Σ + n.μ * n.μ'))
-    n.μ, n.Σ + n.μ * n.μ'
+    x, xxᵀ = n.μ, n.Σ + n.μ*n.μ'
+    vectorize ? vcat(x, vec(xxᵀ)) : (x, xxᵀ)
 end
 lognorm(n::Normal) = .5 * (logdet(n.Σ) + dot(n.μ, inv(n.Σ), n.μ))
 mean(pdf::Normal) = pdf.μ
@@ -175,11 +175,10 @@ function basemeasure(::NormalDiag{T,D}, x::AbstractVector{T}) where {T,D}
 end
 
 function gradlognorm(n::NormalDiag; vectorize = true)
-    if vectorize
-        return vcat(n.μ, n.v + n.μ.^2)
-    end
-    n.μ, n.v + n.μ.^2
+    x, x² = n.μ, n.v + n.μ.^2
+    vectorize ? vcat(x, x²) : (x, x²)
 end
+
 function lognorm(n::NormalDiag{T,D}) where {T,D}
     T(.5) * sum(log.(n.v)) + T(.5) * dot(n.μ, (1 ./ n.v) .* n.μ)
 end
@@ -235,8 +234,8 @@ end
 δNormal{T,D}() where {T,D} = δNormal(zeros(T,D))
 
 function gradlognorm(n::δNormal; vectorize = true)
-    μ, μμᵀ = n.μ, vec(n.μ * n.μ')
-    vectorize ? vcat(μ, μμᵀ) : (μ, μμᵀ)
+    μ, μμᵀ = n.μ, n.μ * n.μ'
+    vectorize ? vcat(μ, vec(μμᵀ)) : (μ, μμᵀ)
 end
 
 function update!(n::δNormal, η::AbstractVector)
