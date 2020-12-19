@@ -19,8 +19,8 @@ an "equivalent" distribution member of the exponential family.
 ```@docs
 δDistribution
 ```
-Each subtype `δDistribution` implements partially the Exponential
-Family interace:
+Each subtype of `δDistribution` implements partially the Exponential
+Family interface:
 * [`gradlognorm`](@ref)
 * [`mean`](@ref)
 * [`update!`](@ref)
