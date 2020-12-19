@@ -1,8 +1,8 @@
 # δ-Distributions
 
-Maximum likelihood (ML) or Maximum A Posteriori inference is a special
-case of Bayesian inference where the posterior is assumed to be a
-Dirac delta distribution:
+Maximum likelihood (ML) and Maximum A Posteriori inference are special
+cases of Bayesian inference where the posterior is assumed to be a
+Dirac δ distribution:
 ```math
 \begin{aligned}
 \delta_{\mu}(x) &= \delta(x - \mu) = \begin{cases}
@@ -13,8 +13,9 @@ Dirac delta distribution:
 \end{aligned}
 ```
 
-To easily switch between Bayesian inference ML/MAP, the package provide
-the *δ-distributions*
+To easily switch between Bayesian inference ML/MAP, the package
+provides the *δ-distributions*, i.e. Dirac δ dsistribution wrap around
+an "equivalent" distribution member of the exponential family.
 ```@docs
 δDistribution
 ```
@@ -24,9 +25,9 @@ Family interace:
 * [`mean`](@ref)
 * [`update!`](@ref)
 where [`gradlognorm`](@ref) returns the expectation of the equivalent
-distribution's sufficient statistics, [`mean`](@ref) returns the the
+distribution's sufficient statistics, [`mean`](@ref) returns the
 Dirac δ pulse location ``\mu`` and [`update!`](@ref) sets the pulse
-location to model of the equivalent distribution.
+location to the maximum of the equivalent distribution.
 
 ## δ-Normal distribution
 

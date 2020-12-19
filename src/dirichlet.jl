@@ -59,7 +59,7 @@ end
 
 """
     mutable struct Dirichlet{T,D} <: δDistribution
-        α
+        μ
     end
 
 The δ-equivalent of the [`Dirichlet`](@ref) distribution.
@@ -67,7 +67,7 @@ The δ-equivalent of the [`Dirichlet`](@ref) distribution.
 # Constructors
 
     Dirichlet{T,D}()
-    Dirichlet(α)
+    Dirichlet(μ)
 
 where `T` is the encoding type of the parameters and `D` is the
 dimension of the support and `μ` is the location of the Dirac δ pulse.

@@ -72,8 +72,7 @@ end
 
 """
     mutable struct δGamma{T} <: δDistribution
-        α
-        β
+        μ
     end
 
 The δ-equivaltent of the [`Gamma`](@ref) distribution.
