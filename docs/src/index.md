@@ -23,7 +23,7 @@ pkg> add ExpFamilyDistributions
 ## Manual Outline
 
 ```@contents
-Pages = ["index.md", "expfamily.md", "delta.md"]
+Pages = ["expfamily.md", "delta.md"]
 Depth = 3
 ```
 
