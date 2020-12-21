@@ -7,6 +7,9 @@ This package is mostly designed to build machine learning Bayesian
 models. For a general purpose statistical Julia package we recommend
 to use [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
 
+See the project on
+[github](https://github.com/lucasondel/ExpFamilyDistributions).
+
 ## Authors
 
 Lucas Ondel, Brno University of technology, 2020.
