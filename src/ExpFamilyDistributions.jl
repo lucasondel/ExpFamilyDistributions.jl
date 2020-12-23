@@ -93,7 +93,7 @@ stats
     stdparam(p, η)
 
 Returns the standard parameters corresponding to the natural parameters
-`η` for distribution with the same type of `p`.
+`η` for distributions with the same type of `p`.
 """
 stdparam
 
