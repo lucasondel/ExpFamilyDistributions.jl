@@ -61,9 +61,12 @@ naturalparam(g::Gamma) = vcat(-g.β, g.α)
 mean(g::Gamma) = g.α / g.β
 stats(::Gamma{T}, x) where T = T[x, log(x)]
 
+function stdparam(::Gamma{T}, η::AbstractVector{T}) where T
+    η[2], -η[1]
+end
+
 function update!(g::Gamma, η)
-   g.β = -η[1]
-   g.α = η[2]
+    g.α, g.β = stdparam(g, η)
    return g
 end
 
@@ -111,10 +114,14 @@ function gradlognorm(g::δGamma; vectorize = true)
     vectorize ? vcat(g.μ, log(g.μ)) : (g.μ, log(g.μ))
 end
 
+function stdparam(::δGamma{T}, η::AbstractVector{T}) where T
+    (η[2]-1) / -η[1]
+end
+
 function update!(g::δGamma, η)
-    α, β = η[2], -η[1]
-    α ≥ 1 || throw(ArgumentError("Expected α ≥ 1"))
-    g.μ = (α - 1)/β
+    μ = stdparam(g, η)
+    μ ≥ 0 || throw(ArgumentError("Expected μ ≥ 0"))
+    g.μ = μ
     g
 end
 

@@ -41,6 +41,10 @@ for T in [Float32, Float64]
         @test kldiv(n, n2) >= 0
         @test kldiv(n2, n) >= 0
 
+        n2 = Normal(stdparam(n, naturalparam(n))...)
+        @test kldiv(n, n2) ≈  0
+
+        n2 = Normal{T, 2}()
         update!(n, naturalparam(n2))
         @test all(naturalparam(n) .≈ naturalparam(n2))
     end
@@ -58,6 +62,10 @@ for T in [Float32, Float64]
         @test size(s2) == (2,2)
 
         @test all(mean(n) .≈ n.μ)
+
+        prior = Normal{T,2}()
+        n2 = δNormal(stdparam(n, naturalparam(prior)))
+        @test all(n2.μ .≈ prior.μ)
 
         prior = Normal{T,2}()
         update!(n, naturalparam(prior))
@@ -95,6 +103,9 @@ for T in [Float32, Float64]
         @test kldiv(n, n2) >= 0
         @test kldiv(n2, n) >= 0
 
+        n2 = NormalDiag(stdparam(n, naturalparam(n))...)
+        @test kldiv(n, n2) ≈  0
+
         update!(n, naturalparam(n2))
         @test all(naturalparam(n) .≈ naturalparam(n2))
     end
@@ -112,6 +123,10 @@ for T in [Float32, Float64]
         @test size(s2) == (2,)
 
         @test all(mean(n) .≈ n.μ)
+
+        prior = NormalDiag{T,2}()
+        n2 = δNormalDiag(stdparam(n, naturalparam(prior)))
+        @test all(n2.μ .≈ prior.μ)
 
         prior = NormalDiag{T,2}()
         update!(n, naturalparam(prior))
@@ -149,6 +164,9 @@ for T in [Float32, Float64]
         @test kldiv(g, g2) >= 0
         @test kldiv(g2, g) >= 0
 
+        g2 = Gamma{T}(stdparam(g, naturalparam(g))...)
+        @test kldiv(g, g2) ≈  0
+
         update!(g, naturalparam(g2))
         @test all(naturalparam(g) .≈ naturalparam(g2))
     end
@@ -171,6 +189,10 @@ for T in [Float32, Float64]
 
         g2 = Gamma{T}(0.9, 0.9)
         @test_throws ArgumentError update!(g, naturalparam(g2))
+
+        prior = Gamma{T}()
+        g2 = δGamma{T}(stdparam(g, naturalparam(prior)))
+        @test all(g2.μ .≈ (prior.α-1)/prior.β)
 
         g2 = Gamma{T}()
         update!(g, naturalparam(g2))
@@ -206,6 +228,9 @@ for T in [Float32, Float64]
         @test kldiv(d, d) ≈  0
         @test kldiv(d, d2) >= 0
         @test kldiv(d2, d) >= 0
+
+        d2 = Dirichlet(stdparam(d, naturalparam(d)))
+        @test kldiv(d, d2) ≈  0
 
         update!(d, naturalparam(d2))
         @test all(naturalparam(d) .≈ naturalparam(d2))

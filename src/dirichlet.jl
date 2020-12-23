@@ -52,8 +52,13 @@ stats(::Dirichlet, x::AbstractVector) = log.(x)
 lognorm(d::Dirichlet) = sum(loggamma.(d.α)) - loggamma(sum(d.α))
 mean(d::Dirichlet) = d.α ./ sum(d.α)
 naturalparam(d::Dirichlet) = d.α
+
+function stdparam(::Dirichlet{T}, η::AbstractVector{T}) where T
+    η
+end
+
 function update!(d::Dirichlet, η::AbstractVector)
-    d.α = η
+    d.α = stdparam(d, η)
     d
 end
 
@@ -100,8 +105,12 @@ end
 # vectorization is effect less
 gradlognorm(d::δDirichlet; vectorize = true) = log.(d.μ)
 
+function stdparam(::δDirichlet{T}, η::AbstractVector{T}) where T
+    (η .- 1) / sum(η .- 1)
+end
+
 function update!(d::δDirichlet, η::AbstractVector)
     all(η .≥ 1) || throw(ArgumentError("Expected η .≥ 1"))
-    d.μ = (η .- 1) / sum(η .- 1)
+    d.μ = stdparam(d, η)
 end
 

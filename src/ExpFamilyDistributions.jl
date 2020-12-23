@@ -14,6 +14,7 @@ export loglikelihood
 export mean
 export naturalparam
 export stats
+export stdparam
 export update!
 
 """
@@ -87,6 +88,14 @@ naturalparam
 Returns the sufficient statistics of `x` for the distribution `p`.
 """
 stats
+
+"""
+    stdparam(p, η)
+
+Returns the standard parameters corresponding to the natural parameters
+`η` for distribution with the same type of `p`.
+"""
+stdparam
 
 """
     update!(p, η)

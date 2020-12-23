@@ -40,7 +40,7 @@ Normal{Float64,2}:
 """
 mutable struct Normal{T,D} <: ExpFamilyDistribution
     μ::Vector{T}
-    Σ::Matrix{T}
+    Σ::Symmetric{T}
 
     function Normal(μ::AbstractVector{T}, Σ::Symmetric{T}) where T
         if size(μ) ≠ size(Σ)[1] ≠ size(Σ)[2]
@@ -50,14 +50,14 @@ mutable struct Normal{T,D} <: ExpFamilyDistribution
     end
 end
 
+function Normal{T, D}() where {T, D}
+    Normal(zeros(T, D), Symmetric(Matrix{T}(I, D, D)))
+end
+
 function Normal(μ::AbstractVector)
     T = eltype(μ)
     D = length(μ)
     Normal(μ, Symmetric(Matrix{T}(I, D, D)))
-end
-
-function Normal{T, D}() where {T, D}
-    Normal(zeros(T, D), Symmetric(Matrix{T}(I, D, D)))
 end
 
 function Base.show(io::IO, ::MIME"text/plain", n::Normal)
@@ -92,12 +92,16 @@ function stats(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
     vcat(x, vec(x*x'))
 end
 
-function update!(n::Normal, η::AbstractVector{T}) where T
-    D = length(n.μ)
+function stdparam(::Normal{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ, nhΛ = _splitnatparams(η, D)
-    Λ = -2 * nhΛ
-    n.Σ = inv(Λ)
-    n.μ = n.Σ * Λμ
+    Λ = Symmetric(-2 * nhΛ)
+    Σ = inv(Λ)
+    μ = Σ * Λμ
+    μ, Σ
+end
+
+function update!(n::Normal{T,D}, η::AbstractVector{T}) where {T,D}
+    n.μ, n.Σ = stdparam(n, η)
     n
 end
 
@@ -186,11 +190,15 @@ mean(n::NormalDiag) = n.μ
 naturalparam(n::NormalDiag{T,D}) where {T,D} = vcat((T(1) ./ n.v) .* n.μ, -T(.5) .* (1 ./ n.v))
 stats(::NormalDiag, x::AbstractVector) = vcat(x, x.^2)
 
-function update!(n::NormalDiag, η::AbstractVector)
-    D = length(n.μ)
+function stdparam(n::NormalDiag{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ, nhλ = η[1:D], η[D+1:end]
-    n.v = 1 ./ (-2 * nhλ)
-    n.μ = n.v .* Λμ
+    v = 1 ./ (-2 * nhλ)
+    μ = v .* Λμ
+    μ, v
+end
+
+function update!(n::NormalDiag, η::AbstractVector)
+    n.μ, n.v = stdparam(n, η)
     return n
 end
 
@@ -238,11 +246,16 @@ function gradlognorm(n::δNormal; vectorize = true)
     vectorize ? vcat(μ, vec(μμᵀ)) : (μ, μμᵀ)
 end
 
-function update!(n::δNormal, η::AbstractVector)
-    D = length(n.μ)
+function stdparam(::δNormal{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ, nhΛ = _splitnatparams(η, D)
-    Λ = -2 * nhΛ
-    n.μ = inv(Λ) * Λμ
+    Λ = Symmetric(-2 * nhΛ)
+    Σ = inv(Λ)
+    μ = Σ * Λμ
+    μ
+end
+
+function update!(n::δNormal, η::AbstractVector)
+    n.μ = stdparam(n, η)
     n
 end
 
@@ -288,11 +301,15 @@ function gradlognorm(n::δNormalDiag; vectorize = true)
     vectorize ? vcat(μ, μ²) : (μ, μ²)
 end
 
-function update!(n::δNormalDiag, η::AbstractVector)
-    D = length(n.μ)
+function stdparam(n::δNormalDiag{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ, nhλ = η[1:D], η[D+1:end]
     v = 1 ./ (-2 * nhλ)
-    n.μ = v .* Λμ
+    μ = v .* Λμ
+    μ
+end
+
+function update!(n::δNormalDiag, η::AbstractVector)
+    n.μ = stdparam(n, η)
     n
 end
 
