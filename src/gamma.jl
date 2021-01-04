@@ -40,7 +40,7 @@ mutable struct Gamma{T} <: ExpFamilyDistribution
    end
 end
 
-function Base.show(io::IO, g::Gamma)
+function Base.show(io::IO, ::MIME"text/plain", g::Gamma)
     println(io, typeof(g), ":")
     println(io, "  α = ", g.α)
     print(io, "  β = ", g.β)

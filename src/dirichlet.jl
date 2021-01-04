@@ -36,7 +36,7 @@ mutable struct Dirichlet{T,D} <: ExpFamilyDistribution
     end
 end
 
-function Base.show(io::IO, d::Dirichlet)
+function Base.show(io::IO, ::MIME"text/plain", d::Dirichlet)
     println(io, typeof(d), ":")
     print(io, "  α = ", d.α)
 end

@@ -114,7 +114,7 @@ Supertype for the δ-distributions.
 """
 abstract type δDistribution end
 
-function Base.show(io::IO, d::δDistribution)
+function Base.show(io::IO, ::MIME"text/plain", d::δDistribution)
     println(io, typeof(d), ":")
     print(io, "  μ = ", d.μ)
 end
