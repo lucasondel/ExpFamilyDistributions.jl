@@ -3,13 +3,17 @@
 *Julia package for using distributions member of the Exponential
 family .*
 
-NOTE: This package is mostly designed to build machine learning
-Bayesian models. For a general purpose statistical Julia package we
-recommend to use [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
+This package is mostly designed to build machine learning
+Bayesian models. Particularly, it provides functions to use both the
+natural and the standard parameters of the distributions. For a general
+purpose statistical Julia package we recommend to use
+[Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
 
 | **Documentation**  | **Test Status**   |
 |:------------------:|:-----------------:|
 | [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions/stable) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions/dev) | ![](https://github.com/lucasondel/ExpFamilyDistributions/workflows/Test/badge.svg) |
+
+See the [changelog file](CHANGELOG.md) to check what's new.
 
 ## Installation
 
