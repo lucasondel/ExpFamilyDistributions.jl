@@ -13,7 +13,8 @@ purpose statistical Julia package we recommend to use
 |:------------------:|:-----------------:|
 | [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions/stable) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions/dev) | ![](https://github.com/lucasondel/ExpFamilyDistributions/workflows/Test/badge.svg) |
 
-See the [changelog file](CHANGELOG.md) to check what's new.
+See the [changelog file](CHANGELOG.md) to check what's new since the
+last release.
 
 ## Installation
 
