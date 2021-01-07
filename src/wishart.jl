@@ -12,23 +12,24 @@ Wishart distribution.
 
 # Constructors
 
-    Gamma{T}()
-    Gamma{T}(α, β)
+    Wishart{T,D}()
+    Wishart(W[, v])
 
-where `T` is the encoding type of the parameters. `α` and `β` are the
-parameters of the distribution.
+where `T` is the encoding type of the parameters and `W` is a
+[**symmetric**](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/#LinearAlgebra.Symmetric)
+DxD matrix.
 
 # Examples
 ```jldoctest
-julia> Gamma{Float32}()
-Gamma{Float32}:
-  α = 1.0
-  β = 1.0
+julia> Wishart{Float32,2}()
+Wishart{Float32,2}:
+  W = Float32[1.0 0.0; 0.0 1.0]
+  v = 2.0
 
-julia> Gamma{Float64}(1, 2)
-Gamma{Float64}:
-  α = 1.0
-  β = 2.0
+julia> using LinearAlgebra; Wishart(Symmetric([1 0.5; 0.5 1]))
+Wishart{Float64,2}:
+  W = [1.0 0.5; 0.5 1.0]
+  v = 2.0
 ```
 """
 mutable struct Wishart{T,D} <: ExpFamilyDistribution
@@ -100,29 +101,29 @@ end
 # δ-Wishart distribution
 
 """
-    mutable struct δGamma{T} <: δDistribution
+    mutable struct δWishart{T,D} <: δDistribution
         μ
     end
 
-The δ-equivaltent of the [`Gamma`](@ref) distribution.
+The δ-equivaltent of the [`Wishart`](@ref) distribution.
 
 # Constructors
 
-    δGamma{T}()
-    δGamma{T}(μ)
+    δWishart{T,D}()
+    δWishart(μ)
 
 where `T` is the encoding type of the parameters and `μ` is the
 location of the Dirac δ pulse.
 
 # Examples
 ```jldoctest
-julia> δGamma{Float32}()
-δGamma{Float32}:
-  μ = 1.0
+julia> δWishart{Float32,2}()
+δWishart{Float32,2}:
+  μ = Float32[1.0 0.0; 0.0 1.0]
 
-julia> δGamma{Float64}(2)
-δGamma{Float64}:
-  μ = 2.0
+julia> using LinearAlgebra; δWishart(Symmetric([1 0.5; 0.5 1]))
+δWishart{Float64,2}:
+  μ = [1.0 0.5; 0.5 1.0]
 ```
 """
 mutable struct δWishart{T,D} <: δDistribution
@@ -133,7 +134,7 @@ mutable struct δWishart{T,D} <: δDistribution
     end
 end
 
-δWishart{T,D}() where {T<:Real,D} = δWishart(Matrix{T}(I,D,D))
+δWishart{T,D}() where {T<:Real,D} = δWishart(Symmetric(Matrix{T}(I,D,D)))
 
 function gradlognorm(w::δWishart; vectorize = true)
     vectorize ? vcat(vec(w.μ), logdet(w.μ)) : (w.μ, logdet(w.μ))

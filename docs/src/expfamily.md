@@ -145,3 +145,43 @@ Terms of the canonical form:
 ```@docs
 Dirichlet
 ```
+
+## Wishart distribution
+
+Likelihood:
+```math
+\mathcal{W}(X | W, v) = B(W, v)|X|^{\frac{(v-D-1)}{2}} \exp \bigg\{
+    -\frac{1}{2} \text{tr}(W^{-1}X) \bigg\} \\
+B(W,v) = |W|^{-\frac{v}{2}}\bigg( 2^{\frac{vD}{2}} \pi^{\frac{D(D-1)}{4}}
+    \prod_{i=1}^D \Gamma \big( \frac{v+1-i}{2} \big) \bigg)^{-1}
+```
+where $X$ and $W$ are $D \times D$ symmetric positive definite matrices.
+
+Terms of the canonical form:
+```math
+\begin{aligned}
+    \eta &= \begin{bmatrix}
+        \text{vec}(-\frac{1}{2} W^{-1}) \\
+        \frac{v}{2}
+    \end{bmatrix}\\
+
+    T(x) &= \begin{bmatrix}
+        \text{vec}(X) \\
+        \ln |X|
+    \end{bmatrix} \\
+
+    A(\eta) &= \frac{v}{2} \ln |W| + \frac{vD}{2} \ln 2
+        + \sum_{i=1}^D \ln \Gamma \big( \frac{v+1-i}{2} \big) \\
+
+    B(x) &= -\frac{(D-1)}{2} \ln |X| - \frac{D(D-1)}{4} \ln \pi     \\
+
+    \nabla_{\eta} A(\eta) &= \begin{bmatrix}
+        \text{vec}(vW) \\
+        \ln |W| + D \ln 2 + \sum_{i=1}^D \psi \big( \frac{v+1-i}{2} \big)
+    \end{bmatrix}
+\end{aligned}
+```
+
+```@docs
+Wishart
+```

@@ -341,6 +341,9 @@ for T in [Float32, Float64]
         W = Symmetric(T[1 0.5; 0.5 2])
         D = 2
 
+        w = δWishart{T,D}()
+        @test all(w.μ .≈ Matrix{T}(I,D,D))
+
         w = δWishart(W)
 
         ETX = vcat(vec(w.μ), logdet(w.μ))

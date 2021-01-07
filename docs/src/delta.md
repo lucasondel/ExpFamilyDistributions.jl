@@ -48,3 +48,9 @@ location to the maximum of the equivalent distribution.
 δDirichlet
 ```
 
+## δ-Wishart distribution
+
+```@docs
+δWishart
+```
+
