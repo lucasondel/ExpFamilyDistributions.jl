@@ -1,7 +1,7 @@
 name = "ExpFamilyDistributions"
 uuid = "ac7c78bc-e309-483d-b879-ab7fdbfc3919"
 authors = ["Lucas Ondel <iondel@fit.vutbr.cz>"]
-version = "0.3.1"
+version = "0.4.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
