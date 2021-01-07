@@ -141,5 +141,10 @@ export δDirichlet
 
 include("dirichlet.jl")
 
+export Wishart
+export δWishart
+
+include("wishart.jl")
+
 end
 

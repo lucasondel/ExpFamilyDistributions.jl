@@ -11,6 +11,9 @@ DocMeta.setdocmeta!(ExpFamilyDistributions, :DocTestSetup,
 
 doctest(ExpFamilyDistributions)
 
+#######################################################################
+# Normal
+
 for T in [Float32, Float64]
     @testset "Normal ($T)" begin
         n = Normal(T[1, 2], Symmetric(T[2 0; 0 2]))
@@ -50,6 +53,9 @@ for T in [Float32, Float64]
     end
 end
 
+#######################################################################
+# δ-Normal
+
 for T in [Float32, Float64]
     @testset "δNormal ($T)" begin
         n = δNormal(T[1, 2])
@@ -72,6 +78,9 @@ for T in [Float32, Float64]
         @test all(n.μ .≈ prior.μ)
     end
 end
+
+#######################################################################
+# NormalDiag
 
 for T in [Float32, Float64]
     @testset "NormalDiag ($T)" begin
@@ -111,6 +120,9 @@ for T in [Float32, Float64]
     end
 end
 
+#######################################################################
+# δ-NormalDiag
+
 for T in [Float32, Float64]
     @testset "δNormalDiag ($T)" begin
         n = δNormalDiag(T[1, 2])
@@ -133,6 +145,9 @@ for T in [Float32, Float64]
         @test all(n.μ .≈ prior.μ)
     end
 end
+
+#######################################################################
+# Gamma
 
 for T in [Float32, Float64]
     @testset "Gamma ($T)" begin
@@ -172,6 +187,9 @@ for T in [Float32, Float64]
     end
 end
 
+#######################################################################
+# δ-Gamma
+
 for T in [Float32, Float64]
     @testset "δGamma ($T)" begin
         @test_throws ArgumentError δGamma{T}(-1)
@@ -199,6 +217,9 @@ for T in [Float32, Float64]
         @test all(g.μ .≈ (g2.α-1)/g2.β)
     end
 end
+
+#######################################################################
+# Dirichlet
 
 for T in [Float32, Float64]
     @testset "Dirichlet ($T)" begin
@@ -237,6 +258,9 @@ for T in [Float32, Float64]
     end
 end
 
+#######################################################################
+# δ-Dirichlet
+
 for T in [Float32, Float64]
     @testset "δDirichlet ($T)" begin
         @test_throws ArgumentError δDirichlet(T[1, 2, 3])
@@ -257,5 +281,81 @@ for T in [Float32, Float64]
         d2 = Dirichlet(T[3, 2, 2])
         update!(d, naturalparam(d2))
         @test all(d.μ .≈ (d2.α .- 1) / sum(d2.α .- 1))
+    end
+end
+
+#######################################################################
+# Wishart
+
+for T in [Float32, Float64]
+    @testset "Wishart($T)" begin
+        X = Symmetric(T[1 0.5; 0.5 2])
+
+        D = 2
+        W = Symmetric(Matrix{T}(I, 2, 2))
+        v = 2
+        w = Wishart(W, 2)
+
+        η = vcat(vec(-.5*inv(W)), v/2)
+        @test eltype(naturalparam(w)) == T
+        @test all(naturalparam(w) .≈ η)
+
+        TX = T[X..., logdet(X)]
+        @test all(stats(w, X) .≈ TX)
+
+        A = .5*( v*logdet(W) + v*D*log(2) ) + sum([loggamma((v+1-i)/2) for i in 1:D])
+        @test lognorm(w) ≈ T(A)
+
+        B = -.5*( (D-1)*logdet(X) + .5*D*(D-1)*log(π) )
+        @test basemeasure(w, X) ≈ B
+
+        ETX = vcat(vec(v*W), sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W))
+        @test eltype(gradlognorm(w)) == T
+        @test all(gradlognorm(w) .≈ ETX)
+
+        s = gradlognorm(w, vectorize = false)
+        @test length(s) == 2
+        @test all(s[1] .≈ v*W)
+        @test s[2] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
+
+        @test all(mean(w) .≈ v*W)
+
+        w2 = Wishart{T,2}()
+        @test kldiv(w, w) ≈  0
+        @test kldiv(w, w2) >= 0
+        @test kldiv(w2, w) >= 0
+
+        w2 = Wishart(stdparam(w, naturalparam(w))...)
+        @test kldiv(w, w2) ≈  0
+
+        update!(w, naturalparam(w2))
+        @test all(naturalparam(w) .≈ naturalparam(w2))
+    end
+end
+
+#######################################################################
+# δ-Wishart
+
+for T in [Float32, Float64]
+    @testset "δWishart ($T)" begin
+        W = Symmetric(T[1 0.5; 0.5 2])
+        D = 2
+
+        w = δWishart(W)
+
+        ETX = vcat(vec(w.μ), logdet(w.μ))
+        @test eltype(gradlognorm(w)) == T
+        @test all(gradlognorm(w) .≈ ETX)
+
+        s = gradlognorm(w, vectorize = false)
+        @test length(s) == 2
+        @test all(s[1] .≈ w.μ)
+        @test s[2] .≈ logdet(w.μ)
+
+        @test all(mean(w) .≈ w.μ)
+
+        w2 = Wishart{T,2}()
+        update!(w, naturalparam(w2))
+        @test all(w.μ .≈ w2.v*w2.W)
     end
 end
