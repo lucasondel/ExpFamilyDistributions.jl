@@ -1,5 +1,10 @@
 # Releases
 
+## 0.4.0
+
+* added the Wishart distribution
+* bugfix: `gradlognorm(gamma, vectorize = false)` now returns a tuple
+
 ## 0.3.1
 
 * bugfix: added MIME type to the `Base.show` redifinition, this avoid
