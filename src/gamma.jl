@@ -52,7 +52,7 @@ Gamma{T}() where T<:Real = Gamma{T}(1, 1)
 basemeasure(::Gamma, x) = -log(x)
 function gradlognorm(g::Gamma; vectorize = true)
     if vectorize
-        vcat(g.α / g.β, digamma(g.α) - log(g.β))
+        return vcat(g.α / g.β, digamma(g.α) - log(g.β))
     end
     g.α / g.β, digamma(g.α) - log(g.β)
 end
