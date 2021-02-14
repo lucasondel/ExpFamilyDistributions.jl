@@ -86,6 +86,11 @@ end
 mean(w::Wishart) = w.v * w.W
 stats(w::Wishart{T}, X::Symmetric{T}) where T = vcat(vec(X), logdet(X))
 
+function sample(w::Wishart, size = 1)
+    w_ = Dists.Wishart(w.v, PDMat(w.W))
+    [rand(w_) for i in 1:size]
+end
+
 function stdparam(::Wishart{T,D}, η::AbstractVector{T}) where {T,D}
     W = inv(-2*Symmetric(reshape(η[1:end-1],D,D)))
     v = 2*η[end]

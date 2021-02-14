@@ -48,10 +48,17 @@ basemeasure(::Dirichlet, x::AbstractVector) = -log.(x)
 # vectorization is effect less
 gradlognorm(d::Dirichlet; vectorize = true) = digamma.(d.α) .- digamma(sum(d.α))
 
-stats(::Dirichlet, x::AbstractVector) = log.(x)
+
 lognorm(d::Dirichlet) = sum(loggamma.(d.α)) - loggamma(sum(d.α))
 mean(d::Dirichlet) = d.α ./ sum(d.α)
 naturalparam(d::Dirichlet) = d.α
+
+function sample(d::Dirichlet, size=1)
+    d_ = Dists.Dirichlet(d.α)
+    [Dists.rand(d_) for i in 1:size]
+end
+
+stats(::Dirichlet, x::AbstractVector) = log.(x)
 
 function stdparam(::Dirichlet{T}, η::AbstractVector{T}) where T
     η

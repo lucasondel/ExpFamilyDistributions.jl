@@ -87,6 +87,11 @@ function naturalparam(n::Normal)
     vcat(Λ * n.μ, -T(.5) .* vec(Λ))
 end
 
+function sample(n::Normal{T,D}, size = 1) where {T,D}
+    L = cholesky(n.Σ).L
+    [n.μ + L*randn(T, D) for i in 1:size]
+end
+
 function stats(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
     length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
     vcat(x, vec(x*x'))
@@ -104,7 +109,6 @@ function update!(n::Normal{T,D}, η::AbstractVector{T}) where {T,D}
     n.μ, n.Σ = stdparam(n, η)
     n
 end
-
 
 #######################################################################
 # Normal distribution with diagonal covariance matrix
@@ -188,6 +192,12 @@ function lognorm(n::NormalDiag{T,D}) where {T,D}
 end
 mean(n::NormalDiag) = n.μ
 naturalparam(n::NormalDiag{T,D}) where {T,D} = vcat((T(1) ./ n.v) .* n.μ, -T(.5) .* (1 ./ n.v))
+
+function sample(n::NormalDiag{T,D}, size = 1) where {T,D}
+    σ = sqrt.(n.v)
+    [n.μ + σ .* randn(T, D) for i in 1:size]
+end
+
 stats(::NormalDiag, x::AbstractVector) = vcat(x, x.^2)
 
 function stdparam(n::NormalDiag{T,D}, η::AbstractVector{T}) where {T,D}

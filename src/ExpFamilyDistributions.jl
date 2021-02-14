@@ -2,6 +2,9 @@ module ExpFamilyDistributions
 
 using LinearAlgebra
 using SpecialFunctions: loggamma, digamma
+using PDMats
+import Distributions
+const Dists = Distributions
 
 export ExpFamilyDistribution
 export δDistribution
@@ -13,6 +16,7 @@ export lognorm
 export loglikelihood
 export mean
 export naturalparam
+export sample
 export stats
 export stdparam
 export update!
@@ -83,6 +87,13 @@ Returns the natural parameters of `p`.
 naturalparam
 
 """
+    sample(p[, n=1])
+
+Draw `n` samples from the distribution `p`.
+"""
+sample
+
+"""
     stats(p, x)
 
 Returns the sufficient statistics of `x` for the distribution `p`.
@@ -120,6 +131,8 @@ function Base.show(io::IO, ::MIME"text/plain", d::δDistribution)
 end
 
 mean(d::δDistribution) = d.μ
+
+sample(d::δDistribution, size=1) = [d.μ[1:end] for i in 1:size]
 
 #######################################################################
 # Distributions

@@ -59,6 +59,12 @@ end
 lognorm(g::Gamma) = loggamma(g.α) - g.α * log.(g.β)
 naturalparam(g::Gamma) = vcat(-g.β, g.α)
 mean(g::Gamma) = g.α / g.β
+
+function sample(g::Gamma, size = 1)
+    g_ = Dists.Gamma(g.α, 1/g.β)
+    [Dists.rand(g_) for i in 1:size]
+end
+
 stats(::Gamma{T}, x) where T = T[x, log(x)]
 
 function stdparam(::Gamma{T}, η::AbstractVector{T}) where T
@@ -112,6 +118,10 @@ end
 
 function gradlognorm(g::δGamma; vectorize = true)
     vectorize ? vcat(g.μ, log(g.μ)) : (g.μ, log(g.μ))
+end
+
+function sample(g::δGamma, size = 1)
+    [g.μ for i in 1:size]
 end
 
 function stdparam(::δGamma{T}, η::AbstractVector{T}) where T

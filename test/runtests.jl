@@ -50,6 +50,9 @@ for T in [Float32, Float64]
         n2 = Normal{T, 2}()
         update!(n, naturalparam(n2))
         @test all(naturalparam(n) .≈ naturalparam(n2))
+
+        @test length(sample(n2)) == 1
+        @test length(sample(n2, 10)) == 10
     end
 end
 
@@ -76,6 +79,9 @@ for T in [Float32, Float64]
         prior = Normal{T,2}()
         update!(n, naturalparam(prior))
         @test all(n.μ .≈ prior.μ)
+
+        @test length(sample(n)) == 1
+        @test length(sample(n, 10)) == 10
     end
 end
 
@@ -117,6 +123,9 @@ for T in [Float32, Float64]
 
         update!(n, naturalparam(n2))
         @test all(naturalparam(n) .≈ naturalparam(n2))
+
+        @test length(sample(n)) == 1
+        @test length(sample(n, 10)) == 10
     end
 end
 
@@ -143,6 +152,9 @@ for T in [Float32, Float64]
         prior = NormalDiag{T,2}()
         update!(n, naturalparam(prior))
         @test all(n.μ .≈ prior.μ)
+
+        @test length(sample(n)) == 1
+        @test length(sample(n, 10)) == 10
     end
 end
 
@@ -184,6 +196,9 @@ for T in [Float32, Float64]
 
         update!(g, naturalparam(g2))
         @test all(naturalparam(g) .≈ naturalparam(g2))
+
+        @test length(sample(g)) == 1
+        @test length(sample(g, 10)) == 10
     end
 end
 
@@ -215,6 +230,9 @@ for T in [Float32, Float64]
         g2 = Gamma{T}()
         update!(g, naturalparam(g2))
         @test all(g.μ .≈ (g2.α-1)/g2.β)
+
+        @test length(sample(g)) == 1
+        @test length(sample(g, 10)) == 10
     end
 end
 
@@ -255,6 +273,9 @@ for T in [Float32, Float64]
 
         update!(d, naturalparam(d2))
         @test all(naturalparam(d) .≈ naturalparam(d2))
+
+        @test length(sample(d)) == 1
+        @test length(sample(d, 10)) == 10
     end
 end
 
@@ -281,6 +302,9 @@ for T in [Float32, Float64]
         d2 = Dirichlet(T[3, 2, 2])
         update!(d, naturalparam(d2))
         @test all(d.μ .≈ (d2.α .- 1) / sum(d2.α .- 1))
+
+        @test length(sample(d)) == 1
+        @test length(sample(d, 10)) == 10
     end
 end
 
@@ -330,6 +354,9 @@ for T in [Float32, Float64]
 
         update!(w, naturalparam(w2))
         @test all(naturalparam(w) .≈ naturalparam(w2))
+
+        @test length(sample(w)) == 1
+        @test length(sample(w, 10)) == 10
     end
 end
 
@@ -360,5 +387,8 @@ for T in [Float32, Float64]
         w2 = Wishart{T,2}()
         update!(w, naturalparam(w2))
         @test all(w.μ .≈ w2.v*w2.W)
+
+        @test length(sample(w)) == 1
+        @test length(sample(w, 10)) == 10
     end
 end
