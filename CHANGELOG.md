@@ -1,5 +1,9 @@
 # Releases
 
+## 0.5.0
+
+* added `sample` function
+
 ## 0.4.0
 
 * added the Wishart distribution
