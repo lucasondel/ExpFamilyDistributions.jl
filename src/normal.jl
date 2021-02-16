@@ -1,11 +1,43 @@
 
 #######################################################################
+# Utilities
+
+"""
+    vec_tril(M)
+
+Return the low-triangular part (diagonal not included) of the matrix
+vectorized.
+"""
+function vec_tril(M::AbstractMatrix)
+    D, _ = size(M)
+    vcat([diag(M, -i) for i in 1:D-1]...)
+end
+
+function inv_vec_tril(v::AbstractVector)
+    # Determine the dimension of the matrix from the length of the
+    # vector. To do this, we solve the equation:
+    #   x²/2 + x/2 - l = 0
+    # The dimension is given by s (the positive solution) + 1.
+    l = length(v)
+    D = Int((-1 + sqrt(1 + 8*l))/2) + 1
+
+    M = zeros(eltype(v), D, D)
+    offset = 0
+    for i in 1:D-1
+        M[diagind(M, -i)] = v[offset+1:offset+D-i]
+        offset += D-i
+    end
+    LowerTriangular(M)
+end
+
+#######################################################################
 # Normal distribution with full covariance matrix
 
 """
     mutable struct Normal{T,D} <: ExpFamilyDistribution
         μ
-        Σ
+        diagΣ
+        trilΣ
     end
 
 Normal distribution with full covariance matrix.
@@ -40,14 +72,26 @@ Normal{Float64,2}:
 """
 mutable struct Normal{T,D} <: ExpFamilyDistribution
     μ::Vector{T}
-    Σ::Symmetric{T}
+    diagΣ::Vector{T}
+    trilΣ::Vector{T}
 
     function Normal(μ::AbstractVector{T}, Σ::Symmetric{T}) where T
         if size(μ) ≠ size(Σ)[1] ≠ size(Σ)[2]
             error("Dimension mismatch: size(μ) = $(size(μ)) size(Σ) = $(size(Σ))")
         end
-        new{T, length(μ)}(μ, Σ)
+        new{T, length(μ)}(μ, diag(Σ), vec_tril(Σ))
     end
+end
+
+function Base.getproperty(n::Normal{T,D}, sym::Symbol) where {T,D}
+    if sym == :Σ
+        Σ = zeros(T, D, D)
+        trilΣ = inv_vec_tril(n.trilΣ)
+        Σ = trilΣ + trilΣ'
+        Σ[diagind(Σ)] = n.diagΣ
+        return Σ
+    end
+    getfield(n, sym)
 end
 
 function Normal{T, D}() where {T, D}
@@ -66,9 +110,6 @@ function Base.show(io::IO, ::MIME"text/plain", n::Normal)
     print(io, "  Σ = ", n.Σ)
 end
 
-# Split a vector of natural parameters into two components: Λμ and Λ.
-_splitnatparams(η, D) = η[1:D], reshape(η[D+1:end], (D, D))
-
 function basemeasure(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
     length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
     -T(.5) * length(x) * log(T(2π))
@@ -76,15 +117,16 @@ end
 
 function gradlognorm(n::Normal; vectorize = true)
     x, xxᵀ = n.μ, n.Σ + n.μ*n.μ'
-    vectorize ? vcat(x, vec(xxᵀ)) : (x, xxᵀ)
+    vectorize ? vcat(x, diag(xxᵀ), vec_tril(xxᵀ)) : (x, diag(xxᵀ), vec_tril(xxᵀ))
 end
+
 lognorm(n::Normal) = .5 * (logdet(n.Σ) + dot(n.μ, inv(n.Σ), n.μ))
 mean(pdf::Normal) = pdf.μ
 
 function naturalparam(n::Normal)
     T = eltype(n.μ)
     Λ = inv(n.Σ)
-    vcat(Λ * n.μ, -T(.5) .* vec(Λ))
+    vcat(Λ * n.μ, -T(.5) * diag(Λ), -vec_tril(Λ))
 end
 
 function sample(n::Normal{T,D}, size = 1) where {T,D}
@@ -94,11 +136,15 @@ end
 
 function stats(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
     length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
-    vcat(x, vec(x*x'))
+    xxᵀ = x * x'
+    vcat(x, diag(xxᵀ), vec_tril(xxᵀ))
 end
 
 function stdparam(::Normal{T,D}, η::AbstractVector{T}) where {T,D}
-    Λμ, nhΛ = _splitnatparams(η, D)
+    Λμ = η[1:D]
+    nhΛ = diagm(η[D+1:2*D])
+    tril_M = inv_vec_tril(η[2*D+1:end])
+    nhΛ += T(.5)*tril_M + T(.5)*tril_M'
     Λ = Symmetric(-2 * nhΛ)
     Σ = inv(Λ)
     μ = Σ * Λμ
@@ -106,7 +152,10 @@ function stdparam(::Normal{T,D}, η::AbstractVector{T}) where {T,D}
 end
 
 function update!(n::Normal{T,D}, η::AbstractVector{T}) where {T,D}
-    n.μ, n.Σ = stdparam(n, η)
+    μ, Σ = stdparam(n, η)
+    n.μ = μ
+    n.diagΣ = diag(Σ)
+    n.trilΣ = vec_tril(Σ)
     n
 end
 
@@ -253,11 +302,14 @@ end
 
 function gradlognorm(n::δNormal; vectorize = true)
     μ, μμᵀ = n.μ, n.μ * n.μ'
-    vectorize ? vcat(μ, vec(μμᵀ)) : (μ, μμᵀ)
+    vectorize ? vcat(μ, diag(μμᵀ), vec_tril(μμᵀ)) : (μ, diag(μμᵀ), vec_tril(μμᵀ))
 end
 
 function stdparam(::δNormal{T,D}, η::AbstractVector{T}) where {T,D}
-    Λμ, nhΛ = _splitnatparams(η, D)
+    Λμ = η[1:D]
+    nhΛ = diagm(η[D+1:2*D])
+    tril_M = inv_vec_tril(η[2*D+1:end])
+    nhΛ += T(.5)*tril_M + T(.5)*tril_M'
     Λ = Symmetric(-2 * nhΛ)
     Σ = inv(Λ)
     μ = Σ * Λμ

@@ -141,6 +141,8 @@ export Normal
 export δNormal
 export NormalDiag
 export δNormalDiag
+export vec_tril
+export inv_vec_tril
 
 include("normal.jl")
 

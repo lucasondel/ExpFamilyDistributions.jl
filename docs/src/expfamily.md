@@ -82,6 +82,11 @@ Normal
 NormalDiag
 ```
 
+The package also provide the following utility function:
+```@docs
+vec_tril
+```
+
 ## Gamma distribution
 
 Likelihood:

@@ -16,13 +16,13 @@ doctest(ExpFamilyDistributions)
 
 for T in [Float32, Float64]
     @testset "Normal ($T)" begin
-        n = Normal(T[1, 2], Symmetric(T[2 0; 0 2]))
+        n = Normal(T[1, 2], Symmetric(T[2 0; 0 3]))
 
-        η = T[.5, 1, -.25, 0, 0, -.25]
+        η = T[1/2, 2/3, -1/4, -1/6, 0]
         @test all(naturalparam(n) .≈ η)
 
         x = T[2, 3]
-        Tx = T[2, 3, 4, 6, 6, 9]
+        Tx = T[2, 3, 4, 9, 6]
         @test all(stats(n, x) .≈ Tx)
 
         A = .5 * log(det(n.Σ)) + .5 * dot(n.μ, inv(n.Σ), n.μ)
@@ -30,12 +30,13 @@ for T in [Float32, Float64]
 
         @test basemeasure(n, x) ≈ T(-log(2π))
 
-        ETx = T[1, 2, 3, 2, 2, 6]
+        ETx = T[1, 2, 3, 7, 2]
         @test all(gradlognorm(n) .≈ ETx)
 
-        s1, s2 = gradlognorm(n, vectorize = false)
+        s1, s2, s3 = gradlognorm(n, vectorize = false)
         @test size(s1) == (2,)
-        @test size(s2) == (2,2)
+        @test size(s2) == (2,)
+        @test size(s3) == (1,)
 
         @test all(mean(n) .≈ n.μ)
 
@@ -63,12 +64,13 @@ for T in [Float32, Float64]
     @testset "δNormal ($T)" begin
         n = δNormal(T[1, 2])
 
-        ETx = T[1, 2, 1, 2, 2, 4]
+        ETx = T[1, 2, 1, 4, 2]
         @test all(gradlognorm(n) .≈ ETx)
 
-        s1, s2 = gradlognorm(n, vectorize = false)
+        s1, s2, s3 = gradlognorm(n, vectorize = false)
         @test size(s1) == (2,)
-        @test size(s2) == (2,2)
+        @test size(s2) == (2,)
+        @test size(s3) == (1,)
 
         @test all(mean(n) .≈ n.μ)
 
