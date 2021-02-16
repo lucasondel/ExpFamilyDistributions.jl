@@ -57,12 +57,14 @@ Terms of the canonical form:
 \begin{aligned}
     \eta &= \begin{bmatrix}
         \Sigma^{-1} \mu \\
-        -\frac{1}{2}\text{vec}(\Sigma^{-1})
+        -\frac{1}{2}\text{vec}(\text{diag}(\Sigma^{-1})) \\
+        -\text{vec}(\text{tril}(\Sigma^{-1}))
     \end{bmatrix} \\
 
     T(x) &= \begin{bmatrix}
         x \\
-        \text{vec}(xx^\top)
+        \text{vec}(\text{diag}(xx^\top)) \\
+        \text{vec}(\text{tril}(xx^\top))
     \end{bmatrix} \\
 
     A(\eta) &= \frac{1}{2} \ln |\Sigma| + \frac{1}{2} \mu^\top
@@ -76,15 +78,18 @@ Terms of the canonical form:
     \end{bmatrix}
 \end{aligned}
 ```
+where $\text{tril}$ is a function that returns the lower-triangular
+part of a matrix (diagonal not included).
 
 ```@docs
 Normal
 NormalDiag
 ```
 
-The package also provide the following utility function:
+The package also provides the following utility functions:
 ```@docs
 vec_tril
+inv_vec_tril
 ```
 
 ## Gamma distribution

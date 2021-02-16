@@ -5,14 +5,20 @@
 """
     vec_tril(M)
 
-Return the low-triangular part (diagonal not included) of the matrix
-vectorized.
+Returns the vectorized low-triangular part (diagonal not included) of
+the matrix. See [`inv_vec_tril`](@ref).
 """
 function vec_tril(M::AbstractMatrix)
     D, _ = size(M)
     vcat([diag(M, -i) for i in 1:D-1]...)
 end
 
+"""
+    inv_vec_tril(v)
+
+Returns a lower triangular matrix from a vectorized form. The diagonal
+of the matrix is set to 0. See [`vec_tril`](@ref).
+"""
 function inv_vec_tril(v::AbstractVector)
     # Determine the dimension of the matrix from the length of the
     # vector. To do this, we solve the equation:
