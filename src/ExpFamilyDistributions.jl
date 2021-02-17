@@ -55,14 +55,15 @@ parameters.
 gradlognorm
 
 """
-    kldiv(q::T, p::T) where T<:ExpFamilyDistribution
+    kldiv(q::T, p::T[, μ = gradlognorm(q)]) where T<:ExpFamilyDistribution
 
 Compute the KL-divergence between two distributions of the same type
-(i.e. `kldiv(Normal, Normal)`, `kldiv(Dirichlet, Dirichlet)`, ...)
+(i.e. `kldiv(Normal, Normal)`, `kldiv(Dirichlet, Dirichlet)`, ...). You
+can specify directly the expectation of the sufficient statistics `μ`.
 """
-function kldiv(q::T, p::T) where T<:ExpFamilyDistribution
+function kldiv(q::T, p::T; μ = gradlognorm(q)) where T<:ExpFamilyDistribution
     q_η, p_η = naturalparam(q), naturalparam(p)
-    lognorm(p) - lognorm(q) - dot(p_η .- q_η, gradlognorm(q))
+    lognorm(p) - lognorm(q) - dot(p_η .- q_η, μ)
 end
 
 """
