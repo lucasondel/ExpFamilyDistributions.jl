@@ -23,11 +23,9 @@ Each subtype of `δDistribution` implements partially the Exponential
 Family interface:
 * [`gradlognorm`](@ref)
 * [`mean`](@ref)
-* [`update!`](@ref)
-where [`gradlognorm`](@ref) returns the expectation of the equivalent
-distribution's sufficient statistics, [`mean`](@ref) returns the
-Dirac δ pulse location ``\mu`` and [`update!`](@ref) sets the pulse
-location to the maximum of the equivalent distribution.
+* [`sample`](@ref)
+* [`splitgrad`](@ref)
+* [`update!`](@ref).
 
 ## δ-Normal distribution
 

@@ -25,6 +25,7 @@ Each subtype of `ExpFamilyDistribution` implements the following interface:
 * [`mean`](@ref)
 * [`naturalparam`](@ref)
 * [`sample`](@ref)
+* [`splitgrad`](@ref)
 * [`stats`](@ref)
 * [`stdparam`](@ref)
 * [`update!`](@ref)
@@ -38,6 +39,7 @@ loglikelihood
 mean
 naturalparam
 sample
+splitgrad
 stats
 stdparam
 update!

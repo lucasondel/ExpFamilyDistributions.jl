@@ -1,5 +1,10 @@
 # Releases
 
+## 0.8.0
+
+* added the function `splitgrad` to replace the `vectorize` parameter
+  in the `gradlognorm` function.
+
 ## 0.7.0
 
 * changed the parameterization of the Wishart: the precision matrix
