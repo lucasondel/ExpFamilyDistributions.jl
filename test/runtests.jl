@@ -322,11 +322,12 @@ for T in [Float32, Float64]
         v = 2
         w = Wishart(W, 2)
 
-        η = vcat(vec(-.5*inv(W)), v/2)
+        invW = inv(W)
+        η = vcat(-.5 * diag(invW), vec_tril(invW), v/2)
         @test eltype(naturalparam(w)) == T
         @test all(naturalparam(w) .≈ η)
 
-        TX = T[X..., logdet(X)]
+        TX = T[diag(X)..., vec_tril(X)..., logdet(X)]
         @test all(stats(w, X) .≈ TX)
 
         A = .5*( v*logdet(W) + v*D*log(2) ) + sum([loggamma((v+1-i)/2) for i in 1:D])
@@ -335,14 +336,16 @@ for T in [Float32, Float64]
         B = -.5*( (D-1)*logdet(X) + .5*D*(D-1)*log(π) )
         @test basemeasure(w, X) ≈ B
 
-        ETX = vcat(vec(v*W), sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W))
+        vW = v*W
+        ETX = vcat(diag(vW), vec_tril(vW), sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W))
         @test eltype(gradlognorm(w)) == T
         @test all(gradlognorm(w) .≈ ETX)
 
         s = gradlognorm(w, vectorize = false)
-        @test length(s) == 2
-        @test all(s[1] .≈ v*W)
-        @test s[2] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
+        @test length(s) == 3
+        @test all(s[1] .≈ diag(vW))
+        @test all(s[2] .≈ vec_tril(vW))
+        @test s[3] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
 
         @test all(mean(w) .≈ v*W)
 

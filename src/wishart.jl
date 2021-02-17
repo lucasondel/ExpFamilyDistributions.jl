@@ -4,7 +4,8 @@
 
 """
     mutable struct Wishart{T, D} <: ExpFamilyDistribution
-        W
+        diagW
+        trilW
         v
     end
 
@@ -33,12 +34,23 @@ Wishart{Float64,2}:
 ```
 """
 mutable struct Wishart{T,D} <: ExpFamilyDistribution
-    W::Symmetric{T}
+    diagW::Vector{T}
+    trilW::Vector{T}
     v::T
 
     function Wishart(W::Symmetric{T}, v::T) where T<:Real
-        new{T,size(W, 1)}(W, v)
+        new{T,size(W, 1)}(diag(W), vec_tril(W), v)
     end
+end
+
+function Base.getproperty(w::Wishart{T,D}, sym::Symbol) where {T,D}
+    if sym == :W
+        W = zeros(T, D, D)
+        trilW = inv_vec_tril(w.trilW)
+        W = diagm(w.diagW) + trilW + trilW'
+        return W
+    end
+    getfield(w, sym)
 end
 
 function Wishart(W::Symmetric, v::Real)
@@ -65,12 +77,10 @@ function basemeasure(w::Wishart, X::Symmetric)
 end
 
 function gradlognorm(w::Wishart{T,D}; vectorize = true) where {T,D}
-    ∂η₁ = w.v*w.W
-    ∂η₂ = sum([digamma((T(w.v+1-i)/2)) for i in 1:D]) + T(D*log(2)) + logdet(w.W)
-    if vectorize
-        return vcat(vec(∂η₁), ∂η₂)
-    end
-    ∂η₁, ∂η₂
+    ∂η₁ = w.v*w.diagW
+    ∂η₂ = w.v*w.trilW
+    ∂η₃ = sum([digamma((T(w.v+1-i)/2)) for i in 1:D]) + T(D*log(2)) + logdet(w.W)
+    vectorize ? vcat(∂η₁, ∂η₂, ∂η₃) : (∂η₁, ∂η₂, ∂η₃)
 end
 
 function lognorm(w::Wishart{T,D}) where {T,D}
@@ -78,13 +88,15 @@ function lognorm(w::Wishart{T,D}) where {T,D}
 end
 
 function naturalparam(w::Wishart{T,D}) where {T,D}
-    η₁ = -T(.5) * inv(w.W)
-    η₂ = T(.5) * w.v
-    vcat(vec(η₁), η₂)
+    invW = inv(w.W)
+    η₁ = -T(.5) * diag(invW)
+    η₂ = -vec_tril(invW)
+    η₃ = T(.5) * w.v
+    vcat(η₁, η₂, η₃)
 end
 
 mean(w::Wishart) = w.v * w.W
-stats(w::Wishart{T}, X::Symmetric{T}) where T = vcat(vec(X), logdet(X))
+stats(w::Wishart{T}, X::Symmetric{T}) where T = vcat(diag(X), vec_tril(X), logdet(X))
 
 function sample(w::Wishart, size = 1)
     w_ = Dists.Wishart(w.v, PDMat(w.W))
@@ -92,14 +104,18 @@ function sample(w::Wishart, size = 1)
 end
 
 function stdparam(::Wishart{T,D}, η::AbstractVector{T}) where {T,D}
-    W = inv(-2*Symmetric(reshape(η[1:end-1],D,D)))
+    diag_invW = η[1:D]
+    tril_invW = inv_vec_tril(η[D+1:end-1])
+    invW = Symmetric(diagm(diag_invW) + tril_invW + tril_invW')
+    W = inv(-2*invW)
     v = 2*η[end]
     W, v
 end
 
 function update!(w::Wishart, η)
-    w.W, w.v = stdparam(w, η)
-   return w
+    W, w.v = stdparam(w, η)
+    w.diagW = diag(W)
+    w.trilW = vec_tril(W)
 end
 
 #######################################################################
@@ -146,7 +162,10 @@ function gradlognorm(w::δWishart; vectorize = true)
 end
 
 function stdparam(::δWishart{T,D}, η) where {T,D}
-    W = inv(-2*Symmetric(reshape(η[1:end-1],D,D)))
+    diag_invW = η[1:D]
+    tril_invW = inv_vec_tril(η[D+1:end-1])
+    invW = Symmetric(diagm(diag_invW) + tril_invW + tril_invW')
+    W = inv(-2*invW)
     v = 2*η[end]
     v*W
 end
