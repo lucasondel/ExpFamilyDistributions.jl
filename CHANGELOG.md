@@ -1,5 +1,15 @@
 # Releases
 
+## 0.7.0
+
+* changed the parameterization of the Wishart: the precision matrix
+  is decomposed into its diagonal and the lower-triangular part of the
+  matrix.
+* added the `mu` parameter to the `kldiv` function: this parameter
+  allows to provide directly the expectation of the sufficient
+  statistcs and allows to easily compute the natural gradient of the
+  KL digervence.
+
 ## 0.6.0
 
 * changed parameterization of the Normal: the sufficient statistics
