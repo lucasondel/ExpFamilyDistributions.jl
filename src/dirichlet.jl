@@ -45,9 +45,7 @@ Dirichlet{T,D}() where {T, D} = Dirichlet(ones(T, D))
 
 basemeasure(::Dirichlet, x::AbstractVector) = -log.(x)
 
-# vectorization is effect less
-gradlognorm(d::Dirichlet; vectorize = true) = digamma.(d.α) .- digamma(sum(d.α))
-
+gradlognorm(d::Dirichlet) = digamma.(d.α) .- digamma(sum(d.α))
 
 lognorm(d::Dirichlet) = sum(loggamma.(d.α)) - loggamma(sum(d.α))
 mean(d::Dirichlet) = d.α ./ sum(d.α)
@@ -57,6 +55,9 @@ function sample(d::Dirichlet, size=1)
     d_ = Dists.Dirichlet(d.α)
     [Dists.rand(d_) for i in 1:size]
 end
+
+# vectorization is effect less
+splitgrad(d::Dirichlet, μ::AbstractVector) = identity(μ)
 
 stats(::Dirichlet, x::AbstractVector) = log.(x)
 
@@ -109,8 +110,9 @@ end
 
 δDirichlet{T,D}() where {T, D} = δDirichlet(ones(T, D) / D)
 
-# vectorization is effect less
 gradlognorm(d::δDirichlet; vectorize = true) = log.(d.μ)
+
+splitgrad(d::δDirichlet, μ::AbstractVector) = identity(μ)
 
 function stdparam(::δDirichlet{T}, η::AbstractVector{T}) where T
     (η .- 1) / sum(η .- 1)

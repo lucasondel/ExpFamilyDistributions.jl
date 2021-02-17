@@ -76,11 +76,11 @@ function basemeasure(w::Wishart, X::Symmetric)
     -.5*(D-1)*logdet(X) - .25*D*(D-1)log(pi)
 end
 
-function gradlognorm(w::Wishart{T,D}; vectorize = true) where {T,D}
+function gradlognorm(w::Wishart{T,D}) where {T,D}
     ∂η₁ = w.v*w.diagW
     ∂η₂ = w.v*w.trilW
     ∂η₃ = sum([digamma((T(w.v+1-i)/2)) for i in 1:D]) + T(D*log(2)) + logdet(w.W)
-    vectorize ? vcat(∂η₁, ∂η₂, ∂η₃) : (∂η₁, ∂η₂, ∂η₃)
+    vcat(∂η₁, ∂η₂, ∂η₃)
 end
 
 function lognorm(w::Wishart{T,D}) where {T,D}
@@ -102,6 +102,14 @@ function sample(w::Wishart, size = 1)
     w_ = Dists.Wishart(w.v, PDMat(w.W))
     [rand(w_) for i in 1:size]
 end
+
+function _splitgrad_wishart(D, μ::AbstractVector)
+    diag_∂₁ = μ[1:D]
+    tril_∂₁ = inv_vec_tril(μ[D+1:end-1])
+    ∂₁ = Symmetric(diagm(diag_∂₁) + tril_∂₁ + tril_∂₁')
+    ∂₁, μ[end]
+end
+splitgrad(w::Wishart{T,D}, μ::AbstractVector) where {T,D} = _splitgrad_wishart(D, μ)
 
 function stdparam(::Wishart{T,D}, η::AbstractVector{T}) where {T,D}
     diag_invW = η[1:D]
@@ -157,9 +165,9 @@ end
 
 δWishart{T,D}() where {T<:Real,D} = δWishart(Symmetric(Matrix{T}(I,D,D)))
 
-function gradlognorm(w::δWishart; vectorize = true)
-    vectorize ? vcat(vec(w.μ), logdet(w.μ)) : (w.μ, logdet(w.μ))
-end
+gradlognorm(w::δWishart) = vcat(diag(w.μ), vec_tril(w.μ), logdet(w.μ))
+
+splitgrad(w::δWishart{T,D}, μ::AbstractVector) where {T,D} = _splitgrad_wishart(D, μ)
 
 function stdparam(::δWishart{T,D}, η) where {T,D}
     diag_invW = η[1:D]

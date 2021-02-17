@@ -121,9 +121,9 @@ function basemeasure(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
     -T(.5) * length(x) * log(T(2π))
 end
 
-function gradlognorm(n::Normal; vectorize = true)
+function gradlognorm(n::Normal)
     x, xxᵀ = n.μ, n.Σ + n.μ*n.μ'
-    vectorize ? vcat(x, diag(xxᵀ), vec_tril(xxᵀ)) : (x, diag(xxᵀ), vec_tril(xxᵀ))
+    vcat(x, diag(xxᵀ), vec_tril(xxᵀ))
 end
 
 lognorm(n::Normal) = .5 * (logdet(n.Σ) + dot(n.μ, inv(n.Σ), n.μ))
@@ -139,6 +139,14 @@ function sample(n::Normal{T,D}, size = 1) where {T,D}
     L = cholesky(n.Σ).L
     [n.μ + L*randn(T, D) for i in 1:size]
 end
+
+function _splitgrad_normal(D, m)
+    x = m[1:D]
+    diag_xxᵀ = m[D+1:2*D]
+    tril_xxᵀ = inv_vec_tril(m[2*D+1:end])
+    x, diagm(diag_xxᵀ) + tril_xxᵀ + tril_xxᵀ'
+end
+splitgrad(n::Normal{T,D}, m::AbstractVector) where {T,D} = _splitgrad_normal(D, m)
 
 function stats(::Normal{T,D}, x::AbstractVector{T}) where {T,D}
     length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
@@ -237,9 +245,9 @@ function basemeasure(::NormalDiag{T,D}, x::AbstractVector{T}) where {T,D}
     -T(.5) * length(x) * log(T(2π))
 end
 
-function gradlognorm(n::NormalDiag; vectorize = true)
+function gradlognorm(n::NormalDiag)
     x, x² = n.μ, n.v + n.μ.^2
-    vectorize ? vcat(x, x²) : (x, x²)
+    vcat(x, x²)
 end
 
 function lognorm(n::NormalDiag{T,D}) where {T,D}
@@ -254,6 +262,9 @@ function sample(n::NormalDiag{T,D}, size = 1) where {T,D}
 end
 
 stats(::NormalDiag, x::AbstractVector) = vcat(x, x.^2)
+
+_splitgrad_normaldiag(D, m) = m[1:D], m[D+1:end]
+splitgrad(n::NormalDiag{T,D}, m::AbstractVector) where {T,D} = _splitgrad_normaldiag(D, m)
 
 function stdparam(n::NormalDiag{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ, nhλ = η[1:D], η[D+1:end]
@@ -306,10 +317,12 @@ end
 
 δNormal{T,D}() where {T,D} = δNormal(zeros(T,D))
 
-function gradlognorm(n::δNormal; vectorize = true)
+function gradlognorm(n::δNormal)
     μ, μμᵀ = n.μ, n.μ * n.μ'
-    vectorize ? vcat(μ, diag(μμᵀ), vec_tril(μμᵀ)) : (μ, diag(μμᵀ), vec_tril(μμᵀ))
+    vcat(μ, diag(μμᵀ), vec_tril(μμᵀ))
 end
+
+splitgrad(n::δNormal{T,D}, m::AbstractVector) where {T,D} = _splitgrad_normal(D, m)
 
 function stdparam(::δNormal{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ = η[1:D]
@@ -368,6 +381,8 @@ function gradlognorm(n::δNormalDiag; vectorize = true)
     μ, μ² = n.μ, n.μ.^2
     vectorize ? vcat(μ, μ²) : (μ, μ²)
 end
+
+splitgrad(n::δNormalDiag{T,D}, m::AbstractVector) where {T,D} = _splitgrad_normaldiag(D, m)
 
 function stdparam(n::δNormalDiag{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ, nhλ = η[1:D], η[D+1:end]

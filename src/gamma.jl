@@ -50,12 +50,8 @@ Gamma{T}(α::Real, β::Real) where T = Gamma{T}(T(α), T(β))
 Gamma{T}() where T<:Real = Gamma{T}(1, 1)
 
 basemeasure(::Gamma, x) = -log(x)
-function gradlognorm(g::Gamma; vectorize = true)
-    if vectorize
-        return vcat(g.α / g.β, digamma(g.α) - log(g.β))
-    end
-    g.α / g.β, digamma(g.α) - log(g.β)
-end
+
+gradlognorm(g::Gamma) = vcat(g.α / g.β, digamma(g.α) - log(g.β))
 lognorm(g::Gamma) = loggamma(g.α) - g.α * log.(g.β)
 naturalparam(g::Gamma) = vcat(-g.β, g.α)
 mean(g::Gamma) = g.α / g.β
@@ -64,6 +60,8 @@ function sample(g::Gamma, size = 1)
     g_ = Dists.Gamma(g.α, 1/g.β)
     [Dists.rand(g_) for i in 1:size]
 end
+
+splitgrad(g::Gamma, μ::AbstractVector) = μ[1], μ[2]
 
 stats(::Gamma{T}, x) where T = T[x, log(x)]
 
@@ -123,6 +121,8 @@ end
 function sample(g::δGamma, size = 1)
     [g.μ for i in 1:size]
 end
+
+splitgrad(g::δGamma, μ::AbstractVector) = μ[1], μ[2]
 
 function stdparam(::δGamma{T}, η::AbstractVector{T}) where T
     (η[2]-1) / -η[1]

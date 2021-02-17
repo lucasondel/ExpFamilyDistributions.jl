@@ -33,10 +33,9 @@ for T in [Float32, Float64]
         ETx = T[1, 2, 3, 7, 2]
         @test all(gradlognorm(n) .≈ ETx)
 
-        s1, s2, s3 = gradlognorm(n, vectorize = false)
+        s1, s2 = splitgrad(n, gradlognorm(n))
         @test size(s1) == (2,)
-        @test size(s2) == (2,)
-        @test size(s3) == (1,)
+        @test size(s2) == (2,2)
 
         @test all(mean(n) .≈ n.μ)
 
@@ -67,10 +66,9 @@ for T in [Float32, Float64]
         ETx = T[1, 2, 1, 4, 2]
         @test all(gradlognorm(n) .≈ ETx)
 
-        s1, s2, s3 = gradlognorm(n, vectorize = false)
+        s1, s2 = splitgrad(n, gradlognorm(n))
         @test size(s1) == (2,)
-        @test size(s2) == (2,)
-        @test size(s3) == (1,)
+        @test size(s2) == (2,2)
 
         @test all(mean(n) .≈ n.μ)
 
@@ -109,7 +107,7 @@ for T in [Float32, Float64]
         ETx = T[1, 2, 3, 6]
         @test all(gradlognorm(n) .≈ ETx)
 
-        s1, s2 = gradlognorm(n, vectorize = false)
+        s1, s2 = splitgrad(n, gradlognorm(n))
         @test size(s1) == (2,)
         @test size(s2) == (2,)
 
@@ -141,7 +139,7 @@ for T in [Float32, Float64]
         ETx = T[1, 2, 1, 4]
         @test all(gradlognorm(n) .≈ ETx)
 
-        s1, s2 = gradlognorm(n, vectorize = false)
+        s1, s2 = splitgrad(n, gradlognorm(n))
         @test size(s1) == (2,)
         @test size(s2) == (2,)
 
@@ -182,7 +180,7 @@ for T in [Float32, Float64]
         ETx = T[1/2, digamma(1) - log(2)]
         @test all(gradlognorm(g) .≈ ETx)
 
-        s1, s2 = gradlognorm(g, vectorize = false)
+        s1, s2 = splitgrad(g, gradlognorm(g))
         @test size(s1) == ()
         @test size(s2) == ()
 
@@ -216,7 +214,7 @@ for T in [Float32, Float64]
         ETx = T[1/2, log(1/2)]
         @test all(gradlognorm(g) .≈ ETx)
 
-        s1, s2 = gradlognorm(g, vectorize = false)
+        s1, s2 = splitgrad(g, gradlognorm(g))
         @test size(s1) == ()
         @test size(s2) == ()
 
@@ -260,7 +258,7 @@ for T in [Float32, Float64]
         ETx = digamma.(d.α) .- digamma(sum(d.α))
         @test all(gradlognorm(d) .≈ ETx)
 
-        s = gradlognorm(d, vectorize = false)
+        s = splitgrad(d, gradlognorm(d))
         @test size(s) == (3,)
 
         @test all(mean(d) .≈ d.α / sum(d.α))
@@ -293,7 +291,7 @@ for T in [Float32, Float64]
         ETx = log.(d.μ)
         @test all(gradlognorm(d) .≈ ETx)
 
-        s = gradlognorm(d, vectorize = false)
+        s = splitgrad(d, gradlognorm(d))
         @test size(s) == (3,)
 
         @test all(mean(d) .≈ d.μ)
@@ -341,11 +339,10 @@ for T in [Float32, Float64]
         @test eltype(gradlognorm(w)) == T
         @test all(gradlognorm(w) .≈ ETX)
 
-        s = gradlognorm(w, vectorize = false)
-        @test length(s) == 3
-        @test all(s[1] .≈ diag(vW))
-        @test all(s[2] .≈ vec_tril(vW))
-        @test s[3] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
+        s = splitgrad(w, gradlognorm(w))
+        @test length(s) == 2
+        @test all(s[1] .≈ vW)
+        @test s[2] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
 
         @test all(mean(w) .≈ v*W)
 
@@ -377,12 +374,11 @@ for T in [Float32, Float64]
         @test all(w.μ .≈ Matrix{T}(I,D,D))
 
         w = δWishart(W)
-
-        ETX = vcat(vec(w.μ), logdet(w.μ))
+        ETX = vcat(diag(w.μ), vec_tril(w.μ), logdet(w.μ))
         @test eltype(gradlognorm(w)) == T
         @test all(gradlognorm(w) .≈ ETX)
 
-        s = gradlognorm(w, vectorize = false)
+        s = splitgrad(w, gradlognorm(w))
         @test length(s) == 2
         @test all(s[1] .≈ w.μ)
         @test s[2] .≈ logdet(w.μ)
