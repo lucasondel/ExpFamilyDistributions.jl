@@ -93,8 +93,7 @@ function Base.getproperty(n::Normal{T,D}, sym::Symbol) where {T,D}
     if sym == :Σ
         Σ = zeros(T, D, D)
         trilΣ = inv_vec_tril(n.trilΣ)
-        Σ = trilΣ + trilΣ'
-        Σ[diagind(Σ)] = n.diagΣ
+        Σ = Diagonal(n.diagΣ) + trilΣ + trilΣ'
         return Σ
     end
     getfield(n, sym)
