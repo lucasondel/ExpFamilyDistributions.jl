@@ -144,7 +144,7 @@ function _splitgrad_normal(D, m)
     x = m[1:D]
     diag_xxᵀ = m[D+1:2*D]
     tril_xxᵀ = inv_vec_tril(m[2*D+1:end])
-    x, diagm(diag_xxᵀ) + tril_xxᵀ + tril_xxᵀ'
+    x, Diagonal(diag_xxᵀ) + tril_xxᵀ + tril_xxᵀ'
 end
 splitgrad(n::Normal{T,D}, m::AbstractVector) where {T,D} = _splitgrad_normal(D, m)
 
@@ -156,7 +156,7 @@ end
 
 function stdparam(::Normal{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ = η[1:D]
-    nhΛ = diagm(η[D+1:2*D])
+    nhΛ = Diagonal(η[D+1:2*D])
     tril_M = inv_vec_tril(η[2*D+1:end])
     nhΛ += T(.5)*tril_M + T(.5)*tril_M'
     Λ = Symmetric(-2 * nhΛ)
@@ -226,7 +226,7 @@ mutable struct NormalDiag{T,D} <: ExpFamilyDistribution
 end
 
 function Base.getproperty(n::NormalDiag, sym::Symbol)
-    sym == :Σ ? diagm(n.v) : getfield(n, sym)
+    sym == :Σ ? Diagonal(n.v) : getfield(n, sym)
 end
 
 # We redefine the show function to avoid allocating the full matrix
@@ -326,7 +326,7 @@ splitgrad(n::δNormal{T,D}, m::AbstractVector) where {T,D} = _splitgrad_normal(D
 
 function stdparam(::δNormal{T,D}, η::AbstractVector{T}) where {T,D}
     Λμ = η[1:D]
-    nhΛ = diagm(η[D+1:2*D])
+    nhΛ = Diagonal(η[D+1:2*D])
     tril_M = inv_vec_tril(η[2*D+1:end])
     nhΛ += T(.5)*tril_M + T(.5)*tril_M'
     Λ = Symmetric(-2 * nhΛ)

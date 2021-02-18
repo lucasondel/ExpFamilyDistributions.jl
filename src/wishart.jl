@@ -47,7 +47,7 @@ function Base.getproperty(w::Wishart{T,D}, sym::Symbol) where {T,D}
     if sym == :W
         W = zeros(T, D, D)
         trilW = inv_vec_tril(w.trilW)
-        W = diagm(w.diagW) + trilW + trilW'
+        W = Diagonal(w.diagW) + trilW + trilW'
         return W
     end
     getfield(w, sym)
@@ -106,7 +106,7 @@ end
 function _splitgrad_wishart(D, μ::AbstractVector)
     diag_∂₁ = μ[1:D]
     tril_∂₁ = inv_vec_tril(μ[D+1:end-1])
-    ∂₁ = Symmetric(diagm(diag_∂₁) + tril_∂₁ + tril_∂₁')
+    ∂₁ = Symmetric(Diagonal(diag_∂₁) + tril_∂₁ + tril_∂₁')
     ∂₁, μ[end]
 end
 splitgrad(w::Wishart{T,D}, μ::AbstractVector) where {T,D} = _splitgrad_wishart(D, μ)
@@ -114,7 +114,7 @@ splitgrad(w::Wishart{T,D}, μ::AbstractVector) where {T,D} = _splitgrad_wishart(
 function stdparam(::Wishart{T,D}, η::AbstractVector{T}) where {T,D}
     diag_invW = η[1:D]
     tril_invW = inv_vec_tril(η[D+1:end-1])
-    invW = Symmetric(diagm(diag_invW) + tril_invW + tril_invW')
+    invW = Symmetric(Diagonal(diag_invW) + tril_invW + tril_invW')
     W = inv(-2*invW)
     v = 2*η[end]
     W, v
@@ -172,7 +172,7 @@ splitgrad(w::δWishart{T,D}, μ::AbstractVector) where {T,D} = _splitgrad_wishar
 function stdparam(::δWishart{T,D}, η) where {T,D}
     diag_invW = η[1:D]
     tril_invW = inv_vec_tril(η[D+1:end-1])
-    invW = Symmetric(diagm(diag_invW) + tril_invW + tril_invW')
+    invW = Symmetric(Diagonal(diag_invW) + tril_invW + tril_invW')
     W = inv(-2*invW)
     v = 2*η[end]
     v*W
