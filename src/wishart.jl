@@ -88,9 +88,9 @@ function lognorm(w::Wishart{T,D}) where {T,D}
 end
 
 function naturalparam(w::Wishart{T,D}) where {T,D}
-    invW = inv(w.W)
-    η₁ = -T(.5) * diag(invW)
-    η₂ = -vec_tril(invW)
+    M = inv(w.W)
+    η₁ = -T(.5)*diag(M)
+    η₂ = vec_tril(M)
     η₃ = T(.5) * w.v
     vcat(η₁, η₂, η₃)
 end
@@ -112,10 +112,10 @@ end
 splitgrad(w::Wishart{T,D}, μ::AbstractVector) where {T,D} = _splitgrad_wishart(D, μ)
 
 function stdparam(::Wishart{T,D}, η::AbstractVector{T}) where {T,D}
-    diag_invW = η[1:D]
-    tril_invW = inv_vec_tril(η[D+1:end-1])
+    diag_invW = -T(2)*η[1:D]
+    tril_invW = -inv_vec_tril(η[D+1:end-1])
     invW = Symmetric(Diagonal(diag_invW) + tril_invW + tril_invW')
-    W = inv(-2*invW)
+    W = inv(invW)
     v = 2*η[end]
     W, v
 end
