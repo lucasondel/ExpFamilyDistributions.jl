@@ -90,7 +90,7 @@ end
 function naturalparam(w::Wishart{T,D}) where {T,D}
     M = inv(w.W)
     η₁ = -T(.5)*diag(M)
-    η₂ = vec_tril(M)
+    η₂ = -vec_tril(M)
     η₃ = T(.5) * w.v
     vcat(η₁, η₂, η₃)
 end
