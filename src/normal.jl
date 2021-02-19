@@ -143,7 +143,7 @@ function _splitgrad_normal(D, m)
     x = m[1:D]
     diag_xxᵀ = m[D+1:2*D]
     tril_xxᵀ = inv_vec_tril(m[2*D+1:end])
-    x, Diagonal(diag_xxᵀ) + tril_xxᵀ + tril_xxᵀ'
+    x, Symmetric(Diagonal(diag_xxᵀ) + tril_xxᵀ + tril_xxᵀ')
 end
 splitgrad(n::Normal{T,D}, m::AbstractVector) where {T,D} = _splitgrad_normal(D, m)
 
