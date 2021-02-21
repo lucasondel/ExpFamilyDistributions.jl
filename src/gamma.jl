@@ -1,137 +1,74 @@
 
 #######################################################################
+# Parameter of the Gamma distribution.
+
+function DefaultGammaParameter(T, α, β)
+    Parameter{T}(vcat(-β, α), identity, identity)
+end
+
+#######################################################################
 # Gamma distribution
 
 """
-    mutable struct Gamma{T} <: ExpFamilyDistribution
-        α
-        β
+    struct Gamma <: Distribution
+        param::Parameter{T} where T
     end
 
 Gamma distribution.
 
 # Constructors
 
-    Gamma{T}()
-    Gamma{T}(α, β)
+    Gamma(T=Float64)
+    Gamma(T=Float64, α, β)
 
 where `T` is the encoding type of the parameters. `α` and `β` are the
 parameters of the distribution.
 
 # Examples
 ```jldoctest
-julia> Gamma{Float32}()
+julia> Gamma(Float32)
 Gamma{Float32}:
   α = 1.0
   β = 1.0
 
-julia> Gamma{Float64}(1, 2)
-Gamma{Float64}:
+julia> Gamma(1, 2)
+Gamma:
   α = 1.0
   β = 2.0
 ```
 """
-mutable struct Gamma{T} <: ExpFamilyDistribution
-    α::T
-    β::T
+struct Gamma <:  Distribution
+    param::Parameter{T} where T
 
-    function Gamma{T}(α::T, β::T) where T<:Real
-       new{T}(α, β)
-   end
+    function Gamma(T, α, β)
+        new(DefaultGammaParameter(T, α, β))
+    end
 end
 
-function Base.show(io::IO, ::MIME"text/plain", g::Gamma)
-    println(io, typeof(g), ":")
-    println(io, "  α = ", g.α)
-    print(io, "  β = ", g.β)
-end
+Gamma(α::Real, β::Real) = Gamma(Float64, α, β)
+Gamma(T=Float64) = Gamma(T, 1, 1)
 
-Gamma{T}(α::Real, β::Real) where T = Gamma{T}(T(α), T(β))
-Gamma{T}() where T<:Real = Gamma{T}(1, 1)
+#######################################################################
+# Distribution interface
 
 basemeasure(::Gamma, x) = -log(x)
 
-gradlognorm(g::Gamma) = vcat(g.α / g.β, digamma(g.α) - log(g.β))
-lognorm(g::Gamma) = loggamma(g.α) - g.α * log.(g.β)
-naturalparam(g::Gamma) = vcat(-g.β, g.α)
-mean(g::Gamma) = g.α / g.β
+function lognorm(g::Gamma, η::AbstractVector = naturalform(g.param))
+    η₁, η₂ = η
+    #loggamma(g.α) - g.α * log.(g.β)
+    loggamma(η₂) - η₂ * log(-η₁)
+end
 
-function sample(g::Gamma, size = 1)
+function sample(g::Gamma, size)
     g_ = Dists.Gamma(g.α, 1/g.β)
     [Dists.rand(g_) for i in 1:size]
 end
 
 splitgrad(g::Gamma, μ::AbstractVector) = μ[1], μ[2]
 
-stats(::Gamma{T}, x) where T = T[x, log(x)]
+stats(::Gamma, x) = [x, log(x)]
 
-function stdparam(::Gamma{T}, η::AbstractVector{T}) where T
-    η[2], -η[1]
-end
-
-function update!(g::Gamma, η)
-    g.α, g.β = stdparam(g, η)
-   return g
-end
-
-#######################################################################
-# δ-Gamma distribution
-
-"""
-    mutable struct δGamma{T} <: δDistribution
-        μ
-    end
-
-The δ-equivaltent of the [`Gamma`](@ref) distribution.
-
-# Constructors
-
-    δGamma{T}()
-    δGamma{T}(μ)
-
-where `T` is the encoding type of the parameters and `μ` is the
-location of the Dirac δ pulse.
-
-# Examples
-```jldoctest
-julia> δGamma{Float32}()
-δGamma{Float32}:
-  μ = 1.0
-
-julia> δGamma{Float64}(2)
-δGamma{Float64}:
-  μ = 2.0
-```
-"""
-mutable struct δGamma{T} <: δDistribution
-    μ::T
-
-    function δGamma{T}(μ::Real) where T<:Real
-        μ ≥ 0 || throw(ArgumentError("Expected μ ≥ 0"))
-        new{T}(T(μ))
-    end
-end
-
-δGamma{T}() where T<:Real = δGamma{T}(1)
-
-function gradlognorm(g::δGamma; vectorize = true)
-    vectorize ? vcat(g.μ, log(g.μ)) : (g.μ, log(g.μ))
-end
-
-function sample(g::δGamma, size = 1)
-    [g.μ for i in 1:size]
-end
-
-splitgrad(g::δGamma, μ::AbstractVector) = μ[1], μ[2]
-
-function stdparam(::δGamma{T}, η::AbstractVector{T}) where T
-    (η[2]-1) / -η[1]
-end
-
-function update!(g::δGamma, η)
-    μ = stdparam(g, η)
-    μ ≥ 0 || throw(ArgumentError("Expected μ ≥ 0"))
-    g.μ = μ
-    g
+function stdparam(g::Gamma, η::AbstractVector{T} = naturalform(g.param)) where T
+    (α = η[2], β = -η[1])
 end
 

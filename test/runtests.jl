@@ -9,7 +9,7 @@ using Test
 DocMeta.setdocmeta!(ExpFamilyDistributions, :DocTestSetup,
                     :(using ExpFamilyDistributions), recursive = true)
 
-doctest(ExpFamilyDistributions)
+#doctest(ExpFamilyDistributions)
 
 #######################################################################
 # Normal
@@ -19,7 +19,7 @@ for T in [Float32, Float64]
         n = Normal(T[1, 2], Symmetric(T[2 0; 0 3]))
 
         η = T[1/2, 2/3, -1/4, -1/6, 0]
-        @test all(naturalparam(n) .≈ η)
+        @test all(naturalform(n.param) .≈ η)
 
         x = T[2, 3]
         Tx = T[2, 3, 4, 9, 6]
@@ -37,51 +37,17 @@ for T in [Float32, Float64]
         @test size(s1) == (2,)
         @test size(s2) == (2,2)
 
-        @test all(mean(n) .≈ n.μ)
-
-        n2 = Normal{T, 2}()
+        n2 = Normal{2}(T)
         @test kldiv(n, n) ≈  0
         @test kldiv(n, n2) >= 0
         @test kldiv(n2, n) >= 0
 
-        n2 = Normal(stdparam(n, naturalparam(n))...)
+        n2 = Normal(stdparam(n, naturalform(n.param))...)
         @test kldiv(n, n2) ≈  0
 
-        n2 = Normal{T, 2}()
-        update!(n, naturalparam(n2))
-        @test all(naturalparam(n) .≈ naturalparam(n2))
-
-        @test length(sample(n2)) == 1
+        @test length(sample(n2, 1)) == 1
         @test length(sample(n2, 10)) == 10
-    end
-end
-
-#######################################################################
-# δ-Normal
-
-for T in [Float32, Float64]
-    @testset "δNormal ($T)" begin
-        n = δNormal(T[1, 2])
-
-        ETx = T[1, 2, 1, 4, 2]
-        @test all(gradlognorm(n) .≈ ETx)
-
-        s1, s2 = splitgrad(n, gradlognorm(n))
-        @test size(s1) == (2,)
-        @test size(s2) == (2,2)
-
-        @test all(mean(n) .≈ n.μ)
-
-        prior = Normal{T,2}()
-        n2 = δNormal(stdparam(n, naturalparam(prior)))
-        @test all(n2.μ .≈ prior.μ)
-
-        prior = Normal{T,2}()
-        update!(n, naturalparam(prior))
-        @test all(n.μ .≈ prior.μ)
-
-        @test length(sample(n)) == 1
-        @test length(sample(n, 10)) == 10
+        @test eltype(sample(n2, 2)[1]) == T
     end
 end
 
@@ -93,7 +59,7 @@ for T in [Float32, Float64]
         n = NormalDiag(T[1, 2], T[2, 2])
 
         η = T[.5, 1, -.25, -.25]
-        @test all(naturalparam(n) .≈ η)
+        @test all(naturalform(n.param) .≈ η)
 
         x = T[2, 3]
         Tx = T[2, 3, 4, 9]
@@ -111,50 +77,17 @@ for T in [Float32, Float64]
         @test size(s1) == (2,)
         @test size(s2) == (2,)
 
-        @test all(mean(n) .≈ n.μ)
-
-        n2 = NormalDiag{T, 2}()
+        n2 = NormalDiag{2}(T)
         @test kldiv(n, n) ≈  0
         @test kldiv(n, n2) >= 0
         @test kldiv(n2, n) >= 0
 
-        n2 = NormalDiag(stdparam(n, naturalparam(n))...)
+        n2 = NormalDiag(stdparam(n, naturalform(n.param))...)
         @test kldiv(n, n2) ≈  0
 
-        update!(n, naturalparam(n2))
-        @test all(naturalparam(n) .≈ naturalparam(n2))
-
-        @test length(sample(n)) == 1
+        @test length(sample(n, 1)) == 1
         @test length(sample(n, 10)) == 10
-    end
-end
-
-#######################################################################
-# δ-NormalDiag
-
-for T in [Float32, Float64]
-    @testset "δNormalDiag ($T)" begin
-        n = δNormalDiag(T[1, 2])
-
-        ETx = T[1, 2, 1, 4]
-        @test all(gradlognorm(n) .≈ ETx)
-
-        s1, s2 = splitgrad(n, gradlognorm(n))
-        @test size(s1) == (2,)
-        @test size(s2) == (2,)
-
-        @test all(mean(n) .≈ n.μ)
-
-        prior = NormalDiag{T,2}()
-        n2 = δNormalDiag(stdparam(n, naturalparam(prior)))
-        @test all(n2.μ .≈ prior.μ)
-
-        prior = NormalDiag{T,2}()
-        update!(n, naturalparam(prior))
-        @test all(n.μ .≈ prior.μ)
-
-        @test length(sample(n)) == 1
-        @test length(sample(n, 10)) == 10
+        @test eltype(sample(n, 2)[1]) == T
     end
 end
 
@@ -163,10 +96,10 @@ end
 
 for T in [Float32, Float64]
     @testset "Gamma ($T)" begin
-        g = Gamma{T}(1, 2)
+        g = Gamma(T, 1, 2)
 
         η = T[-2, 1]
-        @test all(naturalparam(g) .≈ η)
+        @test all(naturalform(g.param) .≈ η)
 
         x = T(2)
         Tx = T[x, log(x)]
@@ -184,54 +117,15 @@ for T in [Float32, Float64]
         @test size(s1) == ()
         @test size(s2) == ()
 
-        @test all(mean(g) .≈ g.α / g.β)
-
-        g2 = Gamma{T}()
+        g2 = Gamma()
         @test kldiv(g, g) ≈  0
         @test kldiv(g, g2) >= 0
         @test kldiv(g2, g) >= 0
 
-        g2 = Gamma{T}(stdparam(g, naturalparam(g))...)
+        g2 = Gamma(T, stdparam(g, naturalform(g.param))...)
         @test kldiv(g, g2) ≈  0
 
-        update!(g, naturalparam(g2))
-        @test all(naturalparam(g) .≈ naturalparam(g2))
-
-        @test length(sample(g)) == 1
-        @test length(sample(g, 10)) == 10
-    end
-end
-
-#######################################################################
-# δ-Gamma
-
-for T in [Float32, Float64]
-    @testset "δGamma ($T)" begin
-        @test_throws ArgumentError δGamma{T}(-1)
-
-        g = δGamma{T}(1/2)
-
-        ETx = T[1/2, log(1/2)]
-        @test all(gradlognorm(g) .≈ ETx)
-
-        s1, s2 = splitgrad(g, gradlognorm(g))
-        @test size(s1) == ()
-        @test size(s2) == ()
-
-        @test all(mean(g) .≈ 1/2)
-
-        g2 = Gamma{T}(0.9, 0.9)
-        @test_throws ArgumentError update!(g, naturalparam(g2))
-
-        prior = Gamma{T}()
-        g2 = δGamma{T}(stdparam(g, naturalparam(prior)))
-        @test all(g2.μ .≈ (prior.α-1)/prior.β)
-
-        g2 = Gamma{T}()
-        update!(g, naturalparam(g2))
-        @test all(g.μ .≈ (g2.α-1)/g2.β)
-
-        @test length(sample(g)) == 1
+        @test length(sample(g, 1)) == 1
         @test length(sample(g, 10)) == 10
     end
 end
@@ -244,7 +138,7 @@ for T in [Float32, Float64]
         d = Dirichlet(T[1, 2, 3])
 
         η = T[1, 2, 3]
-        @test all(naturalparam(d) .≈ η)
+        @test all(naturalform(d.param) .≈ η)
 
         x = T[1, 2, 3]
         Tx = T[log(1), log(2), log(3)]
@@ -261,49 +155,15 @@ for T in [Float32, Float64]
         s = splitgrad(d, gradlognorm(d))
         @test size(s) == (3,)
 
-        @test all(mean(d) .≈ d.α / sum(d.α))
-
-        d2 = Dirichlet{T,3}()
+        d2 = Dirichlet{3}(T)
         @test kldiv(d, d) ≈  0
         @test kldiv(d, d2) >= 0
         @test kldiv(d2, d) >= 0
 
-        d2 = Dirichlet(stdparam(d, naturalparam(d)))
+        d2 = Dirichlet(stdparam(d, naturalform(d.param))...)
         @test kldiv(d, d2) ≈  0
 
-        update!(d, naturalparam(d2))
-        @test all(naturalparam(d) .≈ naturalparam(d2))
-
-        @test length(sample(d)) == 1
-        @test length(sample(d, 10)) == 10
-    end
-end
-
-#######################################################################
-# δ-Dirichlet
-
-for T in [Float32, Float64]
-    @testset "δDirichlet ($T)" begin
-        @test_throws ArgumentError δDirichlet(T[1, 2, 3])
-
-        d = δDirichlet(T[1/3, 1/3, 1/3])
-
-        ETx = log.(d.μ)
-        @test all(gradlognorm(d) .≈ ETx)
-
-        s = splitgrad(d, gradlognorm(d))
-        @test size(s) == (3,)
-
-        @test all(mean(d) .≈ d.μ)
-
-        d2 = Dirichlet(T[0.8, 0.1, 0.1])
-        @test_throws ArgumentError update!(d, naturalparam(d2))
-
-        d2 = Dirichlet(T[3, 2, 2])
-        update!(d, naturalparam(d2))
-        @test all(d.μ .≈ (d2.α .- 1) / sum(d2.α .- 1))
-
-        @test length(sample(d)) == 1
+        @test length(sample(d, 1)) == 1
         @test length(sample(d, 10)) == 10
     end
 end
@@ -315,15 +175,15 @@ for T in [Float32, Float64]
     @testset "Wishart($T)" begin
         X = Symmetric(T[1 0.5; 0.5 2])
 
-        D = 2
+        D = T(2)
         W = Symmetric(Matrix{T}(I, 2, 2))
-        v = 2
+        v = T(2)
         w = Wishart(W, 2)
 
         invW = inv(W)
         η = vcat(-.5 * diag(invW), vec_tril(invW), v/2)
-        @test eltype(naturalparam(w)) == T
-        @test all(naturalparam(w) .≈ η)
+        @test eltype(naturalform(w.param)) == T
+        @test all(naturalform(w.param) .≈ η)
 
         TX = T[diag(X)..., vec_tril(X)..., logdet(X)]
         @test all(stats(w, X) .≈ TX)
@@ -335,7 +195,7 @@ for T in [Float32, Float64]
         @test basemeasure(w, X) ≈ B
 
         vW = v*W
-        ETX = vcat(diag(vW), vec_tril(vW), sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W))
+        ETX = vcat(diag(vW), vec_tril(vW), sum([digamma(T(0.5)*(v+1-i)) for i in 1:D]) + D*T(log(2)) + logdet(W))
         @test eltype(gradlognorm(w)) == T
         @test all(gradlognorm(w) .≈ ETX)
 
@@ -344,52 +204,16 @@ for T in [Float32, Float64]
         @test all(s[1] .≈ vW)
         @test s[2] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
 
-        @test all(mean(w) .≈ v*W)
-
-        w2 = Wishart{T,2}()
+        w2 = Wishart{2}(T)
         @test kldiv(w, w) ≈  0
         @test kldiv(w, w2) >= 0
         @test kldiv(w2, w) >= 0
 
-        w2 = Wishart(stdparam(w, naturalparam(w))...)
+        w2 = Wishart(stdparam(w, naturalform(w.param))...)
         @test kldiv(w, w2) ≈  0
 
-        update!(w, naturalparam(w2))
-        @test all(naturalparam(w) .≈ naturalparam(w2))
-
-        @test length(sample(w)) == 1
+        @test length(sample(w, 1)) == 1
         @test length(sample(w, 10)) == 10
     end
 end
 
-#######################################################################
-# δ-Wishart
-
-for T in [Float32, Float64]
-    @testset "δWishart ($T)" begin
-        W = Symmetric(T[1 0.5; 0.5 2])
-        D = 2
-
-        w = δWishart{T,D}()
-        @test all(w.μ .≈ Matrix{T}(I,D,D))
-
-        w = δWishart(W)
-        ETX = vcat(diag(w.μ), vec_tril(w.μ), logdet(w.μ))
-        @test eltype(gradlognorm(w)) == T
-        @test all(gradlognorm(w) .≈ ETX)
-
-        s = splitgrad(w, gradlognorm(w))
-        @test length(s) == 2
-        @test all(s[1] .≈ w.μ)
-        @test s[2] .≈ logdet(w.μ)
-
-        @test all(mean(w) .≈ w.μ)
-
-        w2 = Wishart{T,2}()
-        update!(w, naturalparam(w2))
-        @test all(w.μ .≈ w2.v*w2.W)
-
-        @test length(sample(w)) == 1
-        @test length(sample(w, 10)) == 10
-    end
-end

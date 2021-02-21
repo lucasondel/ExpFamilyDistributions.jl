@@ -1,13 +1,81 @@
 
 #######################################################################
-# ExpFamilyDistribution interface
+# Parameters interface.
 
 """
-    abstract type ExpFamilyDistribution end
+    struct Parameter{T}
+        ξ::AbstractVector{T}
+        ξ_to_η::Function
+        η_to_ξ::Function
+    end
+
+Object containing the parameter of a distribution. `T` is
+the numerical type of how are stored the parameters (`Float32`,
+`Float64`, ...). `ξ` is a vector storing the parameters. `ξ_to_η` and
+`η_to_ξ` are functions to convert the stored parameters to their
+natural form and vice versa.
+"""
+struct Parameter{T}
+    ξ::AbstractVector{T}
+    ξ_to_η::Function
+    η_to_ξ::Function
+end
+
+"""
+    naturalform(param[, ξ])
+
+Returns the natural form of the parameters stored in `ξ`. If `ξ` is not
+provided, the function will use `realform(param)` instead.
+
+See also: [`stdform`](@ref), [`realform`](@ref).
+"""
+naturalform(param, ξ = param.ξ) = param.ξ_to_η(ξ)
+
+"""
+    realform(param[, η])
+
+Returns the vector of parameters as stored in `param`. If the natural
+parameters `η` is provided, returns their real form.
+
+See also: [`stdform`](@ref), [`naturalform`](@ref).
+"""
+realform(param, η = naturalform(param)) = param.η_to_ξ(η)
+
+#######################################################################
+# Distribution interface
+
+"""
+    abstract type Distribution end
 
 Supertype for distributions member of the exponential family.
 """
-abstract type ExpFamilyDistribution end
+abstract type Distribution end
+
+function Base.getproperty(dist::Distribution, sym::Symbol)
+    # Check first the fields to avoid computing the std-params for
+    # every property access.
+    if sym in fieldnames(typeof(dist))
+        return getfield(dist, sym)
+    end
+
+    param = stdparam(dist)
+    if sym ∈ keys(param)
+        return getfield(param, sym)
+    end
+
+    # Raise an error.
+    getfield(dist, sym)
+end
+
+function Base.show(io::IO, ::MIME"text/plain", dist::Distribution)
+    print(io, typeof(dist), ":")
+
+    params = stdparam(dist)
+    for (prop, val) in zip(keys(params), params)
+        println()
+        print(io, " $prop = $val")
+    end
+end
 
 """
     loglikelihood(p, x)
@@ -33,17 +101,17 @@ basemeasure
 Returns the gradient of the log-normalizer of `p` w.r.t. its natural
 parameters.
 """
-gradlognorm
+gradlognorm(p) = FD.gradient(η -> lognorm(p, η), naturalform(p.param))
 
 """
-    kldiv(q::T, p::T[, μ = gradlognorm(q)]) where T<:ExpFamilyDistribution
+    kldiv(q::T, p::T[, μ = gradlognorm(q)]) where T<:Distribution
 
 Compute the KL-divergence between two distributions of the same type
 (i.e. `kldiv(Normal, Normal)`, `kldiv(Dirichlet, Dirichlet)`, ...). You
 can specify directly the expectation of the sufficient statistics `μ`.
 """
-function kldiv(q::T, p::T; μ = gradlognorm(q)) where T<:ExpFamilyDistribution
-    q_η, p_η = naturalparam(q), naturalparam(p)
+function kldiv(q::T, p::T; μ = gradlognorm(q)) where T<:Distribution
+    q_η, p_η = naturalform(q.param), naturalform(p.param)
     lognorm(p) - lognorm(q) - dot(p_η .- q_η, μ)
 end
 
@@ -55,21 +123,7 @@ Returns the log-normalization constant of `p`.
 lognorm
 
 """
-    mean(p)
-
-Returns the mean of the distribution `p`.
-"""
-mean
-
-"""
-    naturalparam(p)
-
-Returns the natural parameters of `p`.
-"""
-naturalparam
-
-"""
-    sample(p[, n=1])
+    sample(p, n=1)
 
 Draw `n` samples from the distribution `p`.
 """
@@ -99,9 +153,3 @@ Returns the standard parameters corresponding to the natural parameters
 """
 stdparam
 
-"""
-    update!(p, η)
-
-Updates the parameters given a new natural parameter `η`.
-"""
-update!
