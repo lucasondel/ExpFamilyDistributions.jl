@@ -32,33 +32,30 @@ positive-definite matrix.
 # Examples
 ```jldoctest
 julia> Normal{2}(Float32)
-Normal{Float32,2}:
+Normal{2}:
   μ = Float32[0.0, 0.0]
   Σ = Float32[1.0 0.0; 0.0 1.0]
 
 julia> Normal([1.0, 1.0])
-Normal{Float64,2}:
+Normal{2}:
   μ = [1.0, 1.0]
   Σ = [1.0 0.0; 0.0 1.0]
 
 julia> Normal([1.0, 1.0], [2.0 0.5; 0.5 1.0])
-Normal{Float64,2}:
+Normal{2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.5; 0.5 1.0]
 ```
 """
 struct Normal{D} <: Distribution
     param::Parameter{T} where T
-
-    function Normal(μ, Σ) where T
-        if size(μ) ≠ size(Σ)[1] ≠ size(Σ)[2]
-            error("Dimension mismatch: size(μ) = $(size(μ)) size(Σ) = $(size(Σ))")
-        end
-        new{length(μ)}(DefaultNormalParameter(μ, Σ))
-    end
 end
 
-function Normal{D}(T=Float64) where {D}
+function Normal(μ, Σ) where T
+    Normal{length(μ)}(DefaultNormalParameter(μ, Σ))
+end
+
+function Normal{D}(T::Type = Float64) where {D}
     Normal(zeros(T, D), Matrix{T}(I, D, D))
 end
 

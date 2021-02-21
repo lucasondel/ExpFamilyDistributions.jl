@@ -9,7 +9,7 @@ using Test
 DocMeta.setdocmeta!(ExpFamilyDistributions, :DocTestSetup,
                     :(using ExpFamilyDistributions), recursive = true)
 
-#doctest(ExpFamilyDistributions)
+doctest(ExpFamilyDistributions)
 
 #######################################################################
 # Normal

@@ -27,7 +27,7 @@ dimension of the support and `α` is a vector of parameters.
 
 # Examples
 ```jldoctest
-julia> Dirichlet{2}(T)
+julia> Dirichlet{2}(Float32)
 Dirichlet{2}:
   α = Float32[1.0, 1.0]
 
@@ -38,13 +38,10 @@ Dirichlet{3}:
 """
 struct Dirichlet{D} <: Distribution
     param::Parameter{T} where T
-
-    function Dirichlet(α::AbstractVector)
-        new{length(α)}(DefaultDirichletParameter(α))
-    end
 end
 
-Dirichlet{D}(T=Float64) where D = Dirichlet(ones(T, D))
+Dirichlet(α::AbstractVector) = Dirichlet{length(α)}(DefaultDirichletParameter(α))
+Dirichlet{D}(T::Type = Float64) where D = Dirichlet(ones(T, D))
 
 #######################################################################
 # Distribution interface.

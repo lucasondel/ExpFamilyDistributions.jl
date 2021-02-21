@@ -45,9 +45,11 @@ Wishart{2}:
 struct Wishart{D} <: Distribution
     param::Parameter{T} where T
 
-    function Wishart(W::AbstractMatrix{T}, v::Real) where T<:Real
-        new{size(W, 1)}(DefaultWishartParameter(W, v))
-    end
+
+end
+
+function Wishart(W::AbstractMatrix{T}, v::Real) where T<:Real
+    Wishart{size(W, 1)}(DefaultWishartParameter(W, v))
 end
 
 function Wishart(W::AbstractMatrix, v)
@@ -56,7 +58,7 @@ function Wishart(W::AbstractMatrix, v)
 end
 Wishart(W::AbstractMatrix) = Wishart(W, size(W,1))
 
-function Wishart{D}(T=Float64) where D
+function Wishart{D}(T::Type = Float64) where D
     W = Symmetric(Matrix{T}(I,D,D))
     v = T(D)
     Wishart(W, v)

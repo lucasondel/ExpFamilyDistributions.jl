@@ -22,13 +22,11 @@ Each subtype of `ExpFamilyDistribution` implements the following interface:
 * [`kldiv`](@ref)
 * [`loglikelihood`](@ref)
 * [`lognorm`](@ref)
-* [`mean`](@ref)
 * [`naturalparam`](@ref)
 * [`sample`](@ref)
 * [`splitgrad`](@ref)
 * [`stats`](@ref)
 * [`stdparam`](@ref)
-* [`update!`](@ref)
 
 ```@docs
 basemeasure
@@ -36,13 +34,11 @@ gradlognorm
 kldiv
 lognorm
 loglikelihood
-mean
 naturalparam
 sample
 splitgrad
 stats
 stdparam
-update!
 ```
 
 ## Multivariate Normal distribution

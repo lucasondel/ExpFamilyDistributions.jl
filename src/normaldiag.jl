@@ -32,35 +32,31 @@ the covariance matrix.
 # Examples
 ```jldoctest
 julia> NormalDiag{2}(Float32)
-NormalDiag{Float32,2}
+NormalDiag{2}:
   μ = Float32[0.0, 0.0]
-  v = Float32[1.0, 1.0]
+  Σ = Float32[1.0 0.0; 0.0 1.0]
 
 julia> NormalDiag([1.0, 1.0])
-NormalDiag{Float64,2}
+NormalDiag{2}:
   μ = [1.0, 1.0]
-  v = [1.0, 1.0]
+  Σ = [1.0 0.0; 0.0 1.0]
 
 julia> NormalDiag([1.0, 1.0], [2.0, 1.0])
-NormalDiag{Float64,2}
+NormalDiag{2}:
   μ = [1.0, 1.0]
-  v = [2.0, 1.0]
+  Σ = [2.0 0.0; 0.0 1.0]
 ```
 """
 struct NormalDiag{D} <: Distribution
     param::Parameter{T} where T
-
-    function NormalDiag(μ::AbstractVector{T}, v::AbstractVector{T}) where T
-        if size(μ) ≠ size(v)
-            error("Dimension mismatch: size(μ) = $(size(μ)) size(v) = $(size(v))")
-        end
-        new{length(μ)}(DefaultNormalDiagParameter(μ, v))
-    end
 end
 
+function NormalDiag(μ::AbstractVector{T}, v::AbstractVector{T}) where T
+    NormalDiag{length(μ)}(DefaultNormalDiagParameter(μ, v))
+end
 NormalDiag(μ::AbstractVector) = NormalDiag(μ, ones(eltype(μ), length(μ)))
 NormalDiag(μ::AbstractVector, Σ::Diagonal) = NormalDiag(μ, diag(Σ))
-NormalDiag{D}(T=Float64) where D = NormalDiag(zeros(T, D), ones(T, D))
+NormalDiag{D}(T::Type = Float64) where D = NormalDiag(zeros(T, D), ones(T, D))
 
 #######################################################################
 # Distribution interface.

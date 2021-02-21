@@ -27,7 +27,7 @@ parameters of the distribution.
 # Examples
 ```jldoctest
 julia> Gamma(Float32)
-Gamma{Float32}:
+Gamma:
   α = 1.0
   β = 1.0
 
@@ -39,14 +39,11 @@ Gamma:
 """
 struct Gamma <:  Distribution
     param::Parameter{T} where T
-
-    function Gamma(T, α, β)
-        new(DefaultGammaParameter(T, α, β))
-    end
 end
 
+Gamma(T, α, β) = Gamma(DefaultGammaParameter(T, α, β))
 Gamma(α::Real, β::Real) = Gamma(Float64, α, β)
-Gamma(T=Float64) = Gamma(T, 1, 1)
+Gamma(T::Type = Float64) = Gamma(T, 1, 1)
 
 #######################################################################
 # Distribution interface

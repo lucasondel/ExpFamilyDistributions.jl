@@ -68,12 +68,11 @@ function Base.getproperty(dist::Distribution, sym::Symbol)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", dist::Distribution)
-    print(io, typeof(dist), ":")
+    println(io, typeof(dist), ":")
 
     params = stdparam(dist)
     for (prop, val) in zip(keys(params), params)
-        println()
-        print(io, " $prop = $val")
+        println(io, "  $prop = $val")
     end
 end
 
