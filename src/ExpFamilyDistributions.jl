@@ -4,7 +4,6 @@ module ExpFamilyDistributions
 # Dependencies
 using LinearAlgebra
 using SpecialFunctions: loggamma, digamma
-using PDMats
 import Distributions
 const Dists = Distributions
 import ForwardDiff

@@ -3,7 +3,9 @@
     vec_tril(M)
 
 Returns the vectorized low-triangular part (diagonal not included) of
-the matrix. See [`inv_vec_tril`](@ref).
+the matrix.
+
+See also [`inv_vec_tril`](@ref), [`matrix`](@ref).
 """
 function vec_tril(M::AbstractMatrix)
     D, _ = size(M)
@@ -14,7 +16,9 @@ end
     inv_vec_tril(v)
 
 Returns a lower triangular matrix from a vectorized form. The diagonal
-of the matrix is set to 0. See [`vec_tril`](@ref).
+of the matrix is set to 0.
+
+See also [`vec_tril`](@ref), [`matrix`](@ref)
 """
 function inv_vec_tril(v::AbstractVector)
     # Determine the dimension of the matrix from the length of the
@@ -38,6 +42,8 @@ end
 
 Returns a symmetrix matrix from the diagonal and the "tril" form of a
 matrix.
+
+See also [`vec_tril`](@ref), [`inv_vec_tril`](@ref)
 """
 function matrix(diagM::AbstractVector{T}, trilM::AbstractVector{T}) where T
     utrilM = inv_vec_tril(trilM)

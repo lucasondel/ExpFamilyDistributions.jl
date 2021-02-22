@@ -27,7 +27,7 @@ end
 Returns the natural form of the parameters stored in `ξ`. If `ξ` is not
 provided, the function will use `realform(param)` instead.
 
-See also: [`stdform`](@ref), [`realform`](@ref).
+See also: [`realform`](@ref).
 """
 naturalform(param, ξ = param.ξ) = param.ξ_to_η(ξ)
 
@@ -37,7 +37,7 @@ naturalform(param, ξ = param.ξ) = param.ξ_to_η(ξ)
 Returns the vector of parameters as stored in `param`. If the natural
 parameters `η` is provided, returns their real form.
 
-See also: [`stdform`](@ref), [`naturalform`](@ref).
+See also: [`naturalform`](@ref).
 """
 realform(param, η = naturalform(param)) = param.η_to_ξ(η)
 

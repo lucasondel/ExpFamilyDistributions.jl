@@ -12,7 +12,7 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Exponential Family Distributions" => "expfamily.md",
-        "δ-Distributions" => "delta.md",
+        "Distributions" => "dists.md",
     ],
 )
 deploydocs(
