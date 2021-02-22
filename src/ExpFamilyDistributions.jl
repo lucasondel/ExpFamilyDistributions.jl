@@ -8,6 +8,7 @@ import Distributions
 const Dists = Distributions
 import ForwardDiff
 const FD = ForwardDiff
+using PDMats
 
 #######################################################################
 # Utilities
