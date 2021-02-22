@@ -99,8 +99,8 @@ end
 function splitgrad(w::Wishart{D}, μ::AbstractVector{T}) where {T,D}
     diag_∂₁ = μ[1:D]
     tril_∂₁ = μ[D+1:end-1]
-    ∂₁ = matrix(diag_∂₁, T(.5)*tril_∂₁)
-    ∂₁, μ[end]
+    #∂₁ = matrix(diag_∂₁, T(.5)*tril_∂₁)
+    diag_∂₁, tril_∂₁, μ[end]
 end
 
 function stdparam(w::Wishart{D},

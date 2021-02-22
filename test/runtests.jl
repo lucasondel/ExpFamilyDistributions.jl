@@ -33,9 +33,10 @@ for T in [Float32, Float64]
         ETx = T[1, 2, 3, 7, 2]
         @test all(gradlognorm(n) .≈ ETx)
 
-        s1, s2 = splitgrad(n, gradlognorm(n))
+        s1, s2, s3 = splitgrad(n, gradlognorm(n))
         @test size(s1) == (2,)
-        @test size(s2) == (2,2)
+        @test size(s2) == (2,)
+        @test size(s3) == (1,)
 
         n2 = Normal{2}(T)
         @test kldiv(n, n) ≈  0
@@ -200,9 +201,10 @@ for T in [Float32, Float64]
         @test all(gradlognorm(w) .≈ ETX)
 
         s = splitgrad(w, gradlognorm(w))
-        @test length(s) == 2
-        @test all(s[1] .≈ vW)
-        @test s[2] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
+        @test length(s) == 3
+        @test all(s[1] .≈ diag(vW))
+        @test all(s[2] .≈ vec_tril(vW))
+        @test s[3] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
 
         w2 = Wishart{2}(T)
         @test kldiv(w, w) ≈  0

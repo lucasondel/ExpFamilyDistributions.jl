@@ -89,10 +89,7 @@ function sample(n::Normal{D}, size) where D
     [μ + L*randn(T, D) for i in 1:size]
 end
 
-function splitgrad(n::Normal{D}, m) where D
-    x, diag_xxᵀ, tril_xxᵀ = _unpack(D, m)
-    x, matrix(diag_xxᵀ, tril_xxᵀ)
-end
+splitgrad(n::Normal{D}, m) where D = _unpack(D, m)
 
 function stats(::Normal{D}, x::AbstractVector) where D
     length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
