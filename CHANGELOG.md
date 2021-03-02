@@ -2,6 +2,15 @@
 
 ## 0.8.0
 
+* added an abstract type for each distribution to allow easy extension
+  of the pre-defined distributions.
+* Wishart natural parameters and sufficient statistics are more compact
+  (Symmetric matrices are replaced by a their diagonal and the lower
+  triangular parts)
+* each distribution can have arbitrary parameterization through the
+  `Parameter` object.
+* computation are differentiable (with respect to Zygote) to allow use
+  of this package with automatic differentiation packages.
 * added the function `splitgrad` to replace the `vectorize` parameter
   in the `gradlognorm` function.
 
