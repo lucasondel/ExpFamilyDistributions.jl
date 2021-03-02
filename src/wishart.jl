@@ -1,5 +1,15 @@
 
 #######################################################################
+# Super-type
+
+"""
+    AbstractWishart{D} <: Distribution
+
+Abstract type for Wishart distribution implementations.
+"""
+abstract type AbstractWishart{D} <: Distribution end
+
+#######################################################################
 # Parameter of the Gamma distribution.
 
 function DefaultWishartParameter(W, v)
@@ -15,7 +25,7 @@ end
 # Wishart distribution
 
 """
-    struct Wishart{D} <: Distribution
+    struct Wishart{D} <: AbstractWishart{D}
         param
     end
 
@@ -42,7 +52,7 @@ Wishart{2}:
   v = 2.0
 ```
 """
-struct Wishart{D} <: Distribution
+struct Wishart{D} <: AbstractWishart{D}
     param::Parameter{T} where T
 
 

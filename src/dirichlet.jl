@@ -1,7 +1,16 @@
 
 #######################################################################
-# Parameter of the Dirichlet distribution.
+# Super-type
 
+"""
+    AbstractDirichlet{D} <: Distribution
+
+Abstract type for Dirichlet distribution implementations.
+"""
+abstract type AbstractDirichlet{D} <: Distribution end
+
+#######################################################################
+# Parameter of the Dirichlet distribution.
 
 function DefaultDirichletParameter(α::AbstractVector{T}) where T
     Parameter{T}(α, identity, identity)
@@ -11,7 +20,7 @@ end
 # Dirichlet distribution
 
 """
-    struct Dirichlet{D} <: Distribution
+    struct Dirichlet{D} <: AbstractDirichlet{D}
         param
     end
 
@@ -36,7 +45,7 @@ Dirichlet{3}:
   α = [1.0, 2.0, 3.0]
 ```
 """
-struct Dirichlet{D} <: Distribution
+struct Dirichlet{D} <: AbstractDirichlet{D}
     param::Parameter{T} where T
 end
 

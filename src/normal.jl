@@ -1,5 +1,15 @@
 
 #######################################################################
+# Super-type
+
+"""
+    AbstractNormal{D} <: Distribution
+
+Abstract type for Normal distribution implementations.
+"""
+abstract type AbstractNormal{D} <: Distribution end
+
+#######################################################################
 # Normal distribution parameters.
 
 
@@ -14,7 +24,7 @@ end
 # Normal distribution with full covariance matrix
 
 """
-    struct Normal{D} <: Distribution
+    struct Normal{D} <: AbstractNormal{D}
         param::Parameter{T} where T
     end
 
@@ -47,7 +57,7 @@ Normal{2}:
   Σ = [2.0 0.5; 0.5 1.0]
 ```
 """
-struct Normal{D} <: Distribution
+struct Normal{D} <: AbstractNormal{D}
     param::Parameter{T} where T
 end
 

@@ -1,5 +1,15 @@
 
 #######################################################################
+# Super-type
+
+"""
+    AbstractGamma <: Distribution
+
+Abstract type for Gamma distribution implementations.
+"""
+abstract type AbstractGamma <: Distribution end
+
+#######################################################################
 # Parameter of the Gamma distribution.
 
 function DefaultGammaParameter(T, α, β)
@@ -10,7 +20,7 @@ end
 # Gamma distribution
 
 """
-    struct Gamma <: Distribution
+    struct Gamma <: AbstractGamma
         param::Parameter{T} where T
     end
 
@@ -37,7 +47,7 @@ Gamma:
   β = 2.0
 ```
 """
-struct Gamma <:  Distribution
+struct Gamma <: AbstractGamma
     param::Parameter{T} where T
 end
 

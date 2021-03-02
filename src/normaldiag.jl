@@ -1,5 +1,16 @@
 
 #######################################################################
+# Super-type
+
+"""
+    AbstractNormalDiag{D} <: Distribution
+
+Abstract type for Normal distribution (with diagonal covariance matrix)
+implementations.
+"""
+abstract type AbstractNormalDiag{D} <: Distribution end
+
+#######################################################################
 # Parameter of the Normal distribution with diagonal covariance matrix.
 
 
@@ -14,7 +25,7 @@ end
 # Normal distribution with diagonal covariance matrix
 
 """
-    struct NormalDiag{D} <: Distribution
+    struct NormalDiag{D} <: AbstractNormalDiag{D}
         param::Parameter{T}
     end
 
@@ -47,7 +58,7 @@ NormalDiag{2}:
   Σ = [2.0 0.0; 0.0 1.0]
 ```
 """
-struct NormalDiag{D} <: Distribution
+struct NormalDiag{D} <: AbstractNormalDiag{D}
     param::Parameter{T} where T
 end
 
