@@ -42,18 +42,23 @@ include("efdinterface.jl")
 #######################################################################
 # Distributions
 
+export AbstractNormal
 export Normal
 include("normal.jl")
 
+export AbstractNormalDiag
 export NormalDiag
 include("normaldiag.jl")
 
+export AbstractGamma
 export Gamma
 include("gamma.jl")
 
+export AbstractDirichlet
 export Dirichlet
 include("dirichlet.jl")
 
+export AbstractWishart
 export Wishart
 include("wishart.jl")
 
