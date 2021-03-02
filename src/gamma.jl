@@ -58,24 +58,25 @@ Gamma(T::Type = Float64) = Gamma(T, 1, 1)
 #######################################################################
 # Distribution interface
 
-basemeasure(::Gamma, x) = -log(x)
+basemeasure(::AbstractGamma, x) = -log(x)
 
-function lognorm(g::Gamma, η::AbstractVector = naturalform(g.param))
+function lognorm(g::AbstractGamma, η::AbstractVector = naturalform(g.param))
     η₁, η₂ = η
     #loggamma(g.α) - g.α * log.(g.β)
     loggamma(η₂) - η₂ * log(-η₁)
 end
 
-function sample(g::Gamma, size)
+function sample(g::AbstractGamma, size)
     g_ = Dists.Gamma(g.α, 1/g.β)
     [Dists.rand(g_) for i in 1:size]
 end
 
-splitgrad(g::Gamma, μ::AbstractVector) = μ[1], μ[2]
+splitgrad(g::AbstractGamma, μ::AbstractVector) = μ[1], μ[2]
 
 stats(::Gamma, x) = [x, log(x)]
 
-function stdparam(g::Gamma, η::AbstractVector{T} = naturalform(g.param)) where T
+function stdparam(g::AbstractGamma,
+                  η::AbstractVector{T} = naturalform(g.param)) where T
     (α = η[2], β = -η[1])
 end
 

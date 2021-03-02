@@ -72,30 +72,29 @@ NormalDiag{D}(T::Type = Float64) where D = NormalDiag(zeros(T, D), ones(T, D))
 #######################################################################
 # Distribution interface.
 
-function basemeasure(::NormalDiag{D}, x::AbstractVector{T}) where {T,D}
-    length(x) == D || throw(DimensionMismatch("expected input dimension $D got $(length(x))"))
+function basemeasure(::AbstractNormalDiag, x::AbstractVector{T}) where T
     -T(.5) * length(x) * log(T(2π))
 end
 
-function lognorm(n::NormalDiag{D},
+function lognorm(n::AbstractNormalDiag{D},
                  η::AbstractVector{T} = naturalform(n.param)) where {T,D}
     η₁, η₂ = η[1:D], η[D+1:end]
     -T(.5) * sum(log.(-T(2)*η₂)) -T(.25) * dot(η₁, (1 ./ η₂) .* η₁)
 end
 
-function sample(n::NormalDiag{D}, size) where D
+function sample(n::AbstractNormalDiag{D}, size) where D
     μ, Σ = stdparam(n)
     T = eltype(μ)
     σ = sqrt.(diag(Σ))
     [μ + σ .* randn(T, D) for i in 1:size]
 end
 
-stats(::NormalDiag, x) = vcat(x, x.^2)
+stats(::AbstractNormalDiag, x) = vcat(x, x.^2)
 
 _splitgrad_normaldiag(D, m) = m[1:D], m[D+1:end]
-splitgrad(n::NormalDiag{D}, m) where D = m[1:D], m[D+1:end]
+splitgrad(n::AbstractNormalDiag{D}, m) where D = m[1:D], m[D+1:end]
 
-function stdparam(n::NormalDiag{D},
+function stdparam(n::AbstractNormalDiag{D},
                   η::AbstractVector{T} = naturalform(n.param)) where {T,D}
     Λμ, nhλ = η[1:D], η[D+1:end]
     v = 1 ./ (-T(2) * nhλ)

@@ -55,24 +55,24 @@ Dirichlet{D}(T::Type = Float64) where D = Dirichlet(ones(T, D))
 #######################################################################
 # Distribution interface.
 
-basemeasure(::Dirichlet, x::AbstractVector) = -log.(x)
+basemeasure(::AbstractDirichlet, x::AbstractVector) = -log.(x)
 
-function lognorm(d::Dirichlet, η::AbstractVector = naturalform(d.param))
+function lognorm(d::AbstractDirichlet, η::AbstractVector = naturalform(d.param))
     sum(loggamma.(η)) - loggamma(sum(η))
 end
 
-function sample(d::Dirichlet, size)
+function sample(d::AbstractDirichlet, size)
     α = stdparam(d)
     d_ = Dists.Dirichlet(d.α)
     [Dists.rand(d_) for i in 1:size]
 end
 
 # vectorization is effect less
-splitgrad(d::Dirichlet, μ) = identity(μ)
+splitgrad(d::AbstractDirichlet, μ) = identity(μ)
 
-stats(::Dirichlet, x::AbstractVector) = log.(x)
+stats(::AbstractDirichlet, x::AbstractVector) = log.(x)
 
-function stdparam(d::Dirichlet, η::AbstractVector = naturalform(d.param))
+function stdparam(d::AbstractDirichlet, η::AbstractVector = naturalform(d.param))
     (α = η,)
 end
 

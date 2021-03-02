@@ -54,8 +54,6 @@ Wishart{2}:
 """
 struct Wishart{D} <: AbstractWishart{D}
     param::Parameter{T} where T
-
-
 end
 
 function Wishart(W::AbstractMatrix{T}, v::Real) where T<:Real
@@ -77,43 +75,36 @@ end
 #######################################################################
 # Distribution interface
 
-function basemeasure(w::Wishart, X::Symmetric)
+function basemeasure(w::AbstractWishart, X::Symmetric)
     D = size(X, 1)
     -.5*(D-1)*logdet(X) - .25*D*(D-1)log(pi)
 end
 
-function lognorm(w::Wishart{D},
+function lognorm(w::AbstractWishart{D},
                  η::AbstractVector{T} = naturalform(w.param)) where {T,D}
     diagM = η[1:D]
     trilM = η[D+1:end-1]
     M = -T(2)*matrix(diagM, T(.5)*trilM)
     v = T(2)*η[end]
-    #W = inv(-T(2)*M)
-    #v = T(2)*η[end]
-    #(W = W, v = v)
 
     retval = T(0.5)*(-v*logdet(M) + v*D*T(log(2)))
     retval += sum([loggamma(T(0.5)*(v+1-i)) for i in 1:D])
-
-    #W, v = stdparam(w)
-    #T(.5)*(v*logdet(W) +  v*D*T(log(2)) ) + sum([loggamma(T((v+1-i)/2)) for i in 1:D])
 end
 
-stats(w::Wishart, X::AbstractMatrix) = vcat(diag(X), vec_tril(X), logdet(X))
+stats(w::AbstractWishart, X::AbstractMatrix) = vcat(diag(X), vec_tril(X), logdet(X))
 
-function sample(w::Wishart, size = 1)
+function sample(w::AbstractWishart, size = 1)
     w_ = Dists.Wishart(w.v, PDMat(w.W))
     [rand(w_) for i in 1:size]
 end
 
-function splitgrad(w::Wishart{D}, μ::AbstractVector{T}) where {T,D}
+function splitgrad(w::AbstractWishart{D}, μ::AbstractVector{T}) where {T,D}
     diag_∂₁ = μ[1:D]
     tril_∂₁ = μ[D+1:end-1]
-    #∂₁ = matrix(diag_∂₁, T(.5)*tril_∂₁)
     diag_∂₁, tril_∂₁, μ[end]
 end
 
-function stdparam(w::Wishart{D},
+function stdparam(w::AbstractWishart{D},
                   η::AbstractVector{T} = naturalform(w.param)) where {T,D}
     diagM = η[1:D]
     trilM = η[D+1:end-1]
