@@ -1,6 +1,6 @@
 # Exponential Family Distributions
 
-## Expoential Family
+## Exponential Family
 All the distributions provided by this package are members of the
 exponential family of distribution, i.e. they have the follotwing
 canonical form:
