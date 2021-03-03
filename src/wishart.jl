@@ -18,15 +18,15 @@ function DefaultWishartParameter(W, v)
     η₁ = -T(.5)*diag(M)
     η₂ = -vec_tril(M)
     η₃ = T(.5)*v
-    Parameter{T}(vcat(η₁, η₂, η₃), identity, identity)
+    Parameter(vcat(η₁, η₂, η₃), identity, identity)
 end
 
 #######################################################################
 # Wishart distribution
 
 """
-    struct Wishart{D} <: AbstractWishart{D}
-        param
+    struct Wishart{P<:Parameter,D} <: AbstractWishart{D}
+        param::P
     end
 
 Wishart distribution.
@@ -41,41 +41,27 @@ positive definite DxD matrix.
 
 # Examples
 ```jldoctest
-julia> Wishart{2}(Float32)
-Wishart{2}:
-  W = Float32[1.0 0.0; 0.0 1.0]
-  v = 2.0
-
-julia> Wishart([1 0.5; 0.5 1])
-Wishart{2}:
+julia> Wishart([1 0.5; 0.5 1], 2)
+Wishart{Parameter{Array{Float64,1}},2}:
   W = [1.0 0.5; 0.5 1.0]
   v = 2.0
 ```
 """
-struct Wishart{D} <: AbstractWishart{D}
-    param::Parameter{T} where T
-end
-
-function Wishart(W::AbstractMatrix{T}, v::Real) where T<:Real
-    Wishart{size(W, 1)}(DefaultWishartParameter(W, v))
+struct Wishart{P<:Parameter,D} <: AbstractWishart{D}
+    param::P
 end
 
 function Wishart(W::AbstractMatrix, v)
-    T = eltype(W)
-    Wishart(W, T(v))
-end
-Wishart(W::AbstractMatrix) = Wishart(W, size(W,1))
-
-function Wishart{D}(T::Type = Float64) where D
-    W = Symmetric(Matrix{T}(I,D,D))
-    v = T(D)
-    Wishart(W, v)
+    param = DefaultWishartParameter(W, v)
+    P = typeof(param)
+    D = size(W,1)
+    Wishart{P,D}(param)
 end
 
 #######################################################################
 # Distribution interface
 
-function basemeasure(w::AbstractWishart, X::Symmetric)
+function basemeasure(w::AbstractWishart, X::AbstractMatrix)
     D = size(X, 1)
     -.5*(D-1)*logdet(X) - .25*D*(D-1)log(pi)
 end

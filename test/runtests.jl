@@ -38,7 +38,8 @@ for T in [Float32, Float64]
         @test size(s2) == (2,)
         @test size(s3) == (1,)
 
-        n2 = Normal{2}(T)
+
+        n2 = Normal(zeros(T, 2), Matrix{T}(I, 2, 2))
         @test kldiv(n, n) ≈  0
         @test kldiv(n, n2) >= 0
         @test kldiv(n2, n) >= 0
@@ -78,7 +79,7 @@ for T in [Float32, Float64]
         @test size(s1) == (2,)
         @test size(s2) == (2,)
 
-        n2 = NormalDiag{2}(T)
+        n2 = NormalDiag(zeros(T, 2), ones(T, 2))
         @test kldiv(n, n) ≈  0
         @test kldiv(n, n2) >= 0
         @test kldiv(n2, n) >= 0
@@ -97,7 +98,7 @@ end
 
 for T in [Float32, Float64]
     @testset "Gamma ($T)" begin
-        g = Gamma(T, 1, 2)
+        g = Gamma(T(1), T(2))
 
         η = T[-2, 1]
         @test all(naturalform(g.param) .≈ η)
@@ -118,12 +119,12 @@ for T in [Float32, Float64]
         @test size(s1) == ()
         @test size(s2) == ()
 
-        g2 = Gamma()
+        g2 = Gamma(T(1), T(1))
         @test kldiv(g, g) ≈  0
         @test kldiv(g, g2) >= 0
         @test kldiv(g2, g) >= 0
 
-        g2 = Gamma(T, stdparam(g, naturalform(g.param))...)
+        g2 = Gamma(stdparam(g, naturalform(g.param))...)
         @test kldiv(g, g2) ≈  0
 
         @test length(sample(g, 1)) == 1
@@ -156,7 +157,7 @@ for T in [Float32, Float64]
         s = splitgrad(d, gradlognorm(d))
         @test size(s) == (3,)
 
-        d2 = Dirichlet{3}(T)
+        d2 = Dirichlet(ones(T, 3))
         @test kldiv(d, d) ≈  0
         @test kldiv(d, d2) >= 0
         @test kldiv(d2, d) >= 0
@@ -206,7 +207,7 @@ for T in [Float32, Float64]
         @test all(s[2] .≈ vec_tril(vW))
         @test s[3] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
 
-        w2 = Wishart{2}(T)
+        w2 = Wishart(Matrix{T}(I, 2, 2), 2)
         @test kldiv(w, w) ≈  0
         @test kldiv(w, w2) >= 0
         @test kldiv(w2, w) >= 0

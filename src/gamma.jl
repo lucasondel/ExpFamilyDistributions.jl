@@ -12,48 +12,41 @@ abstract type AbstractGamma <: Distribution end
 #######################################################################
 # Parameter of the Gamma distribution.
 
-function DefaultGammaParameter(T, α, β)
-    Parameter{T}(vcat(-β, α), identity, identity)
+function DefaultGammaParameter(α, β)
+    Parameter(vcat(-β, α), identity, identity)
 end
 
 #######################################################################
 # Gamma distribution
 
 """
-    struct Gamma <: AbstractGamma
-        param::Parameter{T} where T
+    struct Gamma{P<:Parameter} <: AbstractGamma
+        param::P
     end
 
 Gamma distribution.
 
 # Constructors
 
-    Gamma(T=Float64)
-    Gamma(T=Float64, α, β)
+    Gamma(α, β)
 
-where `T` is the encoding type of the parameters. `α` and `β` are the
-parameters of the distribution.
+where `α` and `β` are the shape and reate parameters of the
+distribution.
 
 # Examples
 ```jldoctest
-julia> Gamma(Float32)
-Gamma:
-  α = 1.0
-  β = 1.0
-
 julia> Gamma(1, 2)
-Gamma:
+Gamma{Parameter{Array{Float64,1}}}:
   α = 1.0
   β = 2.0
 ```
 """
-struct Gamma <: AbstractGamma
-    param::Parameter{T} where T
+struct Gamma{P<:Parameter} <: AbstractGamma
+    param::P
 end
 
-Gamma(T, α, β) = Gamma(DefaultGammaParameter(T, α, β))
-Gamma(α::Real, β::Real) = Gamma(Float64, α, β)
-Gamma(T::Type = Float64) = Gamma(T, 1, 1)
+Gamma(α::T, β::T) where T<:AbstractFloat = Gamma(DefaultGammaParameter(α, β))
+Gamma(α::Real, β::Real) = Gamma(Float64(α), Float64(β))
 
 #######################################################################
 # Distribution interface

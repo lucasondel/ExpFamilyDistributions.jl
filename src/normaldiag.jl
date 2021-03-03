@@ -18,56 +18,44 @@ function DefaultNormalDiagParameter(μ::AbstractVector{T},
                                     v::AbstractVector{T}) where T
     λ = 1 ./ v
     ξ = vcat(λ .* μ, -T(.5)*λ)
-    Parameter{T}(ξ, identity, identity)
+    Parameter(ξ, identity, identity)
 end
 
 #######################################################################
 # Normal distribution with diagonal covariance matrix
 
 """
-    struct NormalDiag{D} <: AbstractNormalDiag{D}
-        param::Parameter{T}
+    struct NormalDiag{P<:Parameter,D} <: AbstractNormalDiag{D}
+        param::P
     end
 
 Normal distribution with a diagonal covariance matrix.
 
 # Constructors
 
-    NormalDiag{D}(T=Float64)
-    NormalDiag(μ[, v])
+    NormalDiag(μ, v)
 
-where `T` is the encoding type of the parameters, `D` is the
-dimension of the support, `μ` is a vector and `v` is the diagonal of
-the covariance matrix.
+where `μ` is the mean `v` is the diagonal of the covariance matrix.
 
 # Examples
 ```jldoctest
-julia> NormalDiag{2}(Float32)
-NormalDiag{2}:
-  μ = Float32[0.0, 0.0]
-  Σ = Float32[1.0 0.0; 0.0 1.0]
-
-julia> NormalDiag([1.0, 1.0])
-NormalDiag{2}:
-  μ = [1.0, 1.0]
-  Σ = [1.0 0.0; 0.0 1.0]
-
 julia> NormalDiag([1.0, 1.0], [2.0, 1.0])
-NormalDiag{2}:
+NormalDiag{Parameter{Array{Float64,1}},2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.0; 0.0 1.0]
 ```
 """
-struct NormalDiag{D} <: AbstractNormalDiag{D}
-    param::Parameter{T} where T
+struct NormalDiag{P<:Parameter,D} <: AbstractNormalDiag{D}
+    param::P
 end
 
 function NormalDiag(μ::AbstractVector{T}, v::AbstractVector{T}) where T
-    NormalDiag{length(μ)}(DefaultNormalDiagParameter(μ, v))
+    param = DefaultNormalDiagParameter(μ, v)
+    P = typeof(param)
+    D = length(μ)
+    NormalDiag{P,D}(param)
 end
-NormalDiag(μ::AbstractVector) = NormalDiag(μ, ones(eltype(μ), length(μ)))
 NormalDiag(μ::AbstractVector, Σ::Diagonal) = NormalDiag(μ, diag(Σ))
-NormalDiag{D}(T::Type = Float64) where D = NormalDiag(zeros(T, D), ones(T, D))
 
 #######################################################################
 # Distribution interface.

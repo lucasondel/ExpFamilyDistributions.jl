@@ -15,64 +15,44 @@ abstract type AbstractNormal{D} <: Distribution end
 
 function DefaultNormalParameter(μ::AbstractVector{T},
                                 Σ::AbstractMatrix{T}) where T
-    Λ = inv(Symmetric(Σ))
+    Λ = inv(Σ)
     ξ = vcat(Λ*μ, -T(.5)*diag(Λ), -vec_tril(Λ))
-    Parameter{T}(ξ, identity, identity)
+    Parameter(ξ, identity, identity)
 end
 
 #######################################################################
 # Normal distribution with full covariance matrix
 
 """
-    struct Normal{D} <: AbstractNormal{D}
-        param::Parameter{T} where T
+    struct Normal{P<:Parameter,D} <: AbstractNormal{D}
+        param::P
     end
 
 Normal distribution with full covariance matrix.
 
 # Constructors
 
-Normal{D}(T = Float64)
-    Normal(μ[, Σ])
+Normal(μ, Σ)
 
-where `T` is the encoding type of the parameters, `D` is the
-dimension of the support, `μ` is a vector and `Σ` is a
-positive-definite matrix.
+where `μ` is the mean and `Σ` is the covariance matrix.
 
 # Examples
 ```jldoctest
-julia> Normal{2}(Float32)
-Normal{2}:
-  μ = Float32[0.0, 0.0]
-  Σ = Float32[1.0 0.0; 0.0 1.0]
-
-julia> Normal([1.0, 1.0])
-Normal{2}:
-  μ = [1.0, 1.0]
-  Σ = [1.0 0.0; 0.0 1.0]
-
 julia> Normal([1.0, 1.0], [2.0 0.5; 0.5 1.0])
-Normal{2}:
+Normal{Parameter{Array{Float64,1}},2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.5; 0.5 1.0]
 ```
 """
-struct Normal{D} <: AbstractNormal{D}
-    param::Parameter{T} where T
+struct Normal{P<:Parameter,D} <: AbstractNormal{D}
+    param::P
 end
 
-function Normal(μ, Σ) where T
-    Normal{length(μ)}(DefaultNormalParameter(μ, Σ))
-end
-
-function Normal{D}(T::Type = Float64) where {D}
-    Normal(zeros(T, D), Matrix{T}(I, D, D))
-end
-
-function Normal(μ::AbstractVector)
-    T = eltype(μ)
+function Normal(μ, Σ)
+    param = DefaultNormalParameter(μ, Σ)
+    P = typeof(param)
     D = length(μ)
-    Normal(μ, Matrix{T}(I, D, D))
+    Normal{P,D}(param)
 end
 
 _unpack(D, v) = v[1:D], v[D+1:2*D], v[2*D+1:end]

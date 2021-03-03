@@ -15,8 +15,8 @@ the numerical type of how are stored the parameters (`Float32`,
 `η_to_ξ` are functions to convert the stored parameters to their
 natural form and vice versa.
 """
-struct Parameter{T}
-    ξ::AbstractVector{T}
+struct Parameter{T<:AbstractVector}
+    ξ::T
     ξ_to_η::Function
     η_to_ξ::Function
 end
