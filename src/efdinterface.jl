@@ -1,47 +1,5 @@
 
 #######################################################################
-# Parameters interface.
-
-"""
-    struct Parameter{T}
-        ξ::AbstractVector{T}
-        ξ_to_η::Function
-        η_to_ξ::Function
-    end
-
-Object containing the parameter of a distribution. `T` is
-the numerical type of how are stored the parameters (`Float32`,
-`Float64`, ...). `ξ` is a vector storing the parameters. `ξ_to_η` and
-`η_to_ξ` are functions to convert the stored parameters to their
-natural form and vice versa.
-"""
-struct Parameter{T<:AbstractVector}
-    ξ::T
-    ξ_to_η::Function
-    η_to_ξ::Function
-end
-
-"""
-    naturalform(param[, ξ])
-
-Returns the natural form of the parameters stored in `ξ`. If `ξ` is not
-provided, the function will use `realform(param)` instead.
-
-See also: [`realform`](@ref).
-"""
-naturalform(param, ξ = param.ξ) = param.ξ_to_η(ξ)
-
-"""
-    realform(param[, η])
-
-Returns the vector of parameters as stored in `param`. If the natural
-parameters `η` is provided, returns their real form.
-
-See also: [`naturalform`](@ref).
-"""
-realform(param, η = naturalform(param)) = param.η_to_ξ(η)
-
-#######################################################################
 # Distribution interface
 
 """

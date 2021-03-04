@@ -13,14 +13,14 @@ abstract type AbstractGamma <: Distribution end
 # Parameter of the Gamma distribution.
 
 function DefaultGammaParameter(α, β)
-    Parameter(vcat(-β, α), identity, identity)
+    DefaultParameter(vcat(-β, α))
 end
 
 #######################################################################
 # Gamma distribution
 
 """
-    struct Gamma{P<:Parameter} <: AbstractGamma
+    struct Gamma{P<:AbstractParameter} <: AbstractGamma
         param::P
     end
 
@@ -36,12 +36,12 @@ distribution.
 # Examples
 ```jldoctest
 julia> Gamma(1, 2)
-Gamma{Parameter{Array{Float64,1}}}:
+Gamma{DefaultParameter{Array{Float64,1}}}:
   α = 1.0
   β = 2.0
 ```
 """
-struct Gamma{P<:Parameter} <: AbstractGamma
+struct Gamma{P<:AbstractParameter} <: AbstractGamma
     param::P
 end
 

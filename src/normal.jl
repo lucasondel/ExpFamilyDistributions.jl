@@ -10,21 +10,20 @@ Abstract type for Normal distribution implementations.
 abstract type AbstractNormal{D} <: Distribution end
 
 #######################################################################
-# Normal distribution parameters.
-
+# Default parameter
 
 function DefaultNormalParameter(μ::AbstractVector{T},
                                 Σ::AbstractMatrix{T}) where T
     Λ = inv(Σ)
     ξ = vcat(Λ*μ, -T(.5)*diag(Λ), -vec_tril(Λ))
-    Parameter(ξ, identity, identity)
+    DefaultParameter(ξ)
 end
 
 #######################################################################
 # Normal distribution with full covariance matrix
 
 """
-    struct Normal{P<:Parameter,D} <: AbstractNormal{D}
+    struct Normal{P<:AbstractParameter,D} <: AbstractNormal{D}
         param::P
     end
 
@@ -39,12 +38,12 @@ where `μ` is the mean and `Σ` is the covariance matrix.
 # Examples
 ```jldoctest
 julia> Normal([1.0, 1.0], [2.0 0.5; 0.5 1.0])
-Normal{Parameter{Array{Float64,1}},2}:
+Normal{DefaultParameter{Array{Float64,1}},2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.5; 0.5 1.0]
 ```
 """
-struct Normal{P<:Parameter,D} <: AbstractNormal{D}
+struct Normal{P<:AbstractParameter,D} <: AbstractNormal{D}
     param::P
 end
 

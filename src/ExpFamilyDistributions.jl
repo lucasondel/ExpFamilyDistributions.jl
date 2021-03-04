@@ -20,11 +20,19 @@ export matrix
 include("utils.jl")
 
 #######################################################################
-# ExpFamilyDistribution interface
+# Parameter
 
-export Parameter
+export AbstractParameter
 export naturalform
 export realform
+export jacobian
+
+export DefaultParameter
+
+include("parameter.jl")
+
+#######################################################################
+# ExpFamilyDistribution interface
 
 export Distribution
 export basemeasure

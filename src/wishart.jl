@@ -18,14 +18,14 @@ function DefaultWishartParameter(W, v)
     η₁ = -T(.5)*diag(M)
     η₂ = -vec_tril(M)
     η₃ = T(.5)*v
-    Parameter(vcat(η₁, η₂, η₃), identity, identity)
+    DefaultParameter(vcat(η₁, η₂, η₃))
 end
 
 #######################################################################
 # Wishart distribution
 
 """
-    struct Wishart{P<:Parameter,D} <: AbstractWishart{D}
+    struct Wishart{P<:AbstractParameter,D} <: AbstractWishart{D}
         param::P
     end
 
@@ -42,12 +42,12 @@ positive definite DxD matrix.
 # Examples
 ```jldoctest
 julia> Wishart([1 0.5; 0.5 1], 2)
-Wishart{Parameter{Array{Float64,1}},2}:
+Wishart{DefaultParameter{Array{Float64,1}},2}:
   W = [1.0 0.5; 0.5 1.0]
   v = 2.0
 ```
 """
-struct Wishart{P<:Parameter,D} <: AbstractWishart{D}
+struct Wishart{P<:AbstractParameter,D} <: AbstractWishart{D}
     param::P
 end
 

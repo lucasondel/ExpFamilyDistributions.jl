@@ -13,14 +13,14 @@ abstract type AbstractDirichlet{D} <: Distribution end
 # Parameter of the Dirichlet distribution.
 
 function DefaultDirichletParameter(α)
-    Parameter(α, identity, identity)
+    DefaultParameter(α)
 end
 
 #######################################################################
 # Dirichlet distribution
 
 """
-    struct Dirichlet{P<:Parameter,D} <: AbstractDirichlet{D}
+    struct Dirichlet{P<:AbstractParameter,D} <: AbstractDirichlet{D}
         param::P
     end
 
@@ -35,11 +35,11 @@ where `α` is a vector of concentrations.
 # Examples
 ```jldoctest
 julia> Dirichlet([1.0, 2.0, 3.0])
-Dirichlet{Parameter{Array{Float64,1}},3}:
+Dirichlet{DefaultParameter{Array{Float64,1}},3}:
   α = [1.0, 2.0, 3.0]
 ```
 """
-struct Dirichlet{P,D} <: AbstractDirichlet{D}
+struct Dirichlet{P<:AbstractParameter,D} <: AbstractDirichlet{D}
     param::P
 end
 

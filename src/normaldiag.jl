@@ -13,19 +13,18 @@ abstract type AbstractNormalDiag{D} <: Distribution end
 #######################################################################
 # Parameter of the Normal distribution with diagonal covariance matrix.
 
-
 function DefaultNormalDiagParameter(μ::AbstractVector{T},
                                     v::AbstractVector{T}) where T
     λ = 1 ./ v
     ξ = vcat(λ .* μ, -T(.5)*λ)
-    Parameter(ξ, identity, identity)
+    DefaultParameter(ξ)
 end
 
 #######################################################################
 # Normal distribution with diagonal covariance matrix
 
 """
-    struct NormalDiag{P<:Parameter,D} <: AbstractNormalDiag{D}
+    struct NormalDiag{P<:AbstractParameter,D} <: AbstractNormalDiag{D}
         param::P
     end
 
@@ -40,12 +39,12 @@ where `μ` is the mean `v` is the diagonal of the covariance matrix.
 # Examples
 ```jldoctest
 julia> NormalDiag([1.0, 1.0], [2.0, 1.0])
-NormalDiag{Parameter{Array{Float64,1}},2}:
+NormalDiag{DefaultParameter{Array{Float64,1}},2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.0; 0.0 1.0]
 ```
 """
-struct NormalDiag{P<:Parameter,D} <: AbstractNormalDiag{D}
+struct NormalDiag{P<:AbstractParameter,D} <: AbstractNormalDiag{D}
     param::P
 end
 
