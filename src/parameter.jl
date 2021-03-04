@@ -21,7 +21,9 @@ naturalform(param::AbstractParameter)
 """
     realform(param)
 
-Returns the vector of parameters as stored in `param`.
+Returns the vector of parameters as stored in `param`. Note that this
+function is just an accessor of the internal storage of the parameter,
+modifying the returned value should modify the parameter accordingly.
 
 See also: [`naturalform`](@ref).
 """

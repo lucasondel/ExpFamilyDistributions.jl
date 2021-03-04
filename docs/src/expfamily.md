@@ -21,22 +21,22 @@ Which represents the supter-type of members of the exponential family.
 
 ## Parameterization
 
-All subtypes of the [`Distribution`](@ref) have the following form:
+All subtypes of [`Distribution`](@ref) have the following form:
 ```julia
-struct MyDistribution <: Distribution
-    param::Parameter{T} where T
+struct MyDistribution{P<:AbstractParam} <: Distribution
+    param::P
 end
 ```
 This particular form allows each distribution to be agnostic to their
-concrete parameterization. The parameter type is defined as:
-
+concrete parameterization. The parameter type inherits from:
 ```@docs
-Parameter
+AbstractParameter
 ```
-It supports the following methods
+and supports the following methods
 ```@docs
 naturalform
 realform
+jacobian
 ```
 
 ## Distribution interface
