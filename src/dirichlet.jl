@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: CECILL-B
+# SPDX-License-Identifier: MIT
 
 """
     AbstractDirichlet{D} <: Distribution

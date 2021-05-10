@@ -1,5 +1,4 @@
-# SPDX-License-Identifier: CECILL-B
-
+# SPDX-License-Identifier: MIT
 
 """
     AbstractGamma <: Distribution
