@@ -1,5 +1,9 @@
 # Releases
 
+## 0.9.1
+* fixed: typo in calling Diagonal
+* added: test for the DefaultParameter struct
+
 ## 0.9.0
 * refactored parameters API:
     * abstract parameter structure and interface

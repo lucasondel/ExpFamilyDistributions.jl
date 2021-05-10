@@ -13,6 +13,20 @@ DocMeta.setdocmeta!(ExpFamilyDistributions, :DocTestSetup,
 doctest(ExpFamilyDistributions)
 
 #######################################################################
+# DefaultParameter
+
+for T in [Float32, Float64]
+    @testset "DefaultParameter ($T)" begin
+        ξ = T[1.0, 2.0, 3.0]
+        p = DefaultParameter(ξ)
+
+        @test all(naturalform(p) .≈ ξ)
+        @test all(realform(p) .≈ ξ)
+        @test all(jacobian(p) .≈ Matrix{T}(I, length(ξ), length(ξ)))
+    end
+end
+
+#######################################################################
 # Normal
 
 for T in [Float32, Float64]

@@ -42,7 +42,7 @@ struct DefaultParameter{T} <: AbstractParameter{T}
     ξ::T
 end
 
-naturalform(p::DefaultParameter) = identity(p.ξ)
+naturalform(p::DefaultParameter) = p.ξ
 realform(p::DefaultParameter) = p.ξ
-jacobian(p::DefaultParameter) = Diaognal(ones(eltype(p.ξ), length(p.ξ)))
+jacobian(p::DefaultParameter) = Diagonal(ones(eltype(p.ξ), length(p.ξ)))
 
