@@ -1,4 +1,4 @@
-# ExpFamilyDistributions
+# ExpFamilyDistributions.jl
 
 *Julia package for using distributions member of the Exponential
 family .*
@@ -11,7 +11,7 @@ purpose statistical Julia package we recommend to use
 
 | **Documentation**  | **Test Status**   |
 |:------------------:|:-----------------:|
-| [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions/stable) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions/dev) | ![](https://github.com/lucasondel/ExpFamilyDistributions/workflows/Test/badge.svg) |
+| [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions.jl/stable) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://lucasondel.github.io/ExpFamilyDistributions.jl/dev) | ![](https://github.com/lucasondel/ExpFamilyDistributions.jl/workflows/Test/badge.svg) |
 
 See the [changelog file](CHANGELOG.md) to check what's new since the
 last release.
@@ -25,10 +25,9 @@ From the Julia REPL, type ] to enter the Pkg REPL mode and run:
 pkg> add ExpFamilyDistributions
 ```
 
-Have a look at the [documentation](https://lucasondel.github.io/ExpFamilyDistributions/stable/)
+Have a look at the [documentation](https://lucasondel.github.io/ExpFamilyDistributions.jl/stable/)
 to get started.
 
-## Authors
+## Author
 
-Lucas Ondel, Brno University of Technology, 2020
-
+[Lucas Ondel](https://lucasondel.github.io)
