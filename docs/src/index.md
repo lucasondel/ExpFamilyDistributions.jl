@@ -12,7 +12,7 @@ See the project on
 
 ## Authors
 
-Lucas Ondel, Brno University of technology, 2020.
+[Lucas Ondel](https://lucasondel.github.io)
 
 ## Installation
 
