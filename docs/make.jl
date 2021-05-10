@@ -7,7 +7,7 @@ DocMeta.setdocmeta!(ExpFamilyDistributions, :DocTestSetup,
                     :(using ExpFamilyDistributions), recursive = true)
 
 makedocs(
-    sitename="ExpFamilyDistributions",
+    sitename="ExpFamilyDistributions.jl",
     modules = [ExpFamilyDistributions],
     pages = [
         "Home" => "index.md",
@@ -16,6 +16,6 @@ makedocs(
     ],
 )
 deploydocs(
-    repo = "github.com/lucasondel/ExpFamilyDistributions.git",
+    repo = "github.com/lucasondel/ExpFamilyDistributions.jl.git",
 )
 

@@ -39,7 +39,7 @@ where `μ` is the mean `v` is the diagonal of the covariance matrix.
 # Examples
 ```jldoctest
 julia> NormalDiag([1.0, 1.0], [2.0, 1.0])
-NormalDiag{DefaultParameter{Array{Float64,1}},2}:
+NormalDiag{DefaultParameter{Vector{Float64}}, 2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.0; 0.0 1.0]
 ```

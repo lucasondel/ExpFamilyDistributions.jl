@@ -38,7 +38,7 @@ where `μ` is the mean and `Σ` is the covariance matrix.
 # Examples
 ```jldoctest
 julia> Normal([1.0, 1.0], [2.0 0.5; 0.5 1.0])
-Normal{DefaultParameter{Array{Float64,1}},2}:
+Normal{DefaultParameter{Vector{Float64}}, 2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.5; 0.5 1.0]
 ```

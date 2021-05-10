@@ -1,4 +1,4 @@
-# ExpFamilyDistributions
+# ExpFamilyDistributions.jl
 
 [ExpFamilyDistributions](https://github.com/BUTSpeechFIT/ExpFamilyDistributions)
 is a Julia package for using distributions member of the

@@ -36,7 +36,7 @@ distribution.
 # Examples
 ```jldoctest
 julia> Gamma(1, 2)
-Gamma{DefaultParameter{Array{Float64,1}}}:
+Gamma{DefaultParameter{Vector{Float64}}}:
   α = 1.0
   β = 2.0
 ```

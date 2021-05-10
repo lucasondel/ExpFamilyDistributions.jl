@@ -42,7 +42,7 @@ positive definite DxD matrix.
 # Examples
 ```jldoctest
 julia> Wishart([1 0.5; 0.5 1], 2)
-Wishart{DefaultParameter{Array{Float64,1}},2}:
+Wishart{DefaultParameter{Vector{Float64}}, 2}:
   W = [1.0 0.5; 0.5 1.0]
   v = 2.0
 ```

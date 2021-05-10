@@ -35,7 +35,7 @@ where `α` is a vector of concentrations.
 # Examples
 ```jldoctest
 julia> Dirichlet([1.0, 2.0, 3.0])
-Dirichlet{DefaultParameter{Array{Float64,1}},3}:
+Dirichlet{DefaultParameter{Vector{Float64}}, 3}:
   α = [1.0, 2.0, 3.0]
 ```
 """
