@@ -1,6 +1,6 @@
 # ExpFamilyDistributions.jl
 
-[ExpFamilyDistributions](https://github.com/BUTSpeechFIT/ExpFamilyDistributions)
+[ExpFamilyDistributions.jl](https://github.com/BUTSpeechFIT/ExpFamilyDistributions.jl)
 is a Julia package for using distributions member of the
 [Exponential family](https://en.wikipedia.org/wiki/Exponential_family).
 This package is mostly designed to build machine learning Bayesian
@@ -8,7 +8,7 @@ models. For a general purpose statistical Julia package we recommend
 to use [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
 
 See the project on
-[github](https://github.com/lucasondel/ExpFamilyDistributions).
+[github](https://github.com/lucasondel/ExpFamilyDistributions.jl).
 
 ## Authors
 
