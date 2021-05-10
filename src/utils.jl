@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: CECILL-B
 
 """
     vec_tril(M)

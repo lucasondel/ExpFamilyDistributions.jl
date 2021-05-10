@@ -1,6 +1,5 @@
+# SPDX-License-Identifier: CECILL-B
 
-#######################################################################
-# Super-type
 
 """
     AbstractGamma <: Distribution
@@ -9,15 +8,9 @@ Abstract type for Gamma distribution implementations.
 """
 abstract type AbstractGamma <: Distribution end
 
-#######################################################################
-# Parameter of the Gamma distribution.
-
 function DefaultGammaParameter(α, β)
     DefaultParameter(vcat(-β, α))
 end
-
-#######################################################################
-# Gamma distribution
 
 """
     struct Gamma{P<:AbstractParameter} <: AbstractGamma

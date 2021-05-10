@@ -1,7 +1,10 @@
+# SPDX-License-Identifier: CECILL-B
+
 module ExpFamilyDistributions
 
 #######################################################################
 # Dependencies
+
 using LinearAlgebra
 using SpecialFunctions: loggamma, digamma
 import Distributions

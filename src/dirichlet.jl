@@ -1,6 +1,4 @@
-
-#######################################################################
-# Super-type
+# SPDX-License-Identifier: CECILL-B
 
 """
     AbstractDirichlet{D} <: Distribution

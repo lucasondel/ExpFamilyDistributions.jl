@@ -1,6 +1,4 @@
-
-#######################################################################
-# Parameter interface.
+# SPDX-License-Identifier: CECILL-B
 
 """
     abstract type AbstractParameter{T} end

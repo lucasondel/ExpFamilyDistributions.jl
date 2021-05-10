@@ -1,6 +1,4 @@
-
-#######################################################################
-# Super-type
+# SPDX-License-Identifier: CECILL-B
 
 """
     AbstractNormalDiag{D} <: Distribution
@@ -10,18 +8,12 @@ implementations.
 """
 abstract type AbstractNormalDiag{D} <: Distribution end
 
-#######################################################################
-# Parameter of the Normal distribution with diagonal covariance matrix.
-
 function DefaultNormalDiagParameter(μ::AbstractVector{T},
                                     v::AbstractVector{T}) where T
     λ = 1 ./ v
     ξ = vcat(λ .* μ, -T(.5)*λ)
     DefaultParameter(ξ)
 end
-
-#######################################################################
-# Normal distribution with diagonal covariance matrix
 
 """
     struct NormalDiag{P<:AbstractParameter,D} <: AbstractNormalDiag{D}

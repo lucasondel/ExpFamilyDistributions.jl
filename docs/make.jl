@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: CECILL-B
+
 push!(LOAD_PATH, "../src/")
 
 using Documenter

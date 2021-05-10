@@ -1,6 +1,4 @@
-
-#######################################################################
-# Super-type
+# SPDX-License-Identifier: CECILL-B
 
 """
     AbstractWishart{D} <: Distribution
@@ -8,9 +6,6 @@
 Abstract type for Wishart distribution implementations.
 """
 abstract type AbstractWishart{D} <: Distribution end
-
-#######################################################################
-# Parameter of the Gamma distribution.
 
 function DefaultWishartParameter(W, v)
     T = eltype(W)
@@ -20,9 +15,6 @@ function DefaultWishartParameter(W, v)
     η₃ = T(.5)*v
     DefaultParameter(vcat(η₁, η₂, η₃))
 end
-
-#######################################################################
-# Wishart distribution
 
 """
     struct Wishart{P<:AbstractParameter,D} <: AbstractWishart{D}

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: CECILL-B
 
 using Documenter
 using ExpFamilyDistributions

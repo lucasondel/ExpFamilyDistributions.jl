@@ -1,6 +1,4 @@
-
-#######################################################################
-# Super-type
+# SPDX-License-Identifier: CECILL-B
 
 """
     AbstractNormal{D} <: Distribution
@@ -9,18 +7,12 @@ Abstract type for Normal distribution implementations.
 """
 abstract type AbstractNormal{D} <: Distribution end
 
-#######################################################################
-# Default parameter
-
 function DefaultNormalParameter(μ::AbstractVector{T},
                                 Σ::AbstractMatrix{T}) where T
     Λ = inv(Σ)
     ξ = vcat(Λ*μ, -T(.5)*diag(Λ), -vec_tril(Λ))
     DefaultParameter(ξ)
 end
-
-#######################################################################
-# Normal distribution with full covariance matrix
 
 """
     struct Normal{P<:AbstractParameter,D} <: AbstractNormal{D}

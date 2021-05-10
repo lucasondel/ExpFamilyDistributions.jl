@@ -1,6 +1,4 @@
-
-#######################################################################
-# Distribution interface
+# SPDX-License-Identifier: CECILL-B
 
 """
     abstract type Distribution end
