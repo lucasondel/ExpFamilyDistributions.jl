@@ -1,5 +1,12 @@
 # Releases
 
+## 0.9.0
+* refactored parameters API:
+    * abstract parameter structure and interface
+    * default parameter implemenation
+* support julia 1.6 onward
+* change LICENSE to CeCILL-B
+
 ## 0.8.0
 
 * added an abstract type for each distribution to allow easy extension
