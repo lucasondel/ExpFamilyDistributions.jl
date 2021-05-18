@@ -58,6 +58,15 @@ function basemeasure(w::AbstractWishart, X::AbstractMatrix)
     -.5*(D-1)*logdet(X) - .25*D*(D-1)log(pi)
 end
 
+function gradlognorm(w::AbstractWishart)
+    W, v = stdparam(w, naturalform(w.param))
+    D = size(W, 1)
+    T = eltype(W)
+    ∂η₁ = v * W
+    ∂η₂ = sum([digamma((T(v+1-i)/2)) for i in 1:D]) + T(D*log(2)) + logdet(W)
+    vcat(diag(∂η₁), vec_tril(∂η₁), ∂η₂)
+end
+
 function lognorm(w::AbstractWishart{D},
                  η::AbstractVector{T} = naturalform(w.param)) where {T,D}
     diagM = η[1:D]

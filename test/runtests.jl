@@ -41,6 +41,7 @@ for T in [Float32, Float64]
         @test all(stats(n, x) .≈ Tx)
 
         A = .5 * log(det(n.Σ)) + .5 * dot(n.μ, inv(n.Σ), n.μ)
+        @test typeof(lognorm(n)) == T
         @test lognorm(n) ≈ T(A)
 
         @test basemeasure(n, x) ≈ T(-log(2π))
@@ -52,7 +53,6 @@ for T in [Float32, Float64]
         @test size(s1) == (2,)
         @test size(s2) == (2,)
         @test size(s3) == (1,)
-
 
         n2 = Normal(zeros(T, 2), Matrix{T}(I, 2, 2))
         @test kldiv(n, n) ≈  0
@@ -83,6 +83,7 @@ for T in [Float32, Float64]
         @test all(stats(n, x) .≈ Tx)
 
         A = .5 * log(det(n.Σ)) + .5 * dot(n.μ, inv(n.Σ), n.μ)
+        @test typeof(lognorm(n)) == T
         @test lognorm(n) ≈ T(A)
 
         @test basemeasure(n, x) ≈ T(-log(2π))

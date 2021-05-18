@@ -9,8 +9,7 @@ using LinearAlgebra
 using SpecialFunctions: loggamma, digamma
 import Distributions
 const Dists = Distributions
-import ForwardDiff
-const FD = ForwardDiff
+import Zygote: @adjoint, gradient
 using PDMats
 
 #######################################################################

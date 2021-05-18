@@ -51,3 +51,5 @@ function matrix(diagM::AbstractVector{T}, trilM::AbstractVector{T}) where T
     Diagonal(diagM) + Symmetric(utrilM + utrilM')
 end
 
+@adjoint inv_vec_tril(M) = inv_vec_tril(M), Δ -> (vec_tril(Δ),)
+@adjoint vec_tril(v) = vec_tril(v), Δ -> (inv_vec_tril(Δ),)

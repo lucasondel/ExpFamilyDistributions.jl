@@ -59,7 +59,7 @@ function lognorm(n::AbstractNormal{D},
                  η::AbstractVector{T} = naturalform(n.param)) where {T,D}
     η₁, η₂, η₃ = _unpack(D, η)
     H₂ = matrix(η₂, T(.5)*η₃)
-    -.5*logdet(-T(2)*H₂) - T(.25)*dot(η₁, inv(H₂), η₁)
+    -T(.5)*logdet(-T(2)*H₂) - T(.25)*dot(η₁, inv(H₂), η₁)
 end
 
 function sample(n::AbstractNormal{D}, size) where D
