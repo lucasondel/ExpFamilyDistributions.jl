@@ -21,19 +21,19 @@
 
     \nabla_{\eta} A(\eta) &amp;= \begin{bmatrix}
         \mu \\
-        \Sigma + \mu \mu^\top
+        \text{vec}(\Sigma + \mu \mu^\top)
     \end{bmatrix}
 \end{aligned}\]</div><p>where <span>$\text{tril}$</span> is a function that returns the lower-triangular part of a matrix (diagonal not included).</p><article class="docstring"><header><a class="docstring-binding" id="ExpFamilyDistributions.Normal" href="#ExpFamilyDistributions.Normal"><code>ExpFamilyDistributions.Normal</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">struct Normal{P&lt;:AbstractParameter,D} &lt;: AbstractNormal{D}
     param::P
 end</code></pre><p>Normal distribution with full covariance matrix.</p><p><strong>Constructors</strong></p><p>Normal(μ, Σ)</p><p>where <code>μ</code> is the mean and <code>Σ</code> is the covariance matrix.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; Normal([1.0, 1.0], [2.0 0.5; 0.5 1.0])
 Normal{DefaultParameter{Vector{Float64}}, 2}:
   μ = [1.0, 1.0]
-  Σ = [2.0 0.5; 0.5 1.0]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/c5192b4e40f62c50f76f9584a65157053d22ff7a/src/normal.jl#L17-L37">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ExpFamilyDistributions.NormalDiag" href="#ExpFamilyDistributions.NormalDiag"><code>ExpFamilyDistributions.NormalDiag</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">struct NormalDiag{P&lt;:AbstractParameter,D} &lt;: AbstractNormalDiag{D}
+  Σ = [2.0 0.5; 0.5 1.0]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/21f32e8932e54f07cbe1e1fda1939e683cf0bd33/src/normal.jl#L17-L37">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="ExpFamilyDistributions.NormalDiag" href="#ExpFamilyDistributions.NormalDiag"><code>ExpFamilyDistributions.NormalDiag</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">struct NormalDiag{P&lt;:AbstractParameter,D} &lt;: AbstractNormalDiag{D}
     param::P
 end</code></pre><p>Normal distribution with a diagonal covariance matrix.</p><p><strong>Constructors</strong></p><pre><code class="language-none">NormalDiag(μ, v)</code></pre><p>where <code>μ</code> is the mean <code>v</code> is the diagonal of the covariance matrix.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; NormalDiag([1.0, 1.0], [2.0, 1.0])
 NormalDiag{DefaultParameter{Vector{Float64}}, 2}:
   μ = [1.0, 1.0]
-  Σ = [2.0 0.0; 0.0 1.0]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/c5192b4e40f62c50f76f9584a65157053d22ff7a/src/normaldiag.jl#L18-L38">source</a></section></article><h2 id="Gamma-distribution-1"><a class="docs-heading-anchor" href="#Gamma-distribution-1">Gamma distribution</a><a class="docs-heading-anchor-permalink" href="#Gamma-distribution-1" title="Permalink"></a></h2><p>Likelihood:</p><div>\[\mathcal{G}(x | \alpha, \beta) = \frac{1}{\Gamma (\alpha)}\beta^{\alpha} x^{\alpha - 1} \exp \{ -\beta x \}\]</div><p>Terms of the canonical form:</p><div>\[\begin{aligned}
+  Σ = [2.0 0.0; 0.0 1.0]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/21f32e8932e54f07cbe1e1fda1939e683cf0bd33/src/normaldiag.jl#L18-L38">source</a></section></article><h2 id="Gamma-distribution-1"><a class="docs-heading-anchor" href="#Gamma-distribution-1">Gamma distribution</a><a class="docs-heading-anchor-permalink" href="#Gamma-distribution-1" title="Permalink"></a></h2><p>Likelihood:</p><div>\[\mathcal{G}(x | \alpha, \beta) = \frac{1}{\Gamma (\alpha)}\beta^{\alpha} x^{\alpha - 1} \exp \{ -\beta x \}\]</div><p>Terms of the canonical form:</p><div>\[\begin{aligned}
     \eta &amp;= \begin{bmatrix}
         -\beta  \\
         \alpha
@@ -57,7 +57,7 @@ NormalDiag{DefaultParameter{Vector{Float64}}, 2}:
 end</code></pre><p>Gamma distribution.</p><p><strong>Constructors</strong></p><pre><code class="language-none">Gamma(α, β)</code></pre><p>where <code>α</code> and <code>β</code> are the shape and reate parameters of the distribution.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; Gamma(1, 2)
 Gamma{DefaultParameter{Vector{Float64}}}:
   α = 1.0
-  β = 2.0</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/c5192b4e40f62c50f76f9584a65157053d22ff7a/src/gamma.jl#L14-L35">source</a></section></article><h2 id="Dirichlet-distribution-1"><a class="docs-heading-anchor" href="#Dirichlet-distribution-1">Dirichlet distribution</a><a class="docs-heading-anchor-permalink" href="#Dirichlet-distribution-1" title="Permalink"></a></h2><p>Likelihood:</p><div>\[\mathcal{D}(x | \alpha) = \frac{\Gamma(\sum_{i=1}^D \alpha_i)}{\prod_{i=1}^{D}\Gamma (\alpha_i)}
+  β = 2.0</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/21f32e8932e54f07cbe1e1fda1939e683cf0bd33/src/gamma.jl#L14-L35">source</a></section></article><h2 id="Dirichlet-distribution-1"><a class="docs-heading-anchor" href="#Dirichlet-distribution-1">Dirichlet distribution</a><a class="docs-heading-anchor-permalink" href="#Dirichlet-distribution-1" title="Permalink"></a></h2><p>Likelihood:</p><div>\[\mathcal{D}(x | \alpha) = \frac{\Gamma(\sum_{i=1}^D \alpha_i)}{\prod_{i=1}^{D}\Gamma (\alpha_i)}
     \prod_{i=1}^D x_i^{\alpha - 1}\]</div><p>Terms of the canonical form:</p><div>\[\begin{aligned}
     \eta &amp;= \alpha \\
 
@@ -76,7 +76,7 @@ Gamma{DefaultParameter{Vector{Float64}}}:
     param::P
 end</code></pre><p>Dirichlet distribution.</p><p><strong>Constructors</strong></p><pre><code class="language-none">Dirichlet(α)</code></pre><p>where <code>α</code> is a vector of concentrations.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; Dirichlet([1.0, 2.0, 3.0])
 Dirichlet{DefaultParameter{Vector{Float64}}, 3}:
-  α = [1.0, 2.0, 3.0]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/c5192b4e40f62c50f76f9584a65157053d22ff7a/src/dirichlet.jl#L20-L39">source</a></section></article><h2 id="Wishart-distribution-1"><a class="docs-heading-anchor" href="#Wishart-distribution-1">Wishart distribution</a><a class="docs-heading-anchor-permalink" href="#Wishart-distribution-1" title="Permalink"></a></h2><p>Likelihood:</p><div>\[\mathcal{W}(X | W, v) = B(W, v)|X|^{\frac{(v-D-1)}{2}} \exp \bigg\{
+  α = [1.0, 2.0, 3.0]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/21f32e8932e54f07cbe1e1fda1939e683cf0bd33/src/dirichlet.jl#L20-L39">source</a></section></article><h2 id="Wishart-distribution-1"><a class="docs-heading-anchor" href="#Wishart-distribution-1">Wishart distribution</a><a class="docs-heading-anchor-permalink" href="#Wishart-distribution-1" title="Permalink"></a></h2><p>Likelihood:</p><div>\[\mathcal{W}(X | W, v) = B(W, v)|X|^{\frac{(v-D-1)}{2}} \exp \bigg\{
     -\frac{1}{2} \text{tr}(W^{-1}X) \bigg\} \\
 B(W,v) = |W|^{-\frac{v}{2}}\bigg( 2^{\frac{vD}{2}} \pi^{\frac{D(D-1)}{4}}
     \prod_{i=1}^D \Gamma \big( \frac{v+1-i}{2} \big) \bigg)^{-1}\]</div><p>where <span>$X$</span> and <span>$W$</span> are <span>$D \times D$</span> symmetric positive definite matrices.</p><p>Terms of the canonical form:</p><div>\[\begin{aligned}
@@ -86,8 +86,8 @@ B(W,v) = |W|^{-\frac{v}{2}}\bigg( 2^{\frac{vD}{2}} \pi^{\frac{D(D-1)}{4}}
     \end{bmatrix}\\
 
     T(x) &amp;= \begin{bmatrix}
-        \text{vec}(diag(X)) \\
-        \text{vec}(tril(X)) \\
+        \text{vec}(\text{diag}(X)) \\
+        \text{vec}(\text{tril}(X)) \\
         \ln |X|
     \end{bmatrix} \\
 
@@ -106,4 +106,4 @@ end</code></pre><p>Wishart distribution.</p><p><strong>Constructors</strong></p>
 Wishart(W[, v])</code></pre><p>where <code>T</code> is the encoding type of the parameters and <code>W</code> is a positive definite DxD matrix.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; Wishart([1 0.5; 0.5 1], 2)
 Wishart{DefaultParameter{Vector{Float64}}, 2}:
   W = [1.0 0.5; 0.5 1.0]
-  v = 2.0</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/c5192b4e40f62c50f76f9584a65157053d22ff7a/src/wishart.jl#L19-L41">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../expfamily/">« Exponential Family Distributions</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 18 May 2021 12:55">Tuesday 18 May 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  v = 2.0</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lucasondel/ExpFamilyDistributions.jl/blob/21f32e8932e54f07cbe1e1fda1939e683cf0bd33/src/wishart.jl#L19-L41">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../expfamily/">« Exponential Family Distributions</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 18 May 2021 13:17">Tuesday 18 May 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
