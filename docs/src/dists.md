@@ -33,7 +33,7 @@ Terms of the canonical form:
 
     \nabla_{\eta} A(\eta) &= \begin{bmatrix}
         \mu \\
-        \Sigma + \mu \mu^\top
+        \text{vec}(\Sigma + \mu \mu^\top)
     \end{bmatrix}
 \end{aligned}
 ```
@@ -131,8 +131,8 @@ Terms of the canonical form:
     \end{bmatrix}\\
 
     T(x) &= \begin{bmatrix}
-        \text{vec}(diag(X)) \\
-        \text{vec}(tril(X)) \\
+        \text{vec}(\text{diag}(X)) \\
+        \text{vec}(\text{tril}(X)) \\
         \ln |X|
     \end{bmatrix} \\
 

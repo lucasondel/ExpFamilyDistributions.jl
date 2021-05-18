@@ -1,5 +1,11 @@
 # Releases
 
+## 0.9.2
+* replaced ForwardDiff with Zygote for efficiency reason
+* added Zygote adjoint for `vec_tril` and its inverse
+* specialized the Wishart `gradlognorm` function for optimal performances
+* fixed latex equations in the documentation
+
 ## 0.9.1
 * fixed: typo in calling Diagonal
 * added: test for the DefaultParameter struct
