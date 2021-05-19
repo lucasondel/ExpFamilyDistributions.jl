@@ -10,7 +10,7 @@ abstract type AbstractNormal{D} <: Distribution end
 function DefaultNormalParameter(μ::AbstractVector{T},
                                 Σ::AbstractMatrix{T}) where T
     Λ = inv(Σ)
-    ξ = vcat(Λ*μ, -T(.5)*diag(Λ), -vec_tril(Λ))
+    ξ = vcat(Λ*μ, -T(.5)*vec(Λ))
     DefaultParameter(ξ)
 end
 
@@ -46,7 +46,7 @@ function Normal(μ, Σ)
     Normal{P,D}(param)
 end
 
-_unpack(D, v) = v[1:D], v[D+1:2*D], v[2*D+1:end]
+_unpack(D, v) = v[1:D], reshape(v[D+1:end], D, D)
 
 #######################################################################
 # Distribution interface.
@@ -57,8 +57,7 @@ end
 
 function lognorm(n::AbstractNormal{D},
                  η::AbstractVector{T} = naturalform(n.param)) where {T,D}
-    η₁, η₂, η₃ = _unpack(D, η)
-    H₂ = matrix(η₂, T(.5)*η₃)
+    η₁, H₂ = _unpack(D, η)
     -T(.5)*logdet(-T(2)*H₂) - T(.25)*dot(η₁, inv(H₂), η₁)
 end
 
@@ -73,13 +72,12 @@ splitgrad(n::AbstractNormal{D}, m) where D = _unpack(D, m)
 
 function stats(::AbstractNormal{D}, x::AbstractVector) where D
     xxᵀ = x * x'
-    vcat(x, diag(xxᵀ), vec_tril(xxᵀ))
+    vcat(x, vec(xxᵀ))
 end
 
 function stdparam(n::AbstractNormal{D},
                   η::AbstractVector{T} = naturalform(n.param)) where {T,D}
-    η₁, η₂, η₃ = _unpack(D, η)
-    H₂ = matrix(η₂, T(.5)*η₃)
+    η₁, H₂ = _unpack(D, η)
     Σ = inv(-T(2)*H₂)
     (μ = Σ*η₁, Σ = Σ)
 end

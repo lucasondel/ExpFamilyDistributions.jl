@@ -33,11 +33,11 @@ for T in [Float32, Float64]
     @testset "Normal ($T)" begin
         n = Normal(T[1, 2], Symmetric(T[2 0; 0 3]))
 
-        η = T[1/2, 2/3, -1/4, -1/6, 0]
+        η = T[1/2, 2/3, -1/4, 0, 0, -1/6]
         @test all(naturalform(n.param) .≈ η)
 
         x = T[2, 3]
-        Tx = T[2, 3, 4, 9, 6]
+        Tx = T[2, 3, 4, 6, 6, 9]
         @test all(stats(n, x) .≈ Tx)
 
         A = .5 * log(det(n.Σ)) + .5 * dot(n.μ, inv(n.Σ), n.μ)
@@ -46,13 +46,12 @@ for T in [Float32, Float64]
 
         @test basemeasure(n, x) ≈ T(-log(2π))
 
-        ETx = T[1, 2, 3, 7, 2]
+        ETx = T[1, 2, 3, 2, 2, 7]
         @test all(gradlognorm(n) .≈ ETx)
 
-        s1, s2, s3 = splitgrad(n, gradlognorm(n))
+        s1, s2 = splitgrad(n, gradlognorm(n))
         @test size(s1) == (2,)
-        @test size(s2) == (2,)
-        @test size(s3) == (1,)
+        @test size(s2) == (2,2)
 
         n2 = Normal(zeros(T, 2), Matrix{T}(I, 2, 2))
         @test kldiv(n, n) ≈  0
@@ -199,11 +198,11 @@ for T in [Float32, Float64]
         w = Wishart(W, 2)
 
         invW = inv(W)
-        η = vcat(-.5 * diag(invW), vec_tril(invW), v/2)
+        η = vcat(-.5 * vec(invW), v/2)
         @test eltype(naturalform(w.param)) == T
         @test all(naturalform(w.param) .≈ η)
 
-        TX = T[diag(X)..., vec_tril(X)..., logdet(X)]
+        TX = T[vec(X)..., logdet(X)]
         @test all(stats(w, X) .≈ TX)
 
         A = .5*( v*logdet(W) + v*D*log(2) ) + sum([loggamma((v+1-i)/2) for i in 1:D])
@@ -213,15 +212,13 @@ for T in [Float32, Float64]
         @test basemeasure(w, X) ≈ B
 
         vW = v*W
-        ETX = vcat(diag(vW), vec_tril(vW), sum([digamma(T(0.5)*(v+1-i)) for i in 1:D]) + D*T(log(2)) + logdet(W))
+        ETX = vcat(vec(vW), sum([digamma(T(0.5)*(v+1-i)) for i in 1:D]) + D*T(log(2)) + logdet(W))
         @test eltype(gradlognorm(w)) == T
         @test all(gradlognorm(w) .≈ ETX)
 
-        s = splitgrad(w, gradlognorm(w))
-        @test length(s) == 3
-        @test all(s[1] .≈ diag(vW))
-        @test all(s[2] .≈ vec_tril(vW))
-        @test s[3] .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
+        s1, s2 = splitgrad(w, gradlognorm(w))
+        @test all(s1 .≈ vW)
+        @test s2 .≈ sum([digamma((v+1-i)/2) for i in 1:D]) + D*log(2) + logdet(W)
 
         w2 = Wishart(Matrix{T}(I, 2, 2), 2)
         @test kldiv(w, w) ≈  0
