@@ -46,13 +46,18 @@ function Normal(μ, Σ)
     Normal{P,D}(param)
 end
 
-_unpack(D, v) = v[1:D], reshape(v[D+1:end], D, D)
+_unpack(D, v) = v[1:D], Hermitian(reshape(v[D+1:end], D, D))
 
 #######################################################################
 # Distribution interface.
 
 function basemeasure(::AbstractNormal, x::AbstractVector{T}) where T
     -T(.5) * length(x) * log(T(2π))
+end
+
+function gradlognorm(n::AbstractNormal)
+    μ, Σ = stdparam(n, naturalform(n.param))
+    vcat(μ, vec(Σ + μ*μ'))
 end
 
 function lognorm(n::AbstractNormal{D},
@@ -70,10 +75,7 @@ end
 
 splitgrad(n::AbstractNormal{D}, m) where D = _unpack(D, m)
 
-function stats(::AbstractNormal{D}, x::AbstractVector) where D
-    xxᵀ = x * x'
-    vcat(x, vec(xxᵀ))
-end
+stats(::AbstractNormal{D}, x::AbstractVector) where D = vcat(x, vec(x*x'))
 
 function stdparam(n::AbstractNormal{D},
                   η::AbstractVector{T} = naturalform(n.param)) where {T,D}

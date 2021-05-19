@@ -77,17 +77,17 @@ end
 stats(w::AbstractWishart, X::AbstractMatrix) = vcat(vec(X), logdet(X))
 
 function sample(w::AbstractWishart, size = 1)
-    w_ = Dists.Wishart(w.v, PDMat(w.W))
+    w_ = Dists.Wishart(w.v, PDMat(Matrix(w.W)))
     [rand(w_) for i in 1:size]
 end
 
 function splitgrad(w::AbstractWishart{D}, μ::AbstractVector{T}) where {T,D}
-    reshape(μ[1:end-1], D, D), μ[end]
+    Hermitian(reshape(μ[1:end-1], D, D)), μ[end]
 end
 
 function stdparam(w::AbstractWishart{D},
                   η::AbstractVector{T} = naturalform(w.param)) where {T,D}
-    M = -T(2)*reshape(η[1:end-1], D, D)
+    M = -T(2)*Hermitian(reshape(η[1:end-1], D, D))
     W = inv(M)
     v = T(2)*η[end]
     (W = W, v = v)
