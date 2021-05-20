@@ -46,7 +46,7 @@ function Normal(μ, Σ)
     Normal{P,D}(param)
 end
 
-_unpack(D, v) = v[1:D], Hermitian(reshape(v[D+1:end], D, D))
+_unpack(D, v) = v[1:D], reshape(v[D+1:end], D, D)
 
 #######################################################################
 # Distribution interface.
