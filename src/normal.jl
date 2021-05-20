@@ -35,7 +35,7 @@ Normal{DefaultParameter{Vector{Float64}}, 2}:
   Σ = [2.0 0.5; 0.5 1.0]
 ```
 """
-struct Normal{P<:AbstractParameter,D} <: AbstractNormal{D}
+mutable struct Normal{P<:AbstractParameter,D} <: AbstractNormal{D}
     param::P
 end
 

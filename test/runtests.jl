@@ -32,6 +32,7 @@ end
 for T in [Float32, Float64]
     @testset "Normal ($T)" begin
         n = Normal(T[1, 2], Symmetric(T[2 0; 0 3]))
+        @test typeof(n).mutable
 
         η = T[1/2, 2/3, -1/4, -1/6, 0]
         @test all(naturalform(n.param) .≈ η)
@@ -74,6 +75,7 @@ end
 for T in [Float32, Float64]
     @testset "NormalDiag ($T)" begin
         n = NormalDiag(T[1, 2], T[2, 2])
+        @test typeof(n).mutable
 
         η = T[.5, 1, -.25, -.25]
         @test all(naturalform(n.param) .≈ η)
@@ -115,6 +117,7 @@ end
 for T in [Float32, Float64]
     @testset "Gamma ($T)" begin
         g = Gamma(T(1), T(2))
+        @test typeof(g).mutable
 
         η = T[-2, 1]
         @test all(naturalform(g.param) .≈ η)
@@ -154,6 +157,7 @@ end
 for T in [Float32, Float64]
     @testset "Dirichlet ($T)" begin
         d = Dirichlet(T[1, 2, 3])
+        @test typeof(d).mutable
 
         η = T[1, 2, 3]
         @test all(naturalform(d.param) .≈ η)
@@ -196,7 +200,8 @@ for T in [Float32, Float64]
         D = T(2)
         W = Symmetric(Matrix{T}(I, 2, 2))
         v = T(2)
-        w = Wishart(W, 2)
+        w = Wishart(W, v)
+        @test typeof(w).mutable
 
         invW = inv(W)
         η = vcat(-.5 * diag(invW), vec_tril(invW), v/2)

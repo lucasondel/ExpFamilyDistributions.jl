@@ -36,7 +36,7 @@ NormalDiag{DefaultParameter{Vector{Float64}}, 2}:
   Σ = [2.0 0.0; 0.0 1.0]
 ```
 """
-struct NormalDiag{P<:AbstractParameter,D} <: AbstractNormalDiag{D}
+mutable struct NormalDiag{P<:AbstractParameter,D} <: AbstractNormalDiag{D}
     param::P
 end
 

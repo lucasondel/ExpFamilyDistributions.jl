@@ -22,6 +22,8 @@ naturalform(param::AbstractParameter)
 Returns the vector of parameters as stored in `param`. Note that this
 function is just an accessor of the internal storage of the parameter,
 modifying the returned value should modify the parameter accordingly.
+Furthermore, one can create a new parameter using
+`typeof(param)(realform(param))`.
 
 See also: [`naturalform`](@ref).
 """
