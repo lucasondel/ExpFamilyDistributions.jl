@@ -22,8 +22,6 @@ naturalform(param::AbstractParameter)
 Returns the vector of parameters as stored in `param`. Note that this
 function is just an accessor of the internal storage of the parameter,
 modifying the returned value should modify the parameter accordingly.
-Furthermore, one can create a new parameter using
-`typeof(param)(realform(param))`.
 
 See also: [`naturalform`](@ref).
 """
@@ -37,14 +35,23 @@ Returns the Jacobian of ξ (the real form) w.r.t. the natural form η.
 """
 jacobian(::AbstractParameter)
 
+"""
+    reallocate(param, bufferType)
+
+Reallocate (i.e. copy) `param` with all interal buffers stored as
+`bufferType`.
+"""
+reallocate(::AbstractParameter, bufferType::Type)
+
 #######################################################################
 # Default parameter: store the parameters in their natural form.
 
-mutable struct DefaultParameter{T} <: AbstractParameter{T}
+struct DefaultParameter{T} <: AbstractParameter{T}
     ξ::T
 end
 
 naturalform(p::DefaultParameter) = p.ξ
 realform(p::DefaultParameter) = p.ξ
 jacobian(p::DefaultParameter) = Diagonal(ones(eltype(p.ξ), length(p.ξ)))
-
+reallocate(p::DefaultParameter, bufferType::Type) =
+    DefaultParameter(bufferType(realform(p)))

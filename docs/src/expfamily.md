@@ -35,8 +35,9 @@ AbstractParameter
 and supports the following methods
 ```@docs
 naturalform
-realform
 jacobian
+realform
+reallocate
 ```
 
 ## Distribution interface

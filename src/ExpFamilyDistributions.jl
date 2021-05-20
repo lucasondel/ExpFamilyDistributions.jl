@@ -28,6 +28,7 @@ export AbstractParameter
 export naturalform
 export realform
 export jacobian
+export reallocate
 
 export DefaultParameter
 
