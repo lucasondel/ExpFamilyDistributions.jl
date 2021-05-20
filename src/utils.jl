@@ -39,17 +39,17 @@ function inv_vec_tril(v)
 end
 
 """
-    matrix(diagM, trilM)
+    matrix(diagM, vec_trilM)
 
 Returns a symmetrix matrix from the diagonal and the "tril" form of a
 matrix.
 
 See also [`vec_tril`](@ref), [`inv_vec_tril`](@ref)
 """
-function matrix(diagM, trilM)
+function matrix(diagM, vec_trilM)
     T = eltype(diagM)
-    utrilM = inv_vec_tril(trilM)
-    diagm(diagM) + utrilM + utrilM'
+    trilM = inv_vec_tril(vec_trilM)
+    Diagonal(diagM) + trilM + trilM'
 end
 
 @adjoint inv_vec_tril(M) = inv_vec_tril(M), Δ -> (vec_tril(Δ),)
