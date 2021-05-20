@@ -8,7 +8,7 @@ the matrix.
 
 See also [`inv_vec_tril`](@ref), [`matrix`](@ref).
 """
-function vec_tril(M::AbstractMatrix)
+function vec_tril(M)
     D, _ = size(M)
     vcat([diag(M, -i) for i in 1:D-1]...)
 end
@@ -21,7 +21,7 @@ of the matrix is set to 0.
 
 See also [`vec_tril`](@ref), [`matrix`](@ref)
 """
-function inv_vec_tril(v::AbstractVector)
+function inv_vec_tril(v)
     # Determine the dimension of the matrix from the length of the
     # vector. To do this, we solve the equation:
     #   x²/2 + x/2 - l = 0
@@ -46,7 +46,8 @@ matrix.
 
 See also [`vec_tril`](@ref), [`inv_vec_tril`](@ref)
 """
-function matrix(diagM::AbstractVector{T}, trilM::AbstractVector{T}) where T
+function matrix(diagM, trilM)
+    T = eltype(diagM)
     utrilM = inv_vec_tril(trilM)
     Diagonal(diagM) + Symmetric(utrilM + utrilM')
 end
