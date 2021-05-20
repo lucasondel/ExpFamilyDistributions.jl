@@ -1,5 +1,9 @@
 # Releases
 
+## 0.9.3
+* fixed: no type specialization for the splitgrad function to allow
+  using AD toolkit such as AutoGrad.jl
+
 ## 0.9.2
 * replaced ForwardDiff with Zygote for efficiency reason
 * added Zygote adjoint for `vec_tril` and its inverse
