@@ -49,7 +49,7 @@ See also [`vec_tril`](@ref), [`inv_vec_tril`](@ref)
 function matrix(diagM, trilM)
     T = eltype(diagM)
     utrilM = inv_vec_tril(trilM)
-    Diagonal(diagM) + Symmetric(utrilM + utrilM')
+    diagm(diagM) + utrilM + utrilM'
 end
 
 @adjoint inv_vec_tril(M) = inv_vec_tril(M), Δ -> (vec_tril(Δ),)
