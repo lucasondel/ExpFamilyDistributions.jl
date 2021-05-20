@@ -40,7 +40,7 @@ jacobian(::AbstractParameter)
 #######################################################################
 # Default parameter: store the parameters in their natural form.
 
-struct DefaultParameter{T} <: AbstractParameter{T}
+mutable struct DefaultParameter{T} <: AbstractParameter{T}
     ξ::T
 end
 

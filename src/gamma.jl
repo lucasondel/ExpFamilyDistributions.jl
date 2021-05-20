@@ -33,7 +33,7 @@ Gamma{DefaultParameter{Vector{Float64}}}:
   β = 2.0
 ```
 """
-mutable struct Gamma{P<:AbstractParameter} <: AbstractGamma
+struct Gamma{P<:AbstractParameter} <: AbstractGamma
     param::P
 end
 
