@@ -15,8 +15,8 @@ function DefaultNormalParameter(μ::AbstractVector{T},
 end
 
 """
-    struct Normal{P<:AbstractParameter,D} <: AbstractNormal{D}
-        param::P
+    mutable struct Normal{D} <: AbstractNormal{D}
+        param::P where P <: AbstractParameter
     end
 
 Normal distribution with full covariance matrix.
@@ -30,20 +30,20 @@ where `μ` is the mean and `Σ` is the covariance matrix.
 # Examples
 ```jldoctest
 julia> Normal([1.0, 1.0], [2.0 0.5; 0.5 1.0])
-Normal{DefaultParameter{Vector{Float64}}, 2}:
+Normal{2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.5; 0.5 1.0]
 ```
 """
-mutable struct Normal{P<:AbstractParameter,D} <: AbstractNormal{D}
-    param::P
+mutable struct Normal{D} <: AbstractNormal{D}
+    param::P where P <: AbstractParameter
 end
 
 function Normal(μ, Σ)
     param = DefaultNormalParameter(μ, Σ)
     P = typeof(param)
     D = length(μ)
-    Normal{P,D}(param)
+    Normal{D}(param)
 end
 
 _unpack(D, v) = v[1:D], v[D+1:2*D], v[2*D+1:end]

@@ -16,8 +16,8 @@ function DefaultNormalDiagParameter(μ::AbstractVector{T},
 end
 
 """
-    struct NormalDiag{P<:AbstractParameter,D} <: AbstractNormalDiag{D}
-        param::P
+    mutable struct NormalDiag{D} <: AbstractNormalDiag{D}
+        param::P where P <: AbstractParameter
     end
 
 Normal distribution with a diagonal covariance matrix.
@@ -31,20 +31,20 @@ where `μ` is the mean `v` is the diagonal of the covariance matrix.
 # Examples
 ```jldoctest
 julia> NormalDiag([1.0, 1.0], [2.0, 1.0])
-NormalDiag{DefaultParameter{Vector{Float64}}, 2}:
+NormalDiag{2}:
   μ = [1.0, 1.0]
   Σ = [2.0 0.0; 0.0 1.0]
 ```
 """
-mutable struct NormalDiag{P<:AbstractParameter,D} <: AbstractNormalDiag{D}
-    param::P
+mutable struct NormalDiag{D} <: AbstractNormalDiag{D}
+    param::P where P <: AbstractParameter
 end
 
 function NormalDiag(μ::AbstractVector{T}, v::AbstractVector{T}) where T
     param = DefaultNormalDiagParameter(μ, v)
     P = typeof(param)
     D = length(μ)
-    NormalDiag{P,D}(param)
+    NormalDiag{D}(param)
 end
 NormalDiag(μ::AbstractVector, Σ::Diagonal) = NormalDiag(μ, diag(Σ))
 

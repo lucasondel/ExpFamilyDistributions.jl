@@ -17,8 +17,8 @@ function DefaultWishartParameter(W, v)
 end
 
 """
-    struct Wishart{P<:AbstractParameter,D} <: AbstractWishart{D}
-        param::P
+    mutable struct Wishart{D} <: AbstractWishart{D}
+        param::P where P <: AbstractParameter
     end
 
 Wishart distribution.
@@ -34,20 +34,20 @@ positive definite DxD matrix.
 # Examples
 ```jldoctest
 julia> Wishart([1 0.5; 0.5 1], 2)
-Wishart{DefaultParameter{Vector{Float64}}, 2}:
+Wishart{2}:
   W = [1.0 0.5; 0.5 1.0]
   v = 2.0
 ```
 """
-mutable struct Wishart{P<:AbstractParameter,D} <: AbstractWishart{D}
-    param::P
+mutable struct Wishart{D} <: AbstractWishart{D}
+    param::P where P <: AbstractParameter
 end
 
 function Wishart(W::AbstractMatrix, v)
     param = DefaultWishartParameter(W, v)
     P = typeof(param)
     D = size(W,1)
-    Wishart{P,D}(param)
+    Wishart{D}(param)
 end
 
 #######################################################################

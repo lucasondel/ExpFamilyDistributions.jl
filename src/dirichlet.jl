@@ -18,8 +18,8 @@ end
 # Dirichlet distribution
 
 """
-    struct Dirichlet{P<:AbstractParameter,D} <: AbstractDirichlet{D}
-        param::P
+    mutable struct Dirichlet{D} <: AbstractDirichlet{D}
+        param::P where P <: AbstractParameter
     end
 
 Dirichlet distribution.
@@ -33,19 +33,19 @@ where `α` is a vector of concentrations.
 # Examples
 ```jldoctest
 julia> Dirichlet([1.0, 2.0, 3.0])
-Dirichlet{DefaultParameter{Vector{Float64}}, 3}:
+Dirichlet{3}:
   α = [1.0, 2.0, 3.0]
 ```
 """
-mutable struct Dirichlet{P<:AbstractParameter,D} <: AbstractDirichlet{D}
-    param::P
+mutable struct Dirichlet{D} <: AbstractDirichlet{D}
+    param::P where P <: AbstractParameter
 end
 
 function Dirichlet(α::AbstractVector)
     param = DefaultDirichletParameter(α)
     P = typeof(param)
     D = length(α)
-    Dirichlet{P,D}(param)
+    Dirichlet{D}(param)
 end
 
 #######################################################################

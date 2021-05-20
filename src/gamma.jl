@@ -12,8 +12,8 @@ function DefaultGammaParameter(α, β)
 end
 
 """
-    struct Gamma{P<:AbstractParameter} <: AbstractGamma
-        param::P
+    mutable struct Gamma <: AbstractGamma
+        param::P where P <: AbstractParameter
     end
 
 Gamma distribution.
@@ -28,13 +28,13 @@ distribution.
 # Examples
 ```jldoctest
 julia> Gamma(1, 2)
-Gamma{DefaultParameter{Vector{Float64}}}:
+Gamma:
   α = 1.0
   β = 2.0
 ```
 """
-mutable struct Gamma{P<:AbstractParameter} <: AbstractGamma
-    param::P
+mutable struct Gamma <: AbstractGamma
+    param::P where P <: AbstractParameter
 end
 
 Gamma(α::T, β::T) where T<:AbstractFloat = Gamma(DefaultGammaParameter(α, β))
