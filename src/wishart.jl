@@ -85,7 +85,7 @@ function sample(w::AbstractWishart, size = 1)
     [rand(w_) for i in 1:size]
 end
 
-function splitgrad(w::AbstractWishart{D}, μ::AbstractVector{T}) where {T,D}
+function splitgrad(w::AbstractWishart{D}, μ) where {T,D}
     diag_∂₁ = μ[1:D]
     tril_∂₁ = μ[D+1:end-1]
     diag_∂₁, tril_∂₁, μ[end]

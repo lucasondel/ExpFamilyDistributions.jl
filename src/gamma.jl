@@ -56,7 +56,7 @@ function sample(g::AbstractGamma, size)
     [Dists.rand(g_) for i in 1:size]
 end
 
-splitgrad(g::AbstractGamma, μ::AbstractVector) = μ[1], μ[2]
+splitgrad(g::AbstractGamma, μ) = μ[1], μ[2]
 
 stats(::Gamma, x) = [x, log(x)]
 
