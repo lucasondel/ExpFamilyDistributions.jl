@@ -39,7 +39,7 @@ Wishart{DefaultParameter{Vector{Float64}}, 2}:
   v = 2.0
 ```
 """
-struct Wishart{P<:AbstractParameter,D} <: AbstractWishart{D}
+mutable struct Wishart{P<:AbstractParameter,D} <: AbstractWishart{D}
     param::P
 end
 
