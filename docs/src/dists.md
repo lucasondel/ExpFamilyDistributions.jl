@@ -76,6 +76,10 @@ Terms of the canonical form:
 \end{aligned}
 ```
 
+!!! note
+    In practice, the Gamma structure in the package represents the
+    distribution of `D` independent Gamma distributed variables.
+
 ```@docs
 Gamma
 ```
