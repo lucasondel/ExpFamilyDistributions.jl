@@ -72,5 +72,7 @@ The package also provides the following utility functions:
 vec_tril
 inv_vec_tril
 matrix
+pdmat_logdet
+pdmat_inverse
 ```
 

@@ -5,16 +5,19 @@ module ExpFamilyDistributions
 #######################################################################
 # Dependencies
 
+using CUDA: CuArray, lgamma
 using LinearAlgebra
 using SpecialFunctions: loggamma, digamma
 import Distributions
 const Dists = Distributions
-import Zygote: @adjoint, gradient
 using PDMats
+using Random
 
 #######################################################################
 # Utilities
 
+export loggamma_dot
+export pdmat_inverse, pdmat_logdet
 export vec_tril
 export inv_vec_tril
 export matrix

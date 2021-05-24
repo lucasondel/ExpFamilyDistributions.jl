@@ -9,7 +9,7 @@ abstract type AbstractNormal{D} <: Distribution end
 
 function DefaultNormalParameter(μ::AbstractVector{T},
                                 Σ::AbstractMatrix{T}) where T
-    Λ = inv(Σ)
+    Λ = pdmat_inverse(Σ)
     ξ = vcat(Λ*μ, -T(.5)*diag(Λ), -vec_tril(Λ))
     DefaultParameter(ξ)
 end
@@ -31,7 +31,7 @@ where `μ` is the mean and `Σ` is the covariance matrix.
 ```jldoctest
 julia> Normal([1.0, 1.0], [2.0 0.5; 0.5 1.0])
 Normal{2}:
-  μ = [1.0, 1.0]
+  μ = [0.9999999999999998, 1.0]
   Σ = [2.0 0.5; 0.5 1.0]
 ```
 """
@@ -59,14 +59,20 @@ function lognorm(n::AbstractNormal{D},
                  η::AbstractVector{T} = naturalform(n.param)) where {T,D}
     η₁, η₂, η₃ = _unpack(D, η)
     H₂ = matrix(η₂, T(.5)*η₃)
-    -T(.5)*logdet(-T(2)*H₂) - T(.25)*dot(η₁, inv(H₂), η₁)
+    -T(.5)*pdmat_logdet(-T(2)*H₂) + T(.25)*dot(η₁, pdmat_inverse(-H₂) * η₁)
+end
+
+function gradlognorm(n::AbstractNormal)
+    μ, Σ = stdparam(n, naturalform(n.param))
+    M = Σ + μ*μ'
+    vcat(μ, diag(M), vec_tril(M))
 end
 
 function sample(n::AbstractNormal{D}, size) where D
     μ, Σ = stdparam(n)
-    T = eltype(μ)
     L = cholesky(Σ).L
-    [μ + L*randn(T, D) for i in 1:size]
+    ϵ = randn!(similar(μ, D, size))
+    μ .+ L*ϵ
 end
 
 splitgrad(n::AbstractNormal{D}, m) where D = _unpack(D, m)
@@ -80,7 +86,7 @@ function stdparam(n::AbstractNormal{D},
                   η::AbstractVector{T} = naturalform(n.param)) where {T,D}
     η₁, η₂, η₃ = _unpack(D, η)
     H₂ = matrix(η₂, T(.5)*η₃)
-    Σ = inv(-T(2)*H₂)
+    Σ = pdmat_inverse(-T(2)*H₂)
     (μ = Σ*η₁, Σ = Σ)
 end
 

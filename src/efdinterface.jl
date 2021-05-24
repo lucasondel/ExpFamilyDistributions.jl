@@ -57,7 +57,7 @@ basemeasure
 Returns the gradient of the log-normalizer of `p` w.r.t. its natural
 parameters.
 """
-gradlognorm(p) = gradient(η -> lognorm(p, η), naturalform(p.param))[1]
+gradlognorm
 
 """
     kldiv(q::T, p::T[, μ = gradlognorm(q)]) where T<:Distribution

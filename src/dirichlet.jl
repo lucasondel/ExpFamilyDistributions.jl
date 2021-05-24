@@ -54,17 +54,24 @@ end
 basemeasure(::AbstractDirichlet, x::AbstractVector) = -log.(x)
 
 function lognorm(d::AbstractDirichlet, η::AbstractVector = naturalform(d.param))
-    sum(loggamma.(η)) - loggamma(sum(η))
+    sum(loggamma_dot(η)) - loggamma(sum(η))
 end
 
-function sample(d::AbstractDirichlet, size)
-    α = stdparam(d)
-    d_ = Dists.Dirichlet(d.α)
-    [Dists.rand(d_) for i in 1:size]
+function gradlognorm(d::AbstractDirichlet)
+    α = stdparam(d).α
+    digamma.(α) .- digamma(sum(α))
+end
+
+function sample(d::AbstractDirichlet{D}, size) where D
+    α = stdparam(d).α
+    retval = similar(α, D, size)
+    d_ = Dists.Dirichlet(Array(α))
+    retval[:, :] = Dists.rand(d_, size)
+    retval
 end
 
 # vectorization is effect less
-splitgrad(d::AbstractDirichlet, μ) = identity(μ)
+splitgrad(d::AbstractDirichlet, μ) = μ
 
 stats(::AbstractDirichlet, x::AbstractVector) = log.(x)
 

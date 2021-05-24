@@ -1,6 +1,38 @@
 # SPDX-License-Identifier: MIT
 
 """
+    loggamma_dot
+
+Wrapper around the log-gamma version to avoid conflicts with CUDA
+"""
+loggamma_dot(x::AbstractVector) = loggamma.(x)
+loggamma_dot(x::CuArray) = lgamma.(x)
+
+"""
+    pdmat_logdet(M)
+
+Log-determinant of a positive definite matrix.
+"""
+function pdmat_logdet(M::AbstractMatrix)
+    U = cholesky(M).U
+    sum(2 * log.(diag(U)))
+end
+pdmat_logdet(M::Diagonal) = sum(log.(diag(M)))
+
+"""
+    pdmat_inverse(M)
+
+Inverse of a positive definite matrix.
+"""
+function pdmat_inverse(M::AbstractMatrix)
+    U = cholesky(M).U
+    I = typeof(M)(LinearAlgebra.I, size(M)...)
+    U⁻ = I / U
+    U⁻ * U⁻'
+end
+pdmat_inverse(M::Diagonal) = Diagonal(1 ./ diag(M))
+
+"""
     vec_tril(M)
 
 Returns the vectorized low-triangular part (diagonal not included) of
@@ -29,13 +61,17 @@ function inv_vec_tril(v)
     l = length(v)
     D = Int((-1 + sqrt(1 + 8*l))/2) + 1
 
-    M = zeros(eltype(v), D, D)
+    M = similar(v, D, D)
+    fill!(M, 0)
+    #M = zeros(eltype(v), D, D)
     offset = 0
     for i in 1:D-1
         M[diagind(M, -i)] = v[offset+1:offset+D-i]
         offset += D-i
     end
-    LowerTriangular(M)
+    M
+
+    #LowerTriangular(M)
 end
 
 """
@@ -49,8 +85,7 @@ See also [`vec_tril`](@ref), [`inv_vec_tril`](@ref)
 function matrix(diagM, vec_trilM)
     T = eltype(diagM)
     trilM = inv_vec_tril(vec_trilM)
-    Diagonal(diagM) + trilM + trilM'
+    retval = trilM + trilM'
+    retval[diagind(retval)] .= diagM
+    retval
 end
-
-@adjoint inv_vec_tril(M) = inv_vec_tril(M), Δ -> (vec_tril(Δ),)
-@adjoint vec_tril(v) = vec_tril(v), Δ -> (inv_vec_tril(Δ),)

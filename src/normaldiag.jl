@@ -61,11 +61,20 @@ function lognorm(n::AbstractNormalDiag{D},
     -T(.5) * sum(log.(-T(2)*η₂)) -T(.25) * dot(η₁, (1 ./ η₂) .* η₁)
 end
 
+function gradlognorm(n::AbstractNormalDiag{D}, η = naturalform(n.param)) where D
+    T = eltype(η)
+    Λμ, nhλ = η[1:D], η[D+1:end]
+    v = 1 ./ (-T(2) * nhλ)
+    μ = v .* Λμ
+    m = v .+ μ.^2
+    vcat(μ, m)
+end
+
 function sample(n::AbstractNormalDiag{D}, size) where D
     μ, Σ = stdparam(n)
-    T = eltype(μ)
     σ = sqrt.(diag(Σ))
-    [μ + σ .* randn(T, D) for i in 1:size]
+    ϵ = randn!(similar(μ, D, size))
+    μ .+ σ .* ϵ
 end
 
 stats(::AbstractNormalDiag, x) = vcat(x, x.^2)
