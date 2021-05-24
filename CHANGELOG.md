@@ -4,6 +4,8 @@
 * package is compatible with `CuArray` from the CUDA package
 * added `reallocate` function to change distribution's parameter type
   (i.e. from Array to CuArray)
+* `Gamma` distribution is "vectorized" i.e. it represents the joint
+  distribution of independent Gamma distributed variables
 * remove Zygote (gradient of lognormalizers are implemented explicitely)
 * replace StatsFuns with SpecialFunctions package
 * license is MIT again (main reason: CeCILL-B is not OSI approved)
