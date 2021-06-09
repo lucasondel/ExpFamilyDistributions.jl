@@ -39,9 +39,9 @@ for T in types
             @test typeof(realform(p̄)) == Tuple{T, T, T}
 
             dict = todict(p)
-            np = fromdict(DefaultParameter, dict)
-            @test all(naturalform(p) .≈ naturalform(np))
-            @test typeof(naturalform(p)) == typeof(naturalform(np))
+            np = fromdict(typeof(p), dict)
+            @test all(realform(p) .≈ realform(np))
+            @test typeof(realform(p)) == typeof(realform(np))
         end
 
         @testset "Normal ($AT | $T)" begin

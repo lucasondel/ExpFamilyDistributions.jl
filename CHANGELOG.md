@@ -1,5 +1,9 @@
 # Releases
 
+## 1.0.1
+* fixed: the `fromdict` function cannot be used with subtype of
+  `DefaultParameter`.
+
 ## 1.0.0
 * added functions `todict` and `fromdict` to allow easy storing
   of the parameters

@@ -74,4 +74,4 @@ jacobian(p::DefaultParameter) = Diagonal(ones(eltype(p.ξ), length(p.ξ)))
 reallocate(p::DefaultParameter, bufferType::Type) =
     DefaultParameter(bufferType(realform(p)))
 todict(p::DefaultParameter) = Dict(:ξ => p.ξ)
-fromdict(T::Type{DefaultParameter}, d::AbstractDict) = T(d[:ξ])
+fromdict(T::Type{<:DefaultParameter}, d::AbstractDict) = T(d[:ξ])
