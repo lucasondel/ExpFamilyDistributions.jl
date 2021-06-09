@@ -38,6 +38,8 @@ naturalform
 jacobian
 realform
 reallocate
+todict
+fromdict
 ```
 
 ## Distribution interface

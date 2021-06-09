@@ -47,6 +47,8 @@ reallocate(::AbstractParameter, bufferType::Type)
     todict(param)
 
 Return the object as a dictionary.
+
+See also [`fromdict`](@ref).
 """
 todict(param::AbstractParameter)
 
@@ -54,6 +56,8 @@ todict(param::AbstractParameter)
     fromdict(T, dict)
 
 Return a parameter object of type T from the dictionary provided.
+
+See also [`todict`](@ref).
 """
 fromdict(::Type{<:AbstractParameter}, dict::AbstractDict)
 
