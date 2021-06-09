@@ -1,5 +1,11 @@
 # Releases
 
+## 1.0.0
+* added functions `todict` and `fromdict` to allow easy storing
+  of the parameters
+* project is now in version 1.0.0 (starting backward compatibility
+  updates)
+
 ## 0.10.0
 * package is compatible with `CuArray` from the CUDA package
 * added `reallocate` function to change distribution's parameter type
