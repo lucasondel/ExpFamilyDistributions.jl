@@ -23,7 +23,6 @@ export inv_vec_tril
 export matrix
 
 include("utils.jl")
-
 #######################################################################
 # Parameter
 
@@ -32,6 +31,7 @@ export naturalform
 export realform
 export jacobian
 export reallocate
+export todict, fromdict
 
 export DefaultParameter
 

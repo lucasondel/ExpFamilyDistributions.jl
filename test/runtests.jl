@@ -37,6 +37,11 @@ for T in types
             @test all(Array(jacobian(p)) .≈ Matrix{T}(I, length(ξ), length(ξ)))
             p̄ = reallocate(p, Tuple)
             @test typeof(realform(p̄)) == Tuple{T, T, T}
+
+            dict = todict(p)
+            np = fromdict(DefaultParameter, dict)
+            @test all(naturalform(p) .≈ naturalform(np))
+            @test typeof(naturalform(p)) == typeof(naturalform(np))
         end
 
         @testset "Normal ($AT | $T)" begin

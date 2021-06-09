@@ -43,6 +43,20 @@ Reallocate (i.e. copy) `param` with all interal buffers stored as
 """
 reallocate(::AbstractParameter, bufferType::Type)
 
+"""
+    todict(param)
+
+Return the object as a dictionary.
+"""
+todict(param::AbstractParameter)
+
+"""
+    fromdict(T, dict)
+
+Return a parameter object of type T from the dictionary provided.
+"""
+fromdict(::Type{<:AbstractParameter}, dict::AbstractDict)
+
 #######################################################################
 # Default parameter: store the parameters in their natural form.
 
@@ -55,3 +69,5 @@ realform(p::DefaultParameter) = p.ξ
 jacobian(p::DefaultParameter) = Diagonal(ones(eltype(p.ξ), length(p.ξ)))
 reallocate(p::DefaultParameter, bufferType::Type) =
     DefaultParameter(bufferType(realform(p)))
+todict(p::DefaultParameter) = Dict(:ξ => p.ξ)
+fromdict(T::Type{DefaultParameter}, d::AbstractDict) = T(d[:ξ])
