@@ -1,8 +1,11 @@
 # Releases
 
+## 1.0.2
+* updated dependencies to use CUDA 3.3
+
 ## 1.0.1
 * fixed: the `fromdict` function cannot be used with subtype of
-  `DefaultParameter`.
+  `DefaultParameter`
 
 ## 1.0.0
 * added functions `todict` and `fromdict` to allow easy storing

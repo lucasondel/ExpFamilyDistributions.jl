@@ -1,7 +1,7 @@
 name = "ExpFamilyDistributions"
 uuid = "ac7c78bc-e309-483d-b879-ab7fdbfc3919"
 authors = ["Lucas Ondel <lucas.ondel@gmail.com>"]
-version = "1.0.1"
+version = "1.0.2"
 
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
@@ -12,8 +12,8 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [compat]
-CUDA = "2.6"
-Distributions = "0.24"
-PDMats = "0.10"
-SpecialFunctions = "0.10"
+CUDA = "3.3"
+Distributions = "0.25"
+PDMats = "0.11"
+SpecialFunctions = "1.5.1"
 julia = "1.6"
